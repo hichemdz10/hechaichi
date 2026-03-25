@@ -1826,18 +1826,21 @@ try {
 } catch(e) {
     document.getElementById('root').innerHTML = '<div style="background:linear-gradient(135deg,#c62828,#e53935);color:#fff;padding:26px;font-size:16px;font-family:Tajawal,Arial;border-radius:18px;margin:20px;direction:rtl"><h2 style="margin-bottom:12px">⚠️ خطأ</h2><p>'+e.message+'</p><pre style="font-size:12px;overflow:auto;white-space:pre-wrap;margin-top:13px;opacity:.8">'+(e.stack||'')+'</pre></div>';
 }
+
 // ═══════════════════════════════════════════════
 //  LIVE BOTTOM BAR — أضف هذا في آخر script.js
+//  بعد السطر الأخير مباشرة (بعد } الأخيرة)
 // ═══════════════════════════════════════════════
 
 function injectLiveBar() {
     if (window.innerWidth < 769) return;
     if (S.tab !== 'home' || S.cameraActiveInHome) return;
+    if (document.getElementById('liveBar')) return;
 
     var tc = document.querySelector('.tab-content');
-    if (!tc || document.getElementById('liveBar')) return;
+    if (!tc) return;
 
-    // شارت المبيعات الشهرية (آخر 7 أيام)
+    // آخر 7 أيام
     var last7 = [];
     for (var i = 6; i >= 0; i--) {
         var d = new Date();
@@ -1848,10 +1851,9 @@ function injectLiveBar() {
             .reduce(function(a, s) { return a + s.total; }, 0);
         last7.push({ day: d.toLocaleDateString('ar-DZ', { weekday: 'short' }), val: dayTotal });
     }
-
     var maxVal = Math.max.apply(null, last7.map(function(x) { return x.val; })) || 1;
 
-    // أفضل 3 منتجات مبيعاً اليوم
+    // أفضل منتجات اليوم
     var itemSales = {};
     tSales().forEach(function(sale) {
         sale.items.forEach(function(it) {
@@ -1865,18 +1867,17 @@ function injectLiveBar() {
         .sort(function(a, b) { return b.q - a.q; })
         .slice(0, 3);
 
-    var barsHTML = last7.map(function(d) {
+    var barsHTML = last7.map(function(d, idx) {
         var pct = Math.round(d.val / maxVal * 100);
-        var isToday = d === last7[6];
+        var isToday = (idx === 6);
         return '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1">' +
-            '<span style="font-size:10px;color:' + (d.val > 0 ? '#4ade80' : '#4e6180') + ';font-weight:700">' +
+            '<span style="font-size:9px;color:' + (d.val > 0 ? '#4ade80' : '#4e6180') + ';font-weight:700">' +
                 (d.val > 0 ? fmt(d.val) : '—') +
             '</span>' +
             '<div style="width:100%;background:rgba(255,255,255,0.06);border-radius:4px;height:48px;display:flex;align-items:flex-end;overflow:hidden">' +
-                '<div style="width:100%;height:' + pct + '%;background:linear-gradient(to top,' +
+                '<div style="width:100%;height:' + (pct || 0) + '%;background:linear-gradient(to top,' +
                     (isToday ? '#10d988,#4ade80' : '#4f8ef7,#7eb3ff') +
-                ');border-radius:4px;transition:height 0.8s cubic-bezier(0.4,0,0.2,1);min-height:' +
-                (d.val > 0 ? '4' : '0') + 'px"></div>' +
+                ');border-radius:4px;min-height:' + (d.val > 0 ? '4' : '0') + 'px"></div>' +
             '</div>' +
             '<span style="font-size:9px;color:#8fa3c0;white-space:nowrap">' + d.day + '</span>' +
         '</div>';
@@ -1885,55 +1886,77 @@ function injectLiveBar() {
     var topHTML = topItems.length === 0
         ? '<div style="color:#4e6180;font-size:12px;text-align:center;padding:10px">لا مبيعات اليوم</div>'
         : topItems.map(function(it, i) {
-            var medals = ['🥇', '🥈', '🥉'];
+            var medals = ['🥇','🥈','🥉'];
             var col = CC[it.cat] || '#4f8ef7';
             return '<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.05)">' +
-                '<span style="font-size:16px">' + medals[i] + '</span>' +
+                '<span style="font-size:15px">' + medals[i] + '</span>' +
                 '<span style="flex:1;font-size:12px;font-weight:600;color:#e8edf5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(it.n) + '</span>' +
-                '<span style="font-size:11px;font-weight:700;color:' + col + '">' + it.q + ' قطعة</span>' +
+                '<span style="font-size:11px;font-weight:700;color:' + col + '">' + it.q + ' ق</span>' +
             '</div>';
         }).join('');
 
+    var summaryItems = [
+        { l: 'فواتير', v: String(tSales().length), c: '#7eb3ff' },
+        { l: 'بالسلة', v: String(S.cart.length), c: '#fbbf24' },
+        { l: 'صافي', v: fmt(tNet()) + ' دج', c: (tNet() >= 0 ? '#4ade80' : '#f87171') },
+        { l: 'مصاريف', v: fmt(tET()) + ' دج', c: '#fb923c' }
+    ];
+
     var bar = document.createElement('div');
     bar.id = 'liveBar';
+    bar.style.cssText = [
+        'margin-top:20px',
+        'background:linear-gradient(135deg,#1a2540,#1f2d4a)',
+        'border:1px solid rgba(255,255,255,0.08)',
+        'border-radius:20px',
+        'padding:18px 22px',
+        'display:flex',
+        'align-items:flex-start',
+        'gap:20px',
+        'flex-wrap:wrap',
+        'overflow:hidden',
+        'position:relative'
+    ].join(';');
+
     bar.innerHTML =
-        // القسم الأول: مخطط أعمدة 7 أيام
-        '<div style="flex:1;min-width:220px">' +
-            '<div style="font-size:11px;font-weight:700;color:#8fa3c0;margin-bottom:8px;display:flex;align-items:center;gap:6px">' +
-                '<span style="color:#4f8ef7">📊</span> مبيعات آخر 7 أيام' +
-            '</div>' +
-            '<div style="display:flex;gap:4px;align-items:flex-end;height:70px">' + barsHTML + '</div>' +
+        // عنوان البار
+        '<div style="width:100%;display:flex;align-items:center;gap:10px;margin-bottom:4px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.06)">' +
+            '<span style="font-size:11px;font-weight:700;color:#4ade80;background:rgba(16,217,136,0.12);border:1px solid rgba(16,217,136,0.25);padding:3px 10px;border-radius:99px">🟢 مباشر</span>' +
+            '<span style="font-size:14px;font-weight:800;color:#e8edf5">لوحة الأداء اليومي</span>' +
         '</div>' +
 
-        // الفاصل
-        '<div style="width:1px;background:rgba(255,255,255,0.07);align-self:stretch;margin:0 4px;flex-shrink:0"></div>' +
+        // العمود 1: مخطط 7 أيام
+        '<div style="flex:1;min-width:200px">' +
+            '<div style="font-size:10px;font-weight:700;color:#8fa3c0;margin-bottom:10px;display:flex;align-items:center;gap:5px">' +
+                '📊 مبيعات آخر 7 أيام' +
+            '</div>' +
+            '<div style="display:flex;gap:4px;align-items:flex-end;height:72px">' + barsHTML + '</div>' +
+        '</div>' +
 
-        // القسم الثاني: أفضل منتجات اليوم
-        '<div style="flex:1;min-width:180px">' +
-            '<div style="font-size:11px;font-weight:700;color:#8fa3c0;margin-bottom:8px;display:flex;align-items:center;gap:6px">' +
-                '<span>🏆</span> أفضل مبيعات اليوم' +
+        // فاصل
+        '<div style="width:1px;background:rgba(255,255,255,0.07);align-self:stretch;flex-shrink:0"></div>' +
+
+        // العمود 2: أفضل منتجات
+        '<div style="flex:1;min-width:170px">' +
+            '<div style="font-size:10px;font-weight:700;color:#8fa3c0;margin-bottom:10px;display:flex;align-items:center;gap:5px">' +
+                '🏆 أفضل مبيعات اليوم' +
             '</div>' +
             topHTML +
         '</div>' +
 
-        // الفاصل
-        '<div style="width:1px;background:rgba(255,255,255,0.07);align-self:stretch;margin:0 4px;flex-shrink:0"></div>' +
+        // فاصل
+        '<div style="width:1px;background:rgba(255,255,255,0.07);align-self:stretch;flex-shrink:0"></div>' +
 
-        // القسم الثالث: ملخص سريع
-        '<div style="flex:1;min-width:160px">' +
-            '<div style="font-size:11px;font-weight:700;color:#8fa3c0;margin-bottom:8px;display:flex;align-items:center;gap:6px">' +
-                '<span>⚡</span> ملخص اليوم' +
+        // العمود 3: ملخص سريع
+        '<div style="flex:1;min-width:155px">' +
+            '<div style="font-size:10px;font-weight:700;color:#8fa3c0;margin-bottom:10px;display:flex;align-items:center;gap:5px">' +
+                '⚡ ملخص اليوم' +
             '</div>' +
-            '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">' +
-                [
-                    { l: 'فواتير', v: tSales().length, c: '#7eb3ff' },
-                    { l: 'أصناف', v: S.cart.length + ' بالسلة', c: '#fbbf24' },
-                    { l: 'صافي', v: fmt(tNet()) + ' دج', c: tNet() >= 0 ? '#4ade80' : '#f87171' },
-                    { l: 'مصاريف', v: fmt(tET()) + ' دج', c: '#fb923c' }
-                ].map(function(x) {
-                    return '<div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:6px 8px;border:1px solid rgba(255,255,255,0.06)">' +
-                        '<div style="font-size:9px;color:#4e6180;font-weight:600">' + x.l + '</div>' +
-                        '<div style="font-size:13px;font-weight:800;color:' + x.c + '">' + x.v + '</div>' +
+            '<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">' +
+                summaryItems.map(function(x) {
+                    return '<div style="background:rgba(255,255,255,0.04);border-radius:9px;padding:8px 9px;border:1px solid rgba(255,255,255,0.06)">' +
+                        '<div style="font-size:9px;color:#4e6180;font-weight:600;margin-bottom:2px">' + x.l + '</div>' +
+                        '<div style="font-size:14px;font-weight:800;color:' + x.c + '">' + x.v + '</div>' +
                     '</div>';
                 }).join('') +
             '</div>' +
@@ -1942,16 +1965,23 @@ function injectLiveBar() {
     tc.appendChild(bar);
 }
 
-// تحديث الـ bar كل 10 ثواني
+// تحديث كل 15 ثانية
 setInterval(function() {
-    var bar = document.getElementById('liveBar');
-    if (bar) bar.remove();
+    var old = document.getElementById('liveBar');
+    if (old) old.remove();
     injectLiveBar();
-}, 10000);
+}, 15000);
 
-// ربطه مع render الأصلي
-var _origRender = render;
-render = function() {
-    _origRender();
-    setTimeout(injectLiveBar, 300);
-};
+// تشغيل أول مرة بعد تحميل الصفحة
+window.addEventListener('load', function() {
+    setTimeout(injectLiveBar, 600);
+});
+
+// ربط مع نقرات التبويبات لإعادة الرسم
+document.addEventListener('click', function() {
+    setTimeout(function() {
+        var old = document.getElementById('liveBar');
+        if (old) old.remove();
+        injectLiveBar();
+    }, 350);
+});
