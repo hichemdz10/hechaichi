@@ -1985,220 +1985,243 @@ document.addEventListener('click', function() {
         injectLiveBar();
     }, 350);
 }
-// ═══════════════════════════════════════════════════════
-//  أضف هذا الكود في آخر script.js بعد } الأخيرة تماماً
-// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
+//  إضافات التحسين (وضع ليلي، لوحة المنتجات الناقصة، شريط الأداء)
+// ═══════════════════════════════════════════════
 
-// ── 1. زر الوضع الليلي ──
 (function() {
-    var btn = document.createElement('button');
-    btn.id = 'darkModeToggle';
-    var isDark = localStorage.getItem('hch_dark') === '1';
-    if (isDark) document.body.classList.add('dark-mode');
-    btn.textContent = isDark ? '☀️' : '🌙';
-    btn.title = 'تبديل الوضع الليلي';
-    btn.onclick = function() {
-        var dark = document.body.classList.toggle('dark-mode');
-        btn.textContent = dark ? '☀️' : '🌙';
-        localStorage.setItem('hch_dark', dark ? '1' : '0');
-    };
-    document.body.appendChild(btn);
-})();
-
-// ── 2. إخفاء خانة البحث في الصفحة الرئيسية ──
-function hideHomeSearch() {
-    if (S.tab !== 'home') return;
-    var inputs = document.querySelectorAll('#hmSrch');
-    inputs.forEach(function(el) {
-        // إخفاء الـ input وأبوه (div الـ actionBar)
-        if (el && el.parentElement) {
-            el.style.display = 'none';
-            // أيضاً نحذف المساحة الفارغة
-            el.parentElement.style.gap = '8px';
-        }
-    });
-}
-
-// ── 3. لوحة المنتجات الناقصة في المخزون ──
-function injectLowStockPanel() {
-    if (S.tab !== 'stock') return;
-    if (document.getElementById('lowStockPanel')) return;
-
-    var low = S.stock.filter(function(s) { return s.q <= LOW; })
-        .sort(function(a, b) { return a.q - b.q });
-    if (low.length === 0) return;
-
-    var tc = document.querySelector('.tab-content');
-    if (!tc) return;
-
-    var panel = document.createElement('div');
-    panel.id = 'lowStockPanel';
-
-    var isOpen = true;
-    function renderPanel() {
-        panel.innerHTML =
-            '<div class="lsp-header" id="lspToggle">' +
-                '<div class="lsp-title">' +
-                    '⚠️ منتجات تحتاج تموين' +
-                    '<span class="lsp-badge">' + low.length + ' صنف</span>' +
-                '</div>' +
-                '<span style="font-size:18px;color:var(--text-muted);transition:transform 0.25s;transform:' + (isOpen ? 'rotate(180deg)' : 'rotate(0)') + '">▼</span>' +
-            '</div>' +
-            (isOpen ?
-                '<div id="lspBody">' +
-                low.map(function(s) {
-                    var col = CC[s.cat] || '#dc2626';
-                    return '<div class="lsp-item">' +
-                        '<div class="lsp-qty ' + (s.q === 0 ? 'zero' : 'low') + '">' + s.q + '</div>' +
-                        '<div style="flex:1">' +
-                            '<div class="lsp-name">' + esc(s.n) + '</div>' +
-                            '<div class="lsp-cat">' + (CI[s.cat] || '') + ' ' + s.cat + '</div>' +
-                        '</div>' +
-                        '<div style="font-size:12px;font-weight:700;color:' + col + '">' + s.p + ' دج</div>' +
-                        '<button onclick="goToStockCat(\'' + s.cat + '\')" ' +
-                            'style="background:linear-gradient(135deg,' + col + ',' + col + 'cc);color:#fff;border:none;' +
-                            'border-radius:8px;padding:5px 10px;cursor:pointer;font-size:11px;font-weight:700;' +
-                            'font-family:Tajawal,Arial">تموين</button>' +
-                    '</div>';
-                }).join('') +
-                '</div>'
-            : '') ;
-
-        document.getElementById('lspToggle').onclick = function() {
-            isOpen = !isOpen;
-            renderPanel();
+    // ── 1. زر الوضع الليلي ──
+    function initDarkMode() {
+        if (!document.body) return;
+        var btn = document.getElementById('darkModeToggle');
+        if (btn) btn.remove();
+        btn = document.createElement('button');
+        btn.id = 'darkModeToggle';
+        var isDark = localStorage.getItem('hch_dark') === '1';
+        if (isDark) document.body.classList.add('dark-mode');
+        btn.textContent = isDark ? '☀️' : '🌙';
+        btn.title = 'تبديل الوضع الليلي';
+        btn.onclick = function() {
+            var dark = document.body.classList.toggle('dark-mode');
+            btn.textContent = dark ? '☀️' : '🌙';
+            localStorage.setItem('hch_dark', dark ? '1' : '0');
         };
+        document.body.appendChild(btn);
     }
 
-    renderPanel();
-
-    // أدرجه قبل أول عنصر في تبويب المخزون
-    tc.insertBefore(panel, tc.firstChild);
-}
-
-// ── 4. Live Bottom Bar (آخر 7 أيام + أفضل منتجات + ملخص) ──
-function injectLiveBar() {
-    if (window.innerWidth < 769) return;
-    if (S.tab !== 'home' || S.cameraActiveInHome) return;
-    if (document.getElementById('liveBar')) return;
-
-    var tc = document.querySelector('.tab-content');
-    if (!tc) return;
-
-    var last7 = [];
-    for (var i = 6; i >= 0; i--) {
-        var d = new Date();
-        d.setDate(d.getDate() - i);
-        var key = dk(d);
-        var dayTotal = S.sales
-            .filter(function(s) { return dk(new Date(s.date)) === key; })
-            .reduce(function(a, s) { return a + s.total; }, 0);
-        last7.push({ day: d.toLocaleDateString('ar-DZ', { weekday: 'short' }), val: dayTotal });
-    }
-    var maxVal = Math.max.apply(null, last7.map(function(x) { return x.val; })) || 1;
-
-    var itemSales = {};
-    tSales().forEach(function(sale) {
-        sale.items.forEach(function(it) {
-            if (!itemSales[it.n]) itemSales[it.n] = { q: 0, total: 0, cat: it.cat };
-            itemSales[it.n].q     += it.q;
-            itemSales[it.n].total += it.sum;
+    // ── 2. إخفاء خانة البحث في الصفحة الرئيسية ──
+    function hideHomeSearch() {
+        if (typeof S === 'undefined' || S.tab !== 'home') return;
+        var inputs = document.querySelectorAll('#hmSrch');
+        inputs.forEach(function(el) {
+            if (el && el.parentElement) {
+                el.style.display = 'none';
+                el.parentElement.style.gap = '8px';
+            }
         });
-    });
-    var topItems = Object.keys(itemSales)
-        .map(function(n) { return { n: n, q: itemSales[n].q, total: itemSales[n].total, cat: itemSales[n].cat }; })
-        .sort(function(a, b) { return b.q - a.q; })
-        .slice(0, 3);
+    }
 
-    var barsHTML = last7.map(function(d, idx) {
-        var pct = Math.round(d.val / maxVal * 100) || 0;
-        var isToday = (idx === 6);
-        return '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1">' +
-            '<span style="font-size:9px;color:' + (d.val > 0 ? (isToday ? '#059669' : 'var(--accent-blue)') : 'var(--text-muted)') + ';font-weight:700">' +
-                (d.val > 0 ? fmt(d.val) : '—') +
-            '</span>' +
-            '<div style="width:100%;background:var(--bg-elevated);border-radius:4px;height:52px;display:flex;align-items:flex-end;overflow:hidden">' +
-                '<div style="width:100%;height:' + pct + '%;background:linear-gradient(to top,' +
-                    (isToday ? '#059669,#10b981' : 'var(--accent-blue),var(--accent-blue-2)') +
-                ');border-radius:4px;min-height:' + (d.val > 0 ? '4' : '0') + 'px;transition:height 1s ease"></div>' +
-            '</div>' +
-            '<span style="font-size:9px;color:var(--text-muted);white-space:nowrap">' + d.day + '</span>' +
-        '</div>';
-    }).join('');
+    // ── 3. لوحة المنتجات الناقصة في المخزون ──
+    function injectLowStockPanel() {
+        if (typeof S === 'undefined' || S.tab !== 'stock') return;
+        if (document.getElementById('lowStockPanel')) return;
 
-    var topHTML = topItems.length === 0
-        ? '<div style="color:var(--text-muted);font-size:12px;text-align:center;padding:10px">لا مبيعات اليوم</div>'
-        : topItems.map(function(it, i) {
-            var medals = ['🥇','🥈','🥉'];
-            var col = CC[it.cat] || 'var(--accent-blue)';
-            return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border-subtle)">' +
-                '<span style="font-size:15px">' + medals[i] + '</span>' +
-                '<span style="flex:1;font-size:12px;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(it.n) + '</span>' +
-                '<span style="font-size:11px;font-weight:700;color:' + col + '">' + it.q + ' ق</span>' +
+        var low = (S.stock || []).filter(function(s) { return s.q <= 5; })
+            .sort(function(a, b) { return a.q - b.q; });
+        if (low.length === 0) return;
+
+        var tc = document.querySelector('.tab-content');
+        if (!tc) return;
+
+        var panel = document.createElement('div');
+        panel.id = 'lowStockPanel';
+        var isOpen = true;
+
+        function renderPanel() {
+            panel.innerHTML =
+                '<div class="lsp-header" id="lspToggle">' +
+                    '<div class="lsp-title">' +
+                        '⚠️ منتجات تحتاج تموين' +
+                        '<span class="lsp-badge">' + low.length + ' صنف</span>' +
+                    '</div>' +
+                    '<span style="font-size:18px;color:var(--text-muted);transition:transform 0.25s;transform:' + (isOpen ? 'rotate(180deg)' : 'rotate(0)') + '">▼</span>' +
+                '</div>' +
+                (isOpen ?
+                    '<div id="lspBody">' +
+                    low.map(function(s) {
+                        var col = CC && CC[s.cat] ? CC[s.cat] : '#dc2626';
+                        return '<div class="lsp-item">' +
+                            '<div class="lsp-qty ' + (s.q === 0 ? 'zero' : 'low') + '">' + s.q + '</div>' +
+                            '<div style="flex:1">' +
+                                '<div class="lsp-name">' + esc(s.n) + '</div>' +
+                                '<div class="lsp-cat">' + (CI && CI[s.cat] ? CI[s.cat] : '') + ' ' + esc(s.cat) + '</div>' +
+                            '</div>' +
+                            '<div style="font-size:12px;font-weight:700;color:' + col + '">' + s.p + ' دج</div>' +
+                            '<button onclick="goToStockCat(\'' + esc(s.cat) + '\')" ' +
+                                'style="background:linear-gradient(135deg,' + col + ',' + col + 'cc);color:#fff;border:none;' +
+                                'border-radius:8px;padding:5px 10px;cursor:pointer;font-size:11px;font-weight:700;' +
+                                'font-family:Tajawal,Arial">تموين</button>' +
+                        '</div>';
+                    }).join('') +
+                    '</div>'
+                : '');
+            var toggle = document.getElementById('lspToggle');
+            if (toggle) {
+                toggle.onclick = function() {
+                    isOpen = !isOpen;
+                    renderPanel();
+                };
+            }
+        }
+        renderPanel();
+        tc.insertBefore(panel, tc.firstChild);
+    }
+
+    // ── 4. شريط الأداء (آخر 7 أيام + أفضل منتجات + ملخص) ──
+    function injectLiveBar() {
+        if (typeof S === 'undefined') return;
+        if (window.innerWidth < 769) return;
+        if (S.tab !== 'home' || S.cameraActiveInHome) return;
+        if (document.getElementById('liveBar')) return;
+
+        var tc = document.querySelector('.tab-content');
+        if (!tc) return;
+
+        // آخر 7 أيام
+        var last7 = [];
+        for (var i = 6; i >= 0; i--) {
+            var d = new Date();
+            d.setDate(d.getDate() - i);
+            var key = dk(d);
+            var dayTotal = (S.sales || [])
+                .filter(function(s) { return dk(new Date(s.date)) === key; })
+                .reduce(function(a, s) { return a + s.total; }, 0);
+            last7.push({ day: d.toLocaleDateString('ar-DZ', { weekday: 'short' }), val: dayTotal });
+        }
+        var maxVal = Math.max.apply(null, last7.map(function(x) { return x.val; })) || 1;
+
+        // أفضل منتجات اليوم
+        var itemSales = {};
+        var todaySales = (S.sales || []).filter(function(s) { return dk(new Date(s.date)) === tstr(); });
+        todaySales.forEach(function(sale) {
+            (sale.items || []).forEach(function(it) {
+                if (!itemSales[it.n]) itemSales[it.n] = { q: 0, total: 0, cat: it.cat };
+                itemSales[it.n].q     += it.q;
+                itemSales[it.n].total += it.sum;
+            });
+        });
+        var topItems = Object.keys(itemSales)
+            .map(function(n) { return { n: n, q: itemSales[n].q, total: itemSales[n].total, cat: itemSales[n].cat }; })
+            .sort(function(a, b) { return b.q - a.q; })
+            .slice(0, 3);
+
+        var barsHTML = last7.map(function(d, idx) {
+            var pct = Math.round(d.val / maxVal * 100) || 0;
+            var isToday = (idx === 6);
+            return '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1">' +
+                '<span style="font-size:9px;color:' + (d.val > 0 ? (isToday ? '#059669' : 'var(--accent-blue)') : 'var(--text-muted)') + ';font-weight:700">' +
+                    (d.val > 0 ? fmt(d.val) : '—') +
+                '</span>' +
+                '<div style="width:100%;background:var(--bg-elevated);border-radius:4px;height:52px;display:flex;align-items:flex-end;overflow:hidden">' +
+                    '<div style="width:100%;height:' + pct + '%;background:linear-gradient(to top,' +
+                        (isToday ? '#059669,#10b981' : 'var(--accent-blue),var(--accent-blue-2)') +
+                    ');border-radius:4px;min-height:' + (d.val > 0 ? '4' : '0') + 'px;transition:height 1s ease"></div>' +
+                '</div>' +
+                '<span style="font-size:9px;color:var(--text-muted);white-space:nowrap">' + d.day + '</span>' +
             '</div>';
         }).join('');
 
-    var summaryItems = [
-        { l: 'فواتير', v: String(tSales().length), c: 'var(--accent-blue)' },
-        { l: 'بالسلة', v: String(S.cart.length), c: 'var(--accent-orange)' },
-        { l: 'صافي', v: fmt(tNet()) + ' دج', c: (tNet() >= 0 ? 'var(--accent-green)' : 'var(--accent-red)') },
-        { l: 'مصاريف', v: fmt(tET()) + ' دج', c: 'var(--accent-red)' }
-    ];
+        var topHTML = topItems.length === 0
+            ? '<div style="color:var(--text-muted);font-size:12px;text-align:center;padding:10px">لا مبيعات اليوم</div>'
+            : topItems.map(function(it, i) {
+                var medals = ['🥇','🥈','🥉'];
+                var col = CC && CC[it.cat] ? CC[it.cat] : 'var(--accent-blue)';
+                return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border-subtle)">' +
+                    '<span style="font-size:15px">' + medals[i] + '</span>' +
+                    '<span style="flex:1;font-size:12px;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(it.n) + '</span>' +
+                    '<span style="font-size:11px;font-weight:700;color:' + col + '">' + it.q + ' ق</span>' +
+                '</div>';
+            }).join('');
 
-    var bar = document.createElement('div');
-    bar.id = 'liveBar';
-    bar.innerHTML =
-        '<div style="width:100%;display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border-subtle)">' +
-            '<span style="font-size:11px;font-weight:700;color:var(--accent-green);background:rgba(5,150,105,0.10);border:1px solid rgba(5,150,105,0.2);padding:3px 10px;border-radius:99px">🟢 مباشر</span>' +
-            '<span style="font-size:14px;font-weight:800;color:var(--text-primary)">لوحة الأداء اليومي</span>' +
-        '</div>' +
+        var summaryItems = [
+            { l: 'فواتير', v: String(todaySales.length), c: 'var(--accent-blue)' },
+            { l: 'بالسلة', v: String(S.cart ? S.cart.length : 0), c: 'var(--accent-orange)' },
+            { l: 'صافي', v: fmt(tNet()) + ' دج', c: (tNet() >= 0 ? 'var(--accent-green)' : 'var(--accent-red)') },
+            { l: 'مصاريف', v: fmt(tET()) + ' دج', c: 'var(--accent-red)' }
+        ];
 
-        '<div style="flex:1;min-width:190px">' +
-            '<div style="font-size:10px;font-weight:700;color:var(--text-muted);margin-bottom:10px">📊 مبيعات آخر 7 أيام</div>' +
-            '<div style="display:flex;gap:5px;align-items:flex-end;height:76px">' + barsHTML + '</div>' +
-        '</div>' +
-
-        '<div style="width:1px;background:var(--border-subtle);align-self:stretch;flex-shrink:0"></div>' +
-
-        '<div style="flex:1;min-width:165px">' +
-            '<div style="font-size:10px;font-weight:700;color:var(--text-muted);margin-bottom:10px">🏆 أفضل مبيعات اليوم</div>' +
-            topHTML +
-        '</div>' +
-
-        '<div style="width:1px;background:var(--border-subtle);align-self:stretch;flex-shrink:0"></div>' +
-
-        '<div style="flex:1;min-width:150px">' +
-            '<div style="font-size:10px;font-weight:700;color:var(--text-muted);margin-bottom:10px">⚡ ملخص اليوم</div>' +
-            '<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">' +
-                summaryItems.map(function(x) {
-                    return '<div style="background:var(--bg-elevated);border-radius:9px;padding:8px 9px;border:1px solid var(--border-subtle)">' +
-                        '<div style="font-size:9px;color:var(--text-muted);font-weight:600;margin-bottom:2px">' + x.l + '</div>' +
-                        '<div style="font-size:13px;font-weight:800;color:' + x.c + '">' + x.v + '</div>' +
-                    '</div>';
-                }).join('') +
+        var bar = document.createElement('div');
+        bar.id = 'liveBar';
+        bar.style.cssText = [
+            'margin-top:20px',
+            'background:linear-gradient(135deg,#1a2540,#1f2d4a)',
+            'border:1px solid rgba(255,255,255,0.08)',
+            'border-radius:20px',
+            'padding:18px 22px',
+            'display:flex',
+            'align-items:flex-start',
+            'gap:20px',
+            'flex-wrap:wrap',
+            'overflow:hidden',
+            'position:relative'
+        ].join(';');
+        bar.innerHTML =
+            '<div style="width:100%;display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border-subtle)">' +
+                '<span style="font-size:11px;font-weight:700;color:var(--accent-green);background:rgba(5,150,105,0.10);border:1px solid rgba(5,150,105,0.2);padding:3px 10px;border-radius:99px">🟢 مباشر</span>' +
+                '<span style="font-size:14px;font-weight:800;color:var(--text-primary)">لوحة الأداء اليومي</span>' +
             '</div>' +
-        '</div>';
+            '<div style="flex:1;min-width:190px">' +
+                '<div style="font-size:10px;font-weight:700;color:var(--text-muted);margin-bottom:10px">📊 مبيعات آخر 7 أيام</div>' +
+                '<div style="display:flex;gap:5px;align-items:flex-end;height:76px">' + barsHTML + '</div>' +
+            '</div>' +
+            '<div style="width:1px;background:var(--border-subtle);align-self:stretch;flex-shrink:0"></div>' +
+            '<div style="flex:1;min-width:165px">' +
+                '<div style="font-size:10px;font-weight:700;color:var(--text-muted);margin-bottom:10px">🏆 أفضل مبيعات اليوم</div>' +
+                topHTML +
+            '</div>' +
+            '<div style="width:1px;background:var(--border-subtle);align-self:stretch;flex-shrink:0"></div>' +
+            '<div style="flex:1;min-width:150px">' +
+                '<div style="font-size:10px;font-weight:700;color:var(--text-muted);margin-bottom:10px">⚡ ملخص اليوم</div>' +
+                '<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">' +
+                    summaryItems.map(function(x) {
+                        return '<div style="background:var(--bg-elevated);border-radius:9px;padding:8px 9px;border:1px solid var(--border-subtle)">' +
+                            '<div style="font-size:9px;color:var(--text-muted);font-weight:600;margin-bottom:2px">' + x.l + '</div>' +
+                            '<div style="font-size:13px;font-weight:800;color:' + x.c + '">' + x.v + '</div>' +
+                        '</div>';
+                    }).join('') +
+                '</div>' +
+            '</div>';
+        tc.appendChild(bar);
+    }
 
-    tc.appendChild(bar);
-}
+    // ── 5. تحديث كل العناصر الإضافية ──
+    function refreshExtras() {
+        if (typeof S === 'undefined') return;
+        hideHomeSearch();
+        var lb = document.getElementById('liveBar');
+        if (lb) lb.remove();
+        injectLiveBar();
+        var lsp = document.getElementById('lowStockPanel');
+        if (lsp) lsp.remove();
+        injectLowStockPanel();
+    }
 
-// ── 5. تحديث دوري ──
-function refreshExtras() {
-    hideHomeSearch();
-    var lb = document.getElementById('liveBar');
-    if (lb) lb.remove();
-    injectLiveBar();
-    var lsp = document.getElementById('lowStockPanel');
-    if (lsp) lsp.remove();
-    injectLowStockPanel();
-}
+    // ── 6. بدء التشغيل بعد تحميل الصفحة واكتمال التطبيق ──
+    function initExtras() {
+        initDarkMode();
+        // ننتظر قليلاً حتى يكتمل الـ render الأول
+        setTimeout(refreshExtras, 500);
+        // تحديث دوري
+        setInterval(refreshExtras, 12000);
+        // استجابة للنقرات التي قد تغير التبويب
+        document.addEventListener('click', function() {
+            setTimeout(refreshExtras, 380);
+        });
+    }
 
-setInterval(refreshExtras, 12000);
-
-window.addEventListener('load', function() {
-    setTimeout(refreshExtras, 500);
-});
-
-document.addEventListener('click', function() {
-    setTimeout(refreshExtras, 380);
-});
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initExtras);
+    } else {
+        initExtras();
+    }
+})();
