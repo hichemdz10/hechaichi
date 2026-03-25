@@ -1984,7 +1984,8 @@ document.addEventListener('click', function() {
         if (old) old.remove();
         injectLiveBar();
     }, 350);
-}
+});
+
 // ═══════════════════════════════════════════════
 //  إضافات التحسين (وضع ليلي، لوحة المنتجات الناقصة، شريط الأداء)
 // ═══════════════════════════════════════════════
@@ -2049,7 +2050,7 @@ document.addEventListener('click', function() {
                 (isOpen ?
                     '<div id="lspBody">' +
                     low.map(function(s) {
-                        var col = CC && CC[s.cat] ? CC[s.cat] : '#dc2626';
+                        var col = (CC && CC[s.cat]) ? CC[s.cat] : '#dc2626';
                         return '<div class="lsp-item">' +
                             '<div class="lsp-qty ' + (s.q === 0 ? 'zero' : 'low') + '">' + s.q + '</div>' +
                             '<div style="flex:1">' +
@@ -2119,43 +2120,43 @@ document.addEventListener('click', function() {
             var pct = Math.round(d.val / maxVal * 100) || 0;
             var isToday = (idx === 6);
             return '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1">' +
-                '<span style="font-size:9px;color:' + (d.val > 0 ? (isToday ? '#059669' : 'var(--accent-blue)') : 'var(--text-muted)') + ';font-weight:700">' +
+                '<span style="font-size:9px;color:' + (d.val > 0 ? (isToday ? '#059669' : '#3b82f6') : '#6b7280') + ';font-weight:700">' +
                     (d.val > 0 ? fmt(d.val) : '—') +
                 '</span>' +
-                '<div style="width:100%;background:var(--bg-elevated);border-radius:4px;height:52px;display:flex;align-items:flex-end;overflow:hidden">' +
+                '<div style="width:100%;background:#2d3748;border-radius:4px;height:52px;display:flex;align-items:flex-end;overflow:hidden">' +
                     '<div style="width:100%;height:' + pct + '%;background:linear-gradient(to top,' +
-                        (isToday ? '#059669,#10b981' : 'var(--accent-blue),var(--accent-blue-2)') +
+                        (isToday ? '#059669,#10b981' : '#3b82f6,#60a5fa') +
                     ');border-radius:4px;min-height:' + (d.val > 0 ? '4' : '0') + 'px;transition:height 1s ease"></div>' +
                 '</div>' +
-                '<span style="font-size:9px;color:var(--text-muted);white-space:nowrap">' + d.day + '</span>' +
+                '<span style="font-size:9px;color:#9ca3af;white-space:nowrap">' + d.day + '</span>' +
             '</div>';
         }).join('');
 
         var topHTML = topItems.length === 0
-            ? '<div style="color:var(--text-muted);font-size:12px;text-align:center;padding:10px">لا مبيعات اليوم</div>'
+            ? '<div style="color:#9ca3af;font-size:12px;text-align:center;padding:10px">لا مبيعات اليوم</div>'
             : topItems.map(function(it, i) {
                 var medals = ['🥇','🥈','🥉'];
-                var col = CC && CC[it.cat] ? CC[it.cat] : 'var(--accent-blue)';
-                return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border-subtle)">' +
+                var col = (CC && CC[it.cat]) ? CC[it.cat] : '#3b82f6';
+                return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #334155">' +
                     '<span style="font-size:15px">' + medals[i] + '</span>' +
-                    '<span style="flex:1;font-size:12px;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(it.n) + '</span>' +
+                    '<span style="flex:1;font-size:12px;font-weight:600;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(it.n) + '</span>' +
                     '<span style="font-size:11px;font-weight:700;color:' + col + '">' + it.q + ' ق</span>' +
                 '</div>';
             }).join('');
 
         var summaryItems = [
-            { l: 'فواتير', v: String(todaySales.length), c: 'var(--accent-blue)' },
-            { l: 'بالسلة', v: String(S.cart ? S.cart.length : 0), c: 'var(--accent-orange)' },
-            { l: 'صافي', v: fmt(tNet()) + ' دج', c: (tNet() >= 0 ? 'var(--accent-green)' : 'var(--accent-red)') },
-            { l: 'مصاريف', v: fmt(tET()) + ' دج', c: 'var(--accent-red)' }
+            { l: 'فواتير', v: String(todaySales.length), c: '#3b82f6' },
+            { l: 'بالسلة', v: String(S.cart ? S.cart.length : 0), c: '#f59e0b' },
+            { l: 'صافي', v: fmt(tNet()) + ' دج', c: (tNet() >= 0 ? '#10b981' : '#ef4444') },
+            { l: 'مصاريف', v: fmt(tET()) + ' دج', c: '#f97316' }
         ];
 
         var bar = document.createElement('div');
         bar.id = 'liveBar';
         bar.style.cssText = [
             'margin-top:20px',
-            'background:linear-gradient(135deg,#1a2540,#1f2d4a)',
-            'border:1px solid rgba(255,255,255,0.08)',
+            'background:linear-gradient(135deg,#1f2937,#111827)',
+            'border:1px solid #374151',
             'border-radius:20px',
             'padding:18px 22px',
             'display:flex',
@@ -2166,26 +2167,26 @@ document.addEventListener('click', function() {
             'position:relative'
         ].join(';');
         bar.innerHTML =
-            '<div style="width:100%;display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border-subtle)">' +
-                '<span style="font-size:11px;font-weight:700;color:var(--accent-green);background:rgba(5,150,105,0.10);border:1px solid rgba(5,150,105,0.2);padding:3px 10px;border-radius:99px">🟢 مباشر</span>' +
-                '<span style="font-size:14px;font-weight:800;color:var(--text-primary)">لوحة الأداء اليومي</span>' +
+            '<div style="width:100%;display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid #374151">' +
+                '<span style="font-size:11px;font-weight:700;color:#10b981;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);padding:3px 10px;border-radius:99px">🟢 مباشر</span>' +
+                '<span style="font-size:14px;font-weight:800;color:#f1f5f9">لوحة الأداء اليومي</span>' +
             '</div>' +
             '<div style="flex:1;min-width:190px">' +
-                '<div style="font-size:10px;font-weight:700;color:var(--text-muted);margin-bottom:10px">📊 مبيعات آخر 7 أيام</div>' +
+                '<div style="font-size:10px;font-weight:700;color:#9ca3af;margin-bottom:10px">📊 مبيعات آخر 7 أيام</div>' +
                 '<div style="display:flex;gap:5px;align-items:flex-end;height:76px">' + barsHTML + '</div>' +
             '</div>' +
-            '<div style="width:1px;background:var(--border-subtle);align-self:stretch;flex-shrink:0"></div>' +
+            '<div style="width:1px;background:#374151;align-self:stretch;flex-shrink:0"></div>' +
             '<div style="flex:1;min-width:165px">' +
-                '<div style="font-size:10px;font-weight:700;color:var(--text-muted);margin-bottom:10px">🏆 أفضل مبيعات اليوم</div>' +
+                '<div style="font-size:10px;font-weight:700;color:#9ca3af;margin-bottom:10px">🏆 أفضل مبيعات اليوم</div>' +
                 topHTML +
             '</div>' +
-            '<div style="width:1px;background:var(--border-subtle);align-self:stretch;flex-shrink:0"></div>' +
+            '<div style="width:1px;background:#374151;align-self:stretch;flex-shrink:0"></div>' +
             '<div style="flex:1;min-width:150px">' +
-                '<div style="font-size:10px;font-weight:700;color:var(--text-muted);margin-bottom:10px">⚡ ملخص اليوم</div>' +
+                '<div style="font-size:10px;font-weight:700;color:#9ca3af;margin-bottom:10px">⚡ ملخص اليوم</div>' +
                 '<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">' +
                     summaryItems.map(function(x) {
-                        return '<div style="background:var(--bg-elevated);border-radius:9px;padding:8px 9px;border:1px solid var(--border-subtle)">' +
-                            '<div style="font-size:9px;color:var(--text-muted);font-weight:600;margin-bottom:2px">' + x.l + '</div>' +
+                        return '<div style="background:#1f2937;border-radius:9px;padding:8px 9px;border:1px solid #374151">' +
+                            '<div style="font-size:9px;color:#9ca3af;font-weight:600;margin-bottom:2px">' + x.l + '</div>' +
                             '<div style="font-size:13px;font-weight:800;color:' + x.c + '">' + x.v + '</div>' +
                         '</div>';
                     }).join('') +
@@ -2209,11 +2210,8 @@ document.addEventListener('click', function() {
     // ── 6. بدء التشغيل بعد تحميل الصفحة واكتمال التطبيق ──
     function initExtras() {
         initDarkMode();
-        // ننتظر قليلاً حتى يكتمل الـ render الأول
         setTimeout(refreshExtras, 500);
-        // تحديث دوري
         setInterval(refreshExtras, 12000);
-        // استجابة للنقرات التي قد تغير التبويب
         document.addEventListener('click', function() {
             setTimeout(refreshExtras, 380);
         });
