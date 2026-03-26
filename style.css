@@ -309,9 +309,7 @@ body.dark-mode::before {
 
 .header-banner {
   width: 100%;
-  height: 180px;  /* أو أي ارتفاع مناسب لصورة البانر */
-  object-fit: cover;
-  object-position: center center; /* غيّر من center top إلى center */
+  height: auto;  /* يتناسب مع ارتفاع الصورة الأصلي */
   display: block;
 }
 
