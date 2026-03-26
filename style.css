@@ -307,10 +307,31 @@ body.dark-mode::before {
   overflow: hidden;
 }
 
+/* تعديل صورة البانر فقط دون التأثير على باقي التخطيط */
 .header-banner {
   width: 100%;
-  height: auto;  /* يتناسب مع ارتفاع الصورة الأصلي */
+  height: auto;           /* يتناسب مع الصورة */
+  max-height: 180px;      /* حد أقصى للارتفاع */
+  object-fit: cover;      /* تغطي المساحة مع الحفاظ على النسبة */
+  object-position: center center;
   display: block;
+}
+
+/* لا تقم بتعديل overflow في header */
+.header {
+  /* احتفظ بالخصائص الأصلية ولا تغير overflow */
+  background: var(--bg-glass);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: var(--shadow-md);
+  transition: background 0.4s;
+  /* overflow: hidden; ← احتفظ بها كما كانت */
+  overflow: hidden;
 }
 
 .info-card {
