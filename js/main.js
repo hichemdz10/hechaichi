@@ -19,6 +19,22 @@ function render() {
         '</div>';
 
     document.getElementById('root').innerHTML=
+        // أعد إنشاء زر الوضع الليلي بعد كل render
+(function() {
+    if (document.getElementById('darkModeToggle')) return;
+    var btn = document.createElement('button');
+    btn.id = 'darkModeToggle';
+    var isDark = localStorage.getItem('hch_dark') === '1';
+    if (isDark) document.body.classList.add('dark-mode');
+    btn.textContent = isDark ? '☀️' : '🌙';
+    btn.title = 'تبديل الوضع الليلي';
+    btn.onclick = function() {
+        var dark = document.body.classList.toggle('dark-mode');
+        btn.textContent = dark ? '☀️' : '🌙';
+        localStorage.setItem('hch_dark', dark ? '1' : '0');
+    };
+    document.body.appendChild(btn);
+})();
         '<div class="app-layout">'+renderTabs()+
         '<div class="main-content">'+renderHeader()+'<div class="tab-content">'+tabContent+'</div></div>'+
         '</div>'+cartPanelGlobal;
