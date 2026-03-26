@@ -6,7 +6,7 @@ function dateStr()  { return new Date().toLocaleDateString("ar-DZ",{weekday:"lon
 
 function renderHeader() {
     return '<div class="header">'+
-        '<img src="image/logo.png" class="header-banner" alt="banner">'+
+        '<img src="image/header.png" class="header-banner" alt="banner">'+
         '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 18px;background:rgba(255,255,255,.95);border-top:1px solid rgba(100,130,200,.13)">'+
         '<div style="flex:1;min-width:0">'+
         '<div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">'+
