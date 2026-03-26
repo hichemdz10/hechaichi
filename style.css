@@ -309,7 +309,7 @@ body.dark-mode::before {
 
 .header-banner {
   width: 100%;
-  height: 180px;
+  height: 210px;
   object-fit: cover;
   object-position: center top;
   display: block;
