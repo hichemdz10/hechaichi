@@ -2,9 +2,6 @@
 // js/main.js
 // =====================================================
 function render() {
-    // التأكد من وجود المتغير S قبل البدء لتجنب أخطاء الترتيب
-    if (typeof S === 'undefined') return; 
-
     if (typeof S.cameraActiveInHome==='undefined') S.cameraActiveInHome=false;
     var tabContent='';
     if(S.tab==="home")     tabContent=renderHome();
@@ -39,19 +36,7 @@ function render() {
     bindCartEvents(refreshGlobalCart);
 }
 
-// البدء في جدولة المهام
 scheduleMidnight();
-
-// التعديل الجوهري: ننتظر تحميل الصفحة بالكامل قبل تشغيل أول رندر
-window.onload = function() {
-    try { 
-        render(); 
-    } catch(e) {
-        document.getElementById('root').innerHTML=
-            '<div style="background:linear-gradient(135deg,#c62828,#e53935);color:#fff;padding:26px;font-size:16px;font-family:Tajawal,Arial;border-radius:18px;margin:20px;direction:rtl">' +
-            '<h2 style="margin-bottom:12px">⚠️ خطأ في التشغيل</h2>' +
-            '<p>' + e.message + '</p>' +
-            '<pre style="font-size:12px;overflow:auto;white-space:pre-wrap;margin-top:13px;opacity:.8">' + (e.stack||'') + '</pre>' +
-            '</div>';
-    }
-};
+try { render(); } catch(e) {
+    document.getElementById('root').innerHTML='<div style="background:linear-gradient(135deg,#c62828,#e53935);color:#fff;padding:26px;font-size:16px;font-family:Tajawal,Arial;border-radius:18px;margin:20px;direction:rtl"><h2 style="margin-bottom:12px">⚠️ خطأ</h2><p>'+e.message+'</p><pre style="font-size:12px;overflow:auto;white-space:pre-wrap;margin-top:13px;opacity:.8">'+(e.stack||'')+'</pre></div>';
+}
