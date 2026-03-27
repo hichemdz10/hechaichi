@@ -7,8 +7,9 @@ function render() {
     else if (S.tab === "print")    tabContent = renderPrint();
     else if (S.tab === "flixy")    tabContent = renderFlixy();
     else if (S.tab === "clients")  tabContent = renderClients();
-    else if (S.tab === "expenses") tabContent = renderExpenses();
+    else if (S.tab === "expenses") tabContent = renderExpences(); // اسم الملف بالإملاء القديم
     else if (S.tab === "report")   tabContent = renderReport();
+    else if (S.tab === "settings") tabContent = renderSettings();
 
     var cartSlide =
         '<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>' +
@@ -27,7 +28,7 @@ function render() {
         '</div>' +
         cartSlide;
 
-    // زر الوضع الليلي
+    // زر الوضع الليلي — مرة واحدة فقط
     if (!document.getElementById('darkModeToggle')) {
         var btn = document.createElement('button');
         btn.id = 'darkModeToggle';
@@ -39,6 +40,8 @@ function render() {
             var dark = document.body.classList.toggle('dark-mode');
             btn.textContent = dark ? '☀️' : '🌙';
             localStorage.setItem('hch_dark', dark ? '1' : '0');
+            if (S.settings) S.settings.darkMode = dark;
+            saveSettings();
         };
         document.body.appendChild(btn);
     }
@@ -52,9 +55,12 @@ function render() {
         }, 1000);
     }
 
-    if (S.tab === "home")    bindHomeEvents();
-    if (S.tab === "flixy")   bindFlixyEvents();
-    if (S.tab === "report")  bindReportEvents();
+    // ✅ ربط أحداث كل التبويبات
+    if (S.tab === "home")     bindHomeEvents();
+    if (S.tab === "stock")    bindStockEvents();
+    if (S.tab === "flixy")    bindFlixyEvents();
+    if (S.tab === "report")   bindReportEvents();
+    if (S.tab === "settings") bindSettingsEvents();
     bindCartEvents(refreshGlobalCart);
 }
 
