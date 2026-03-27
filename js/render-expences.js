@@ -1,3 +1,4 @@
+// ===== EXPENSES =====
 function renderExpenses() {
     var list = S.expenses.slice().reverse().map(function(e){
         return '<div style="border:1px solid #ffe0b2;border-radius:18px;padding:14px 18px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;background:#fffaf5;box-shadow:0 2px 6px rgba(0,0,0,.02)">'+
