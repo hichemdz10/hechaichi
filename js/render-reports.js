@@ -40,31 +40,3 @@ function renderReport() {
         '</div>'+
         (rs.length===0?'<div style="text-align:center;padding:40px;color:#94a3b8;background:#fff;border-radius:20px;border:1px dashed #cbd5e1"><div style="font-size:48px;margin-bottom:12px">📊</div><div style="font-size:15px;font-weight:500">لا توجد مبيعات</div></div>':salesList);
 }
-
-function bindReportEvents() {
-    // لا حاجة لربط أحداث السحابة هنا بعد الآن
-}
-
-function printReport() {
-    var rs = fSales(), re = fExp(), rp = fPrint();
-    var rf = S.flixy.filter(function(f){ var d = new Date(f.date); if(S.rep==="today") return dk(d)===tstr(); if(S.rep==="week") return (now()-d)<7*86400000; if(S.rep==="month") return d.getMonth()===nm() && d.getFullYear()===ny(); return true; });
-    var rT = rs.reduce(function(a,s){ return a+s.total; },0);
-    var rP = rs.reduce(function(a,s){ return a+s.profit; },0);
-    var rPR = rp.reduce(function(a,p){ return a+p.price; },0);
-    var rFR = rf.reduce(function(a,f){ return a+(f.profit||0); },0);
-    var rE = re.reduce(function(a,e){ return a+e.amount; },0);
-    var rNet = rP + rPR + rFR - rE;
-    var periods = {"today":"اليوم","week":"الأسبوع","month":"الشهر","all":"الكل"};
-    var html = '<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"><title>تقرير</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Tajawal,Arial,sans-serif;font-size:13px;direction:rtl;padding:10mm;color:#000}@media print{@page{size:A4;margin:10mm}}.title{text-align:center;font-size:22px;font-weight:900;margin-bottom:4px}.sub{text-align:center;font-size:13px;color:#555;margin-bottom:14px}table{width:100%;border-collapse:collapse;margin-bottom:14px}th{background:#0277bd;color:#fff;padding:8px;font-size:13px}td{padding:6px 8px;border:1px solid #ddd;font-size:12px}.summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}.box{border:2px solid #0277bd;border-radius:10px;padding:12px;text-align:center}.box-label{font-size:11px;color:#666}.box-val{font-size:17px;font-weight:bold;color:#0277bd}.net{font-size:22px;font-weight:bold;text-align:center;padding:12px;border:2px solid;border-radius:10px;margin-bottom:14px}</style></head><body>'+
-        '<div class="title">📚 مكتبة حشايشي</div><div class="sub">تقرير: '+periods[S.rep]+' | '+new Date().toLocaleDateString("ar-DZ",{year:"numeric",month:"long",day:"numeric"})+'</div>'+
-        '<div class="summary"><div class="box"><div class="box-label">إجمالي المبيعات</div><div class="box-val">'+fmt(rT)+' دج</div></div><div class="box"><div class="box-label">أرباح المبيعات</div><div class="box-val">'+fmt(rP)+' دج</div></div><div class="box"><div class="box-label">الطباعة</div><div class="box-val">'+fmt(rPR)+' دج</div></div><div class="box"><div class="box-label">ربح Flixy</div><div class="box-val">'+fmt(rFR)+' دج</div></div><div class="box"><div class="box-label">المصاريف</div><div class="box-val" style="color:#c62828">'+fmt(rE)+' دج</div></div><div class="box"><div class="box-label">عدد الفواتير</div><div class="box-val">'+rs.length+'</div></div></div>'+
-        '<div class="net" style="color:'+(rNet>=0?'#1b5e20':'#c62828')+';border-color:'+(rNet>=0?'#1b5e20':'#c62828')+'">صافي الربح: '+fmt(rNet)+' دج</div>'+
-        (rs.length>0?'<table><thead><th>#</th><th>الوقت</th><th>الأصناف</th><th>الإجمالي</th><th>الربح</th></thead><tbody>'+rs.slice().reverse().map(function(s,i){ return '<tr><td>'+(rs.length-i)+'</td><td style="font-size:11px">'+ld(s.date)+'</td><td style="font-size:11px">'+s.items.map(function(it){ return esc(it.n)+'×'+it.q; }).join('، ')+'</td><td style="font-weight:bold">'+s.total+' دج</td><td style="color:#2e7d32;font-weight:bold">'+s.profit+' دج</td></tr>'; }).join('')+'</tbody></table>':'')+
-    '</body></html>';
-    var w = window.open('','_blank','width=800,height=700');
-    if(!w){ toast("يرجى السماح بالنوافذ","e"); return; }
-    w.document.write(html);
-    w.document.close();
-    w.focus();
-    setTimeout(function(){ w.print(); },400);
-}
