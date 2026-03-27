@@ -59,7 +59,7 @@ var FLIXY_COLORS = {
     "Idoom 1000": "#00695c",
     "Idoom 2000": "#00695c"
 };
-var LOW = 5;
+var LOW = 5; // سيتم استبداله بإعداد المستخدم
 
 var TAB_STYLES = {
     "home":     { label: "🏪 الرئيسية" },
@@ -68,5 +68,6 @@ var TAB_STYLES = {
     "flixy":    { label: "📱 Flixy" },
     "clients":  { label: "👤 الديون" },
     "expenses": { label: "💸 المصاريف" },
-    "report":   { label: "📊 التقارير" }
+    "report":   { label: "📊 التقارير" },
+    "settings": { label: "⚙️ الإعدادات" }   // إضافة جديدة
 };
