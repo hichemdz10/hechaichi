@@ -221,10 +221,33 @@ function expCSV(type) {
     a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
     a.download=fn; a.click(); toast("✅ تم التصدير");
 }
-
 function goToStockCat(cat) {
-    S.tab='stock'; S.openCats[cat]=true; S.ssrch=''; save(); render();
-    setTimeout(function(){ var el=document.querySelector('[data-cat="'+cat+'"]'); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); },200);
+    // 1. تغيير التبويب إلى المخزون
+    S.tab = 'stock';
+    // 2. فتح الفئة المحددة (تأكد من مسح أي بحث سابق)
+    S.openCats = {};           // ننظف كل الفئات المفتوحة سابقاً
+    S.openCats[cat] = true;    // نفتح الفئة المطلوبة
+    S.ssrch = '';              // نمسح أي بحث سابق
+    save();
+    render();
+    
+    // 3. بعد إعادة الرسم، ننتظر حتى يظهر العنصر ونمرر إليه
+    setTimeout(function() {
+        var el = document.querySelector('[data-cat="' + cat + '"]');
+        if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // إضافة تأثير وميض لفت الانتباه
+            el.style.transition = 'background 0.3s';
+            el.style.background = '#fff3e0';
+            setTimeout(function() {
+                el.style.background = '';
+            }, 800);
+        } else {
+            console.warn('لم يتم العثور على الفئة:', cat);
+        }
+    }, 300);
+}
+
 }
 
 function openManualCart() {
