@@ -574,6 +574,99 @@ details summary::-webkit-details-marker{display:none}
 }
 #darkModeToggle:hover{transform:scale(1.1) rotate(15deg);border-color:#3668d6}
 
+/* ── إعدادات جديدة ── */
+.settings-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r2);
+    padding: 20px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow);
+}
+.settings-section-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+}
+.settings-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+}
+.settings-row:last-child {
+    border-bottom: none;
+}
+.settings-row-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+.settings-row-icon {
+    font-size: 24px;
+    width: 32px;
+    text-align: center;
+}
+.settings-row-label {
+    font-weight: 700;
+    color: var(--text);
+}
+.settings-row-desc {
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 2px;
+}
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 24px;
+    flex-shrink: 0;
+}
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.3s;
+    border-radius: 24px;
+}
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+input:checked + .toggle-slider {
+    background-color: var(--blue);
+}
+input:checked + .toggle-slider:before {
+    transform: translateX(24px);
+}
+
 /* ── RESPONSIVE ── */
 @media(max-width:768px){
   .sidebar {
@@ -636,8 +729,3 @@ details summary::-webkit-details-marker{display:none}
   .sidebar,.cart-sidebar,.cart-overlay{display:none!important}
   .tab-content{padding:0}
 }
-
-/* ── إضافة كلاسات حجم الخط ── */
-body.font-small { font-size: 12px; }
-body.font-medium { font-size: 14px; }
-body.font-large { font-size: 16px; }
