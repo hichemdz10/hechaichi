@@ -636,3 +636,8 @@ details summary::-webkit-details-marker{display:none}
   .sidebar,.cart-sidebar,.cart-overlay{display:none!important}
   .tab-content{padding:0}
 }
+
+/* ── إضافة كلاسات حجم الخط ── */
+body.font-small { font-size: 12px; }
+body.font-medium { font-size: 14px; }
+body.font-large { font-size: 16px; }
