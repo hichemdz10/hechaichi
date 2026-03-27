@@ -32,6 +32,15 @@ function pushToCloud() {
     });
 }
 
+function startSync() {
+    syncEnabled = true;
+    pushToCloud();
+    var msg = document.getElementById('syncStatusMsg');
+    if (msg) msg.innerHTML = '<span style="color:#16a34a">✅ تم تفعيل المزامنة ورفع البيانات</span>';
+    setTimeout(function() { if(msg) msg.innerHTML = ''; }, 3000);
+    render(); // لتحديث واجهة الإعدادات
+}
+
 function cleanStock(arr) {
     return (arr || []).filter(function(s) { return s && s.n && s.id; })
     .map(function(s) {
