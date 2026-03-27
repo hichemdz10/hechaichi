@@ -19,7 +19,14 @@ var S = {
     form:  { n:"", p:"", c:"", q:"", wq:"", dest:"shop", cat:"كراريس", bc:"" },
     cForm: { name:"", phone:"", debt:"" },
     eForm: { lbl:"", amt:"", cat:"إيجار" },
-    pForm: { type:"طباعة وثيقة", pages:"", price:"" }
+    pForm: { type:"طباعة وثيقة", pages:"", price:"" },
+
+    // إعدادات جديدة
+    beepEnabled: localStorage.getItem('hch_beep') !== '0',
+    lowStockThreshold: parseInt(localStorage.getItem('hch_lowStock')) || 5,
+    autoPrint: localStorage.getItem('hch_autoPrint') === '1',
+    clearCartAfterSale: localStorage.getItem('hch_clearCart') !== '0',
+    fontSize: localStorage.getItem('hch_fontSize') || 'medium'
 };
 
 var toastTimer   = null;
@@ -35,6 +42,14 @@ function save() {
     lsS("hch_print",    S.pjobs);
     lsS("hch_flixy",    S.flixy);
     lsS("hch_tab",      S.tab);
+
+    // حفظ الإعدادات الجديدة
+    lsS("hch_beep", S.beepEnabled ? "1" : "0");
+    lsS("hch_lowStock", S.lowStockThreshold);
+    lsS("hch_autoPrint", S.autoPrint ? "1" : "0");
+    lsS("hch_clearCart", S.clearCartAfterSale ? "1" : "0");
+    lsS("hch_fontSize", S.fontSize);
+
     pushToCloud();
 }
 
