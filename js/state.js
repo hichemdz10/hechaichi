@@ -20,38 +20,23 @@ var S = {
     cForm: { name:"", phone:"", debt:"" },
     eForm: { lbl:"", amt:"", cat:"إيجار" },
     pForm: { type:"طباعة وثيقة", pages:"", price:"" },
-    // الإعدادات الجديدة
-    settings: {
-        lowStockThreshold: 5,
+
+    // ✅ إضافة settings
+    settings: lsG("hch_settings") || {
+        darkMode:           localStorage.getItem('hch_dark') === '1',
+        hideNums:           false,
+        beepEnabled:        true,
+        lowStockThreshold:  5,
+        fontSize:           "medium",
         autoPrintAfterSale: false,
-        clearCartAfterSale: true,
-        fontSize: "medium",   // small, medium, large
-        beepEnabled: true,
-        darkMode: false,
-        hideNums: false
+        clearCartAfterSale: true
     }
 };
 
-var toastTimer   = null;
-var clockTimer   = null;
-var midnightTimer= null;
-var pieChart     = null;
-
-function loadSettings() {
-    var saved = lsG("hch_settings");
-    if (saved) {
-        for (var k in saved) {
-            if (S.settings.hasOwnProperty(k)) S.settings[k] = saved[k];
-        }
-    }
-    // تطبيق الإعدادات التي تؤثر فوراً
-    if (S.settings.darkMode) document.body.classList.add("dark-mode");
-    S.hideNums = S.settings.hideNums;
-}
-
-function saveSettings() {
-    lsS("hch_settings", S.settings);
-}
+var toastTimer    = null;
+var clockTimer    = null;
+var midnightTimer = null;
+var pieChart      = null;
 
 function save() {
     lsS("hch_stock5",   S.stock);
@@ -61,8 +46,16 @@ function save() {
     lsS("hch_print",    S.pjobs);
     lsS("hch_flixy",    S.flixy);
     lsS("hch_tab",      S.tab);
-    saveSettings();
     pushToCloud();
+}
+
+// ✅ دالة حفظ الإعدادات
+function saveSettings() {
+    lsS("hch_settings", S.settings);
+    // مزامنة hideNums
+    S.hideNums = S.settings.hideNums;
+    // مزامنة darkMode
+    localStorage.setItem('hch_dark', S.settings.darkMode ? '1' : '0');
 }
 
 function scheduleMidnight() {
@@ -72,6 +65,3 @@ function scheduleMidnight() {
     midnight.setHours(24, 0, 0, 0);
     midnightTimer = setTimeout(function() { render(); scheduleMidnight(); }, midnight - now);
 }
-
-// تحميل الإعدادات عند بدء التشغيل
-loadSettings();
