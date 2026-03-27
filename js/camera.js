@@ -7,7 +7,6 @@ var cameraActive = false;
 
 // بدء الكاميرا في وضع العرض المقسوم
 function startSplitCamera() {
-    // تأكد من أن الوضع المقسوم مفعل
     if (!S.cameraActiveInHome) {
         console.warn("startSplitCamera called but cameraActiveInHome is false");
         return false;
@@ -21,7 +20,15 @@ function startSplitCamera() {
         return false;
     }
     var video = document.getElementById('splitCameraVideo');
-    if (!video) return false;
+    if (!video) {
+        toast("عنصر الفيديو غير موجود","e");
+        return false;
+    }
+
+    // تنظيف أي كاميرا سابقة قبل بدء الجديدة
+    if (camStream) {
+        stopSplitCamera();
+    }
 
     // إعدادات منخفضة الدقة لتحسين الأداء
     navigator.mediaDevices.getUserMedia({
@@ -35,36 +42,52 @@ function startSplitCamera() {
     .then(function(stream) {
         camStream = stream;
         video.srcObject = stream;
-        video.play();
-        camDetector = new BarcodeDetector({ formats: ['ean_13','ean_8','code_128','code_39','qr_code','upc_a','upc_e'] });
-        // حلقة المسح
-        function scanLoop() {
-            if (!cameraActive || !video.videoWidth) {
-                camFrameId = requestAnimationFrame(scanLoop);
-                return;
-            }
-            camDetector.detect(video).then(function(barcodes) {
-                if (barcodes && barcodes.length > 0) {
-                    var code = barcodes[0].rawValue;
-                    if (!scanLock && code !== lastScannedCode) {
-                        scanLock = true;
-                        lastScannedCode = code;
-                        handleScannedCode(code);
-                        setTimeout(function() { scanLock = false; }, 1000);
+
+        // الانتظار حتى يصبح الفيديو جاهزاً للتشغيل
+        video.onloadedmetadata = function() {
+            // تأخير صغير لضمان استقرار العنصر
+            setTimeout(function() {
+                video.play().then(function() {
+                    // بدء المسح بعد نجاح التشغيل
+                    camDetector = new BarcodeDetector({ formats: ['ean_13','ean_8','code_128','code_39','qr_code','upc_a','upc_e'] });
+                    function scanLoop() {
+                        if (!cameraActive || !video.videoWidth) {
+                            camFrameId = requestAnimationFrame(scanLoop);
+                            return;
+                        }
+                        camDetector.detect(video).then(function(barcodes) {
+                            if (barcodes && barcodes.length > 0) {
+                                var code = barcodes[0].rawValue;
+                                if (!scanLock && code !== lastScannedCode) {
+                                    scanLock = true;
+                                    lastScannedCode = code;
+                                    handleScannedCode(code);
+                                    setTimeout(function() { scanLock = false; }, 1000);
+                                }
+                            }
+                        }).catch(function(e) {});
+                        camFrameId = requestAnimationFrame(scanLoop);
                     }
-                }
-            }).catch(function(e) {});
-            camFrameId = requestAnimationFrame(scanLoop);
-        }
-        cameraActive = true;
-        scanLock = false;
-        lastScannedCode = "";
-        scanLoop();
+                    cameraActive = true;
+                    scanLock = false;
+                    lastScannedCode = "";
+                    scanLoop();
+                }).catch(function(err) {
+                    toast("فشل تشغيل الفيديو: "+err.message,"e");
+                    S.cameraActiveInHome = false;
+                    render();
+                });
+            }, 100);
+        };
+        video.onerror = function() {
+            toast("خطأ في الفيديو","e");
+            S.cameraActiveInHome = false;
+            render();
+        };
     })
     .catch(function(err) {
         toast("لا يمكن تشغيل الكاميرا: "+ (err.message || "غير معروف"),"e");
         cameraActive = false;
-        // عند فشل الكاميرا، نغلق وضع المقسوم
         S.cameraActiveInHome = false;
         render();
     });
@@ -75,7 +98,7 @@ function handleScannedCode(code) {
     var item = S.stock.find(function(s){ return s.barcode === code; });
     if (!item) {
         beep(false);
-        stopSplitCamera();
+        stopSplitCamera(); // إيقاف الكاميرا قبل فتح النافذة
         openQuickAdd(code);
         return;
     }
@@ -104,8 +127,11 @@ function stopSplitCamera() {
     }
     cameraActive = false;
     var video = document.getElementById('splitCameraVideo');
-    if (video) video.srcObject = null;
+    if (video) {
+        video.srcObject = null;
+        video.onloadedmetadata = null;
+        video.onerror = null;
+    }
     camDetector = null;
     scanLock = false;
-    // لا نغير S.cameraActiveInHome هنا، لأن إيقاف الكاميرا قد يكون مؤقتًا
 }
