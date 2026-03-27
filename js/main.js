@@ -9,22 +9,40 @@ function render() {
     else if (S.tab === "clients")  tabContent = renderClients();
     else if (S.tab === "expenses") tabContent = renderExpenses();
     else if (S.tab === "report")   tabContent = renderReport();
+    else if (S.tab === "settings") tabContent = renderSettings();
 
-    var cartPanelGlobal =
+    // السلة الثابتة (دائماً ظاهرة على الديسكتوب)
+    var cartColumn =
+        '<div class="cart-column" id="cartColumn">' +
+            '<div class="cart-column-header">' +
+                '<span style="font-size:20px">🛒</span>' +
+                '<span style="font-weight:800;font-size:15px">السلة</span>' +
+                (S.cart.length > 0 ?
+                    '<span class="cart-col-badge">' + S.cart.length + '</span>' : '') +
+            '</div>' +
+            '<div id="cartColumnContent">' + renderCartPanelContent(refreshGlobalCart) + '</div>' +
+        '</div>';
+
+    // السلة المنزلقة (للموبايل فقط)
+    var cartSlide =
         '<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>' +
         '<div class="cart-sidebar" id="cartPanel">' +
             '<button onclick="closeCart()" style="background:linear-gradient(135deg,#c62828,#e53935);color:#fff;border:none;border-radius:12px;padding:10px;font-size:15px;font-weight:700;margin-bottom:12px;cursor:pointer">✕ إغلاق</button>' +
             '<div id="cartPanelContent">' + renderCartPanelContent(refreshGlobalCart) + '</div>' +
         '</div>';
 
-    // هذا منفصل تماماً عن innerHTML
     document.getElementById('root').innerHTML =
-        '<div class="app-layout">' + renderTabs() +
-        '<div class="main-content">' + renderHeader() +
-        '<div class="tab-content">' + tabContent + '</div>' +
-        '</div></div>' + cartPanelGlobal;
+        '<div class="app-layout">' +
+            renderTabs() +
+            '<div class="main-content">' +
+                renderHeader() +
+                '<div class="tab-content">' + tabContent + '</div>' +
+            '</div>' +
+            cartColumn +
+        '</div>' +
+        cartSlide;
 
-    // زر الوضع الليلي — بعد innerHTML مباشرة
+    // زر الوضع الليلي
     if (!document.getElementById('darkModeToggle')) {
         var btn = document.createElement('button');
         btn.id = 'darkModeToggle';
@@ -49,10 +67,22 @@ function render() {
         }, 1000);
     }
 
-    if (S.tab === "home")    bindHomeEvents();
-    if (S.tab === "flixy")   bindFlixyEvents();
-    if (S.tab === "report")  bindReportEvents();
+    if (S.tab === "home")     bindHomeEvents();
+    if (S.tab === "flixy")    bindFlixyEvents();
+    if (S.tab === "report")   bindReportEvents();
+    if (S.tab === "settings") bindSettingsEvents();
     bindCartEvents(refreshGlobalCart);
+    bindCartEvents(refreshCartColumn);
+}
+
+// تحديث السلة الثابتة فقط
+function refreshCartColumn() {
+    var el = document.getElementById('cartColumnContent');
+    if (el) el.innerHTML = renderCartPanelContent(refreshCartColumn);
+    // تحديث شارة العدد
+    var badge = document.querySelector('.cart-col-badge');
+    if (badge) badge.textContent = S.cart.length;
+    bindCartEvents(refreshCartColumn);
 }
 
 scheduleMidnight();
