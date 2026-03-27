@@ -32,6 +32,7 @@ function esc(s) {
 }
 
 function beep(ok) {
+    // سيتم تعديلها في actions.js لاستخدام S.beepEnabled
     try {
         var ctx = new(window.AudioContext || window.webkitAudioContext)();
         var o = ctx.createOscillator(), g = ctx.createGain();
@@ -66,7 +67,10 @@ function tstr() { return dk(now()); }
 function nm()   { return now().getMonth(); }
 function ny()   { return now().getFullYear(); }
 
-function lowItems() { return S.stock.filter(function(s){ return s.q <= LOW; }); }
+function lowItems() {
+    // استخدام الحد المخزن في S
+    return S.stock.filter(function(s){ return s.q <= S.lowStockThreshold; });
+}
 function tDebt()    { return S.clients.reduce(function(a,c){ return a+c.debt; },0); }
 function shopVal()  { return S.stock.reduce(function(a,s){ return a+s.q*s.c; },0); }
 function whVal()    { return S.stock.reduce(function(a,s){ return a+(s.wq||0)*s.c; },0); }
