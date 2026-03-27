@@ -32,7 +32,7 @@ function esc(s) {
 }
 
 function beep(ok) {
-    // سيتم تعديلها في actions.js لاستخدام S.beepEnabled
+    if (!S.settings.beepEnabled) return;
     try {
         var ctx = new(window.AudioContext || window.webkitAudioContext)();
         var o = ctx.createOscillator(), g = ctx.createGain();
@@ -61,15 +61,27 @@ function toast(msg, type) {
     toastTimer = setTimeout(function() { el.style.display = "none"; }, 2800);
 }
 
+function applyFontSize(size) {
+    var root = document.documentElement;
+    if (size === "small") {
+        root.style.fontSize = "12px";
+    } else if (size === "large") {
+        root.style.fontSize = "18px";
+    } else {
+        root.style.fontSize = "";
+    }
+}
+window.applyFontSize = applyFontSize;
+
 // ── computed ──
 function now()  { return new Date(); }
 function tstr() { return dk(now()); }
 function nm()   { return now().getMonth(); }
 function ny()   { return now().getFullYear(); }
 
-function lowItems() {
-    // استخدام الحد المخزن في S
-    return S.stock.filter(function(s){ return s.q <= S.lowStockThreshold; });
+function lowItems() { 
+    var threshold = S.settings.lowStockThreshold || 5;
+    return S.stock.filter(function(s){ return s.q <= threshold; }); 
 }
 function tDebt()    { return S.clients.reduce(function(a,c){ return a+c.debt; },0); }
 function shopVal()  { return S.stock.reduce(function(a,s){ return a+s.q*s.c; },0); }
