@@ -5,7 +5,6 @@ var scanLock = false;
 var lastScannedCode = "";
 var cameraActive = false;
 
-// بدء الكاميرا في وضع العرض المقسوم
 function startSplitCamera() {
     if (!S.cameraActiveInHome) {
         console.warn("startSplitCamera called but cameraActiveInHome is false");
@@ -25,12 +24,11 @@ function startSplitCamera() {
         return false;
     }
 
-    // تنظيف أي كاميرا سابقة قبل بدء الجديدة
+    // تنظيف أي كاميرا سابقة
     if (camStream) {
         stopSplitCamera();
     }
 
-    // إعدادات منخفضة الدقة لتحسين الأداء
     navigator.mediaDevices.getUserMedia({
         video: {
             facingMode: { exact: "environment" },
@@ -43,12 +41,9 @@ function startSplitCamera() {
         camStream = stream;
         video.srcObject = stream;
 
-        // الانتظار حتى يصبح الفيديو جاهزاً للتشغيل
         video.onloadedmetadata = function() {
-            // تأخير صغير لضمان استقرار العنصر
             setTimeout(function() {
                 video.play().then(function() {
-                    // بدء المسح بعد نجاح التشغيل
                     camDetector = new BarcodeDetector({ formats: ['ean_13','ean_8','code_128','code_39','qr_code','upc_a','upc_e'] });
                     function scanLoop() {
                         if (!cameraActive || !video.videoWidth) {
@@ -62,7 +57,11 @@ function startSplitCamera() {
                                     scanLock = true;
                                     lastScannedCode = code;
                                     handleScannedCode(code);
-                                    setTimeout(function() { scanLock = false; }, 1000);
+                                    // فتح القفل بعد ثانية وإعادة تعيين الكود الممسوح
+                                    setTimeout(function() {
+                                        scanLock = false;
+                                        lastScannedCode = "";
+                                    }, 1000);
                                 }
                             }
                         }).catch(function(e) {});
@@ -97,8 +96,9 @@ function startSplitCamera() {
 function handleScannedCode(code) {
     var item = S.stock.find(function(s){ return s.barcode === code; });
     if (!item) {
+        // منتج غير موجود
         beep(false);
-        stopSplitCamera(); // إيقاف الكاميرا قبل فتح النافذة
+        stopSplitCamera();
         openQuickAdd(code);
         return;
     }
@@ -107,12 +107,18 @@ function handleScannedCode(code) {
         toast("نفذ المخزون: "+item.n,"e");
         return;
     }
+    // المنتج موجود
     beep(true);
     addToCartHome(item.id);
+    
+    // تحديث السلة في وضع الكاميرا (المقسوم)
     var cartPanel = document.getElementById('splitCartContent');
     if (cartPanel) {
         cartPanel.innerHTML = renderCartPanelContent(refreshSplitCart);
         bindCartEvents(refreshSplitCart);
+    } else {
+        // إذا لم يكن في وضع الكاميرا، قم بتحديث السلة العادية
+        refreshGlobalCart();
     }
 }
 
@@ -134,4 +140,5 @@ function stopSplitCamera() {
     }
     camDetector = null;
     scanLock = false;
+    lastScannedCode = "";
 }
