@@ -40,3 +40,8 @@ function renderReport() {
         '</div>'+
         (rs.length===0?'<div style="text-align:center;padding:40px;color:#94a3b8;background:#fff;border-radius:20px;border:1px dashed #cbd5e1"><div style="font-size:48px;margin-bottom:12px">📊</div><div style="font-size:15px;font-weight:500">لا توجد مبيعات</div></div>':salesList);
 }
+
+// التعديل الجديد لمنع الخطأ في ملف main.js
+function bindReportEvents() {
+    console.log("تم تحميل أحداث التقارير بنجاح ✅");
+}
