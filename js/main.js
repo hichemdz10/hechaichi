@@ -1,6 +1,9 @@
 function render() {
     if (typeof S.cameraActiveInHome === 'undefined') S.cameraActiveInHome = false;
 
+    // تطبيق حجم الخط من الإعدادات
+    applyFontSize(S.settings.fontSize);
+
     var tabContent = '';
     if      (S.tab === "home")     tabContent = renderHome();
     else if (S.tab === "stock")    tabContent = renderStock();
@@ -46,14 +49,15 @@ function render() {
     if (!document.getElementById('darkModeToggle')) {
         var btn = document.createElement('button');
         btn.id = 'darkModeToggle';
-        var isDark = localStorage.getItem('hch_dark') === '1';
+        var isDark = S.settings.darkMode;
         if (isDark) document.body.classList.add('dark-mode');
         btn.textContent = isDark ? '☀️' : '🌙';
         btn.title = 'تبديل الوضع الليلي';
         btn.onclick = function() {
             var dark = document.body.classList.toggle('dark-mode');
             btn.textContent = dark ? '☀️' : '🌙';
-            localStorage.setItem('hch_dark', dark ? '1' : '0');
+            S.settings.darkMode = dark;
+            saveSettings();
         };
         document.body.appendChild(btn);
     }
