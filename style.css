@@ -1057,3 +1057,52 @@ input:checked + .toggle-slider:before {
   .tab-content{padding:0}
 }
 
+/* قسم المنتجات الناقصة */
+.low-stock-section {
+    background: var(--card);
+    border: 1px solid #ffcdd2;
+    border-radius: 24px;
+    margin-bottom: 24px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(229,57,53,0.1);
+}
+.low-stock-header {
+    background: #ffebee;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-weight: 800;
+    color: #c62828;
+}
+.low-stock-title {
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.low-stock-badge {
+    background: #c62828;
+    color: #fff;
+    border-radius: 20px;
+    padding: 2px 10px;
+    font-size: 12px;
+}
+.low-stock-toggle {
+    font-size: 18px;
+    transition: transform 0.2s;
+}
+.low-stock-content {
+    padding: 0;
+    transition: max-height 0.3s ease;
+}
+.low-stock-content.collapsed {
+    display: none;
+}
+.low-stock-table {
+    background: #fff;
+}
+.low-stock-table td {
+    border-bottom: 1px solid #ffe0e0;
+}
