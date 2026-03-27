@@ -77,18 +77,15 @@ function saveSale(client) {
     var sale = { id:Date.now(), items:JSON.parse(JSON.stringify(S.cart)), raw:cRaw(), discount:S.disc, discAmt:dAmt(), total:cTotal(), profit:cProfit(), date:new Date().toISOString(), client:client||null };
     S.sales.push(sale);
     if (client) { var cl=S.clients.find(function(c){ return c.id===client.id; }); if(cl) cl.debt+=cTotal(); }
-
-    // تطبيق إعداد تفريغ السلة
-    if (S.clearCartAfterSale) {
+    if (S.settings.clearCartAfterSale !== false) {
         S.cart = [];
         S.disc = 0;
     }
-    save(); render();
+    save(); 
+    render();
     toast(client ? "✅ على حساب "+client.name : "✅ تم الحفظ");
-
-    // طباعة تلقائية إذا كان الإعداد مفعلاً
-    if (S.autoPrint) {
-        setTimeout(printReceipt, 100);
+    if (S.settings.autoPrintAfterSale === true) {
+        setTimeout(function() { printReceipt(); }, 200);
     }
 }
 
