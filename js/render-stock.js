@@ -18,6 +18,44 @@ function renderStock() {
         '</div>';
     }).join('') + '</div>';
 
+    // ===== قسم المنتجات الناقصة (يضاف هنا) =====
+    var lowStockItems = S.stock.filter(function(s) { return s.q <= (S.settings.lowStockThreshold || 5); });
+    var lowStockSection = '';
+    if (lowStockItems.length > 0) {
+        lowStockSection = '<div class="low-stock-section">' +
+            '<div class="low-stock-header" onclick="document.querySelector(\'.low-stock-content\').classList.toggle(\'collapsed\')">' +
+                '<div class="low-stock-title">⚠️ المنتجات الناقصة <span class="low-stock-badge">' + lowStockItems.length + '</span></div>' +
+                '<div class="low-stock-toggle">⌄</div>' +
+            '</div>' +
+            '<div class="low-stock-content">' +
+                '<div class="category-table-wrapper"><table class="stock-table low-stock-table">' +
+                    '<thead>' +
+                        '<th>🏪 الكمية</th>' +
+                        (S.stockView === "warehouse" ? '' : '<th>🏪 المحل</th>') +
+                        '<th>الصنف</th>' +
+                        '<th>💰 البيع</th>' +
+                        '<th>🛒 الشراء</th>' +
+                        '<th>➕</th>' +
+                        '<th></th>' +
+                    '</thead>' +
+                    '<tbody>' +
+                        lowStockItems.map(function(s) {
+                            return '<tr style="background:#fff5f0;">' +
+                                '<td class="qty-cell low-stock"><input type="number" value="' + s.q + '" data-id="' + s.id + '" data-field="q" class="stock-qty" style="border-color:#f44336; background:#fff0f0;"><\/td>' +
+                                '<td class="product-name">' + esc(s.n) + '<\/td>' +
+                                '<td><input type="number" value="' + s.p + '" data-id="' + s.id + '" data-field="p" class="stock-price"><\/td>' +
+                                '<td><input type="number" value="' + s.c + '" data-id="' + s.id + '" data-field="c" class="stock-price"><\/td>' +
+                                '<td><button class="add-to-cart-btn" data-id="' + s.id + '">🛒<\/button><\/td>' +
+                                '<td><button class="delete-btn" data-id="' + s.id + '">🗑<\/button><\/td>' +
+                            '<\/tr>';
+                        }).join('') +
+                    '</tbody>' +
+                '<\/table><\/div>' +
+            '</div>' +
+        '<\/div>';
+    }
+    // ===== انتهى قسم المنتجات الناقصة =====
+
     // نموذج إضافة/تحديث المنتج
     var formHTML = '<div class="stock-form-card">' +
         '<div class="form-header">' +
@@ -125,7 +163,8 @@ function renderStock() {
         '<\/div>';
     }).join('');
 
-    return '<div class="stock-container">' + statsBar + formHTML + toolBar + catTables + '<\/div>';
+    // إرجاع كل شيء مع ترتيب: الإحصائيات، ثم المنتجات الناقصة، ثم النموذج، ثم الأدوات، ثم الفئات
+    return '<div class="stock-container">' + statsBar + lowStockSection + formHTML + toolBar + catTables + '<\/div>';
 }
 
 function bindStockEvents() {
