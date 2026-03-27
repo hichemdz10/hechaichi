@@ -16,20 +16,23 @@ function renderHome(){
     '</div>';
 
     // ===== تصفح حسب الفئة (فوق) =====
-    var catCards='<div style="margin-bottom:24px">'+
-        '<div style="font-size:16px;font-weight:800;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:8px">'+
-            '<span style="background:linear-gradient(135deg,#3668d6,#0891b2);-webkit-background-clip:text;-webkit-text-fill-color:transparent">🗂️ تصفح حسب الفئة</span>'+
-        '</div>'+
-        '<div class="category-grid">'+
-        CATS.filter(function(x){return x!=="الكل";}).map(function(cat){
-            var count=S.stock.filter(function(s){return s.cat===cat;}).length;
-            return '<div class="category-card" onclick="goToStockCat(\''+cat+'\')">'+
-                '<div class="category-icon" style="background:linear-gradient(135deg,'+CC[cat]+'22,#ffffff)">'+(CI[cat]||"📦")+'</div>'+
-                '<div class="category-name">'+cat+'</div>'+
-                '<div class="category-count">'+count+' صنف</div>'+
-            '</div>';
-        }).join('')+'</div>'+
-    '</div>';
+    var catCards = '<div style="margin-bottom:24px">'+
+    '<div style="font-size:16px;font-weight:800;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:8px">'+
+        '<span style="background:linear-gradient(135deg,#3668d6,#0891b2);-webkit-background-clip:text;-webkit-text-fill-color:transparent">🗂️ تصفح حسب الفئة</span>'+
+    '</div>'+
+    '<div class="category-grid">'+
+    CATS.filter(function(x){return x!=="الكل";}).map(function(cat){
+        var count = S.stock.filter(function(s){return s.cat===cat;}).length;
+        var imgUrl = CAT_IMG[cat] || 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=200&q=70';
+        return '<div class="category-card" onclick="goToStockCat(\''+cat+'\')">'+
+            '<div class="category-icon" style="background:linear-gradient(135deg,'+CC[cat]+'22, #ffffff); overflow:hidden; border-radius:16px;">'+
+                '<img src="'+imgUrl+'" style="width:100%; height:100%; object-fit:cover; border-radius:16px;">'+
+            '</div>'+
+            '<div class="category-name">'+cat+'</div>'+
+            '<div class="category-count">'+count+' صنف</div>'+
+        '</div>';
+    }).join('')+'</div>'+
+'</div>';
 
     // ===== الرسم البياني =====
     var chartSection=S.cameraActiveInHome?'':'<div class="chart-container" style="margin-bottom:24px"><div class="chart-title"><span>📊</span> أفضل المبيعات اليوم حسب الفئة</div><canvas id="dailySalesChart" style="max-height:260px;width:100%"></canvas></div>';
