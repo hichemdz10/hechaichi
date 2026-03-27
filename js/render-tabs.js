@@ -1,6 +1,5 @@
 function renderTabs() {
-    // أزل "settings" لأنه غير موجود في TAB_STYLES
-    var tabKeys = ["home","stock","print","flixy","clients","expenses","report"];
+    var tabKeys = ["home","stock","print","flixy","clients","expenses","report","settings"];
     var low = lowItems().length;
 
     var navBtns = tabKeys.map(function(k) {
@@ -12,9 +11,9 @@ function renderTabs() {
         return '<button class="tab-btn-vertical ' + (active ? 'active' : '') + '" onclick="S.tab=\'' + k + '\';save();render()">' +
             '<span>' + icon + '</span><span>' + text + '</span>' + badge +
         '</button>';
-    }).join('');
+    });
 
-    // إحصائيات مضغوطة — تظهر فقط على الكمبيوتر
+    // إحصائيات مضغوطة – ستوضع أسفل زر التقارير
     var net = tNet();
     var sideStats =
         '<div class="sidebar-stats">' +
@@ -46,5 +45,15 @@ function renderTabs() {
             '</div>' +
         '</div>';
 
-    return '<div class="sidebar">' + navBtns + '<div style="margin-top: 12px;"></div>' + sideStats + '</div>';
+    // إدراج الإحصائيات بعد زر التقارير
+    var reportIndex = tabKeys.indexOf("report");
+    if (reportIndex !== -1) {
+        navBtns.splice(reportIndex + 1, 0,
+            '<hr style="margin:12px 10px; border:0; height:1px; background:rgba(255,255,255,.1)">',
+            sideStats
+        );
+    }
+
+    var spacer = '<div style="flex:1;min-height:16px"></div>';
+    return '<div class="sidebar">' + navBtns.join('') + spacer + '</div>';
 }
