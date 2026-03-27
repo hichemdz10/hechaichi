@@ -45,8 +45,9 @@ function renderTabs() {
             '</div>' +
         '</div>';
 
-    // إدراج الإحصائيات بعد زر التقارير
+    // تحديد مكان زر التقارير (آخر عنصر قبل الإعدادات)
     var reportIndex = tabKeys.indexOf("report");
+    // إدراج فاصل وإحصائيات بعد زر التقارير
     if (reportIndex !== -1) {
         navBtns.splice(reportIndex + 1, 0,
             '<hr style="margin:12px 10px; border:0; height:1px; background:rgba(255,255,255,.1)">',
@@ -54,6 +55,8 @@ function renderTabs() {
         );
     }
 
+    // إضافة المساحة المرنة في الأسفل
     var spacer = '<div style="flex:1;min-height:16px"></div>';
+
     return '<div class="sidebar">' + navBtns.join('') + spacer + '</div>';
 }
