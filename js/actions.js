@@ -27,7 +27,7 @@ function addToCartFromStock(id) {
     var ex = S.cart.find(function(c){ return c.id===id; });
     if (ex) { ex.q++; ex.sum=(ex.customP!==undefined?ex.customP:ex.p)*ex.q; ex.prof=(ex.sum/ex.q-ex.c)*ex.q; }
     else S.cart.push({ id:item.id,n:item.n,p:item.p,c:item.c,q:1,sum:item.p,prof:item.p-item.c,cat:item.cat||"قرطاسية" });
-    save(); beep(true); toast("🛒 أضيف للسلة: "+item.n);
+    save(); beep(true); toast("🛒 أضيف: "+item.n);
     refreshGlobalCart();
     if (S.cameraActiveInHome) refreshSplitCart();
 }
@@ -77,14 +77,10 @@ function saveSale(client) {
     var sale = { id:Date.now(), items:JSON.parse(JSON.stringify(S.cart)), raw:cRaw(), discount:S.disc, discAmt:dAmt(), total:cTotal(), profit:cProfit(), date:new Date().toISOString(), client:client||null };
     S.sales.push(sale);
     if (client) { var cl=S.clients.find(function(c){ return c.id===client.id; }); if(cl) cl.debt+=cTotal(); }
-    if (S.settings.clearCartAfterSale !== false) {
-        S.cart = [];
-        S.disc = 0;
-    }
-    save(); 
-    render();
+    if (S.settings && S.settings.clearCartAfterSale !== false) { S.cart=[]; S.disc=0; }
+    save(); render();
     toast(client ? "✅ على حساب "+client.name : "✅ تم الحفظ");
-    if (S.settings.autoPrintAfterSale === true) {
+    if (S.settings && S.settings.autoPrintAfterSale === true) {
         setTimeout(function() { printReceipt(); }, 200);
     }
 }
@@ -221,33 +217,24 @@ function expCSV(type) {
     a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
     a.download=fn; a.click(); toast("✅ تم التصدير");
 }
+
+// ✅ إصلاح: حذف القوس الزائد الذي كان بعد هذه الدالة
 function goToStockCat(cat) {
-    // 1. تغيير التبويب إلى المخزون
     S.tab = 'stock';
-    // 2. فتح الفئة المحددة (تأكد من مسح أي بحث سابق)
-    S.openCats = {};           // ننظف كل الفئات المفتوحة سابقاً
-    S.openCats[cat] = true;    // نفتح الفئة المطلوبة
-    S.ssrch = '';              // نمسح أي بحث سابق
+    S.openCats = {};
+    S.openCats[cat] = true;
+    S.ssrch = '';
     save();
     render();
-    
-    // 3. بعد إعادة الرسم، ننتظر حتى يظهر العنصر ونمرر إليه
     setTimeout(function() {
         var el = document.querySelector('[data-cat="' + cat + '"]');
         if (el) {
             el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            // إضافة تأثير وميض لفت الانتباه
             el.style.transition = 'background 0.3s';
             el.style.background = '#fff3e0';
-            setTimeout(function() {
-                el.style.background = '';
-            }, 800);
-        } else {
-            console.warn('لم يتم العثور على الفئة:', cat);
+            setTimeout(function() { el.style.background = ''; }, 800);
         }
     }, 300);
-}
-
 }
 
 function openManualCart() {
@@ -265,7 +252,7 @@ function renderManualList(items, srch) {
     return filtered.map(function(item){
         var col=CC[item.cat]||"#0277bd";
         var inCart=S.cart.find(function(c){ return c.id===item.id; });
-        return '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:13px;border:1.5px solid '+col+'22;background:'+(inCart?col+'11':'#fafafa')+';margin-bottom:8px"><div style="display:flex;align-items:center;gap:10px"><span style="background:linear-gradient(135deg,'+col+','+col+'cc);color:#fff;border-radius:9px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">'+(CI[item.cat]||"📦")+'</span><div><div style="font-size:15px;font-weight:700;color:#1a2535">'+esc(item.n)+'</div><div style="font-size:13px;color:'+col+';font-weight:700">'+item.p+' دج <span style="color:#aaa;font-weight:400">· متبقي: '+item.q+'</span></div></div></div><button onclick="addManualToCart('+item.id+')" style="background:linear-gradient(135deg,'+col+','+col+'cc);color:#fff;border:none;border-radius:10px;padding:10px 16px;font-size:16px;font-weight:800;cursor:pointer;font-family:Tajawal,Arial;min-width:50px">'+(inCart?'<span style="font-size:12px">'+inCart.q+'</span> +':'+'')+'</button></div>';
+        return '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:13px;border:1.5px solid '+col+'22;background:'+(inCart?col+'11':'#fafafa')+';margin-bottom:8px"><div style="display:flex;align-items:center;gap:10px"><span style="background:linear-gradient(135deg,'+col+','+col+'cc);color:#fff;border-radius:9px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">'+(CI[item.cat]||"📦")+'</span><div><div style="font-size:15px;font-weight:700;color:#1a2535">'+esc(item.n)+'</div><div style="font-size:13px;color:'+col+';font-weight:700">'+item.p+' دج <span style="color:#aaa;font-weight:400">· متبقي: '+item.q+'</span></div></div></div><button onclick="addManualToCart('+item.id+')" style="background:linear-gradient(135deg,'+col+','+col+'cc);color:#fff;border:none;border-radius:10px;padding:10px 16px;font-size:16px;font-weight:800;cursor:pointer;font-family:Tajawal,Arial;min-width:50px">'+(inCart?'<span style="font-size:12px">'+inCart.q+'</span> +':'➕')+'</button></div>';
     }).join('');
 }
 
