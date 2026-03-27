@@ -46,5 +46,5 @@ function renderTabs() {
             '</div>' +
         '</div>';
 
-    return '<div class="sidebar">' + navBtns + '<div style="flex:1;min-height:16px"></div>' + sideStats + '</div>';
+    return '<div class="sidebar">' + navBtns + '<div style="margin-top: 12px;"></div>' + sideStats + '</div>';
 }
