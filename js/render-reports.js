@@ -1,4 +1,3 @@
-
 // ===== REPORT =====
 function renderReport() {
     var rs = fSales(), re = fExp(), rp = fPrint();
@@ -19,26 +18,6 @@ function renderReport() {
         {ic:"💸",l:"مصاريف",v:fmt(rE)+" دج",g:"linear-gradient(135deg,#bf360c,#e64a19)"},
         {ic:"🏆",l:"صافي الربح",v:fmt(rNet)+" دج",g:rNet>=0?"linear-gradient(135deg,#1b5e20,#43a047)":"linear-gradient(135deg,#b71c1c,#e53935)"}
     ];
-    var cloudSection = '<div style="background:#fff;border-radius:24px;padding:20px;margin-bottom:24px;border:1px solid #eef2f6">'+
-        '<h4 style="color:#0f172a;font-size:18px;font-weight:800;margin:0 0 20px;display:flex;align-items:center;gap:8px">☁️ <span>السحابة والنسخ الاحتياطي</span></h4>'+
-        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">'+
-            '<button id="syncUpBtn" style="background:linear-gradient(135deg,#0277bd,#01579b);color:#fff;border:none;border-radius:20px;padding:16px 12px;cursor:pointer;display:flex;align-items:center;gap:12px;justify-content:center;box-shadow:0 4px 12px rgba(2,119,189,.2)">'+
-                '<span style="font-size:28px">⬆️</span><div><div style="font-size:14px;font-weight:700">رفع للسحابة</div><div style="font-size:11px;opacity:.8">رفع بيانات جهازك</div></div>'+
-            '</button>'+
-            '<button id="syncDownBtn" style="background:linear-gradient(135deg,#1b5e20,#2e7d32);color:#fff;border:none;border-radius:20px;padding:16px 12px;cursor:pointer;display:flex;align-items:center;gap:12px;justify-content:center;box-shadow:0 4px 12px rgba(27,94,32,.2)">'+
-                '<span style="font-size:28px">⬇️</span><div><div style="font-size:14px;font-weight:700">استيراد من السحابة</div><div style="font-size:11px;opacity:.8">تحميل بيانات السحابة</div></div>'+
-            '</button>'+
-        '</div>'+
-        '<div id="cloudStatus" style="text-align:center;min-height:20px;font-size:13px;margin-bottom:16px"></div>'+
-        '<div style="border-top:1px solid #eef2f6;padding-top:16px">'+
-            '<div style="color:#475569;font-size:13px;font-weight:600;margin-bottom:12px">💾 النسخ الاحتياطي المحلي</div>'+
-            '<div style="display:flex;gap:12px;flex-wrap:wrap">'+
-                '<button onclick="expBk()" class="btn" style="background:#f1f5f9;color:#1e293b;border:1px solid #e2e8f0;font-size:13px;flex:1">⬇️ تصدير نسخة</button>'+
-                '<button onclick="document.getElementById(\'impFile\').click()" class="btn" style="background:#f1f5f9;color:#1e293b;border:1px solid #e2e8f0;font-size:13px;flex:1">⬆️ استيراد نسخة</button>'+
-                '<input type="file" id="impFile" accept=".json" style="display:none" onchange="impBk(this.files[0]);this.value=\'\'">'+
-            '</div>'+
-        '</div>'+
-    '</div>';
     var salesList = rs.slice().reverse().map(function(s,idx){
         return '<div style="border:1px solid #eef2f6;border-radius:20px;padding:16px 18px;margin-bottom:16px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.02)">'+
             '<div style="display:flex;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">'+
@@ -59,36 +38,11 @@ function renderReport() {
             '<div style="color:rgba(255,255,255,.7);font-size:14px;font-weight:500;margin-bottom:6px">صافي الربح</div>'+
             '<div style="color:#fff;font-size:32px;font-weight:800">'+(rNet>=0?'📈':'📉')+' '+fmt(rNet)+' دج</div>'+
         '</div>'+
-        cloudSection+
         (rs.length===0?'<div style="text-align:center;padding:40px;color:#94a3b8;background:#fff;border-radius:20px;border:1px dashed #cbd5e1"><div style="font-size:48px;margin-bottom:12px">📊</div><div style="font-size:15px;font-weight:500">لا توجد مبيعات</div></div>':salesList);
 }
 
 function bindReportEvents() {
-    if(S.tab!=="report") return;
-    var upBtn = document.getElementById('syncUpBtn');
-    var downBtn = document.getElementById('syncDownBtn');
-    var statusEl = document.getElementById('cloudStatus');
-    if(upBtn){
-        upBtn.onclick = function(){
-            if(!confirm("سيتم رفع بياناتك واستبدال بيانات السحابة. موافق؟")) return;
-            statusEl.innerHTML = '<span style="color:#0284c7">⏳ جاري الرفع...</span>';
-            syncEnabled = true;
-            pushToCloud();
-            setTimeout(function(){ statusEl.innerHTML = '<span style="color:#16a34a;font-weight:600">✅ تم رفع البيانات بنجاح!</span>'; },1200);
-        };
-    }
-    if(downBtn){
-        downBtn.onclick = function(){
-            if(!confirm("سيتم استبدال بيانات جهازك ببيانات السحابة. موافق؟")) return;
-            statusEl.innerHTML = '<span style="color:#0284c7">⏳ جاري التحميل...</span>';
-            syncEnabled = true;
-            sbGet("app_state",function(data){
-                if(!data || !data.stock || data.stock.length===0){ statusEl.innerHTML = '<span style="color:#dc2626;font-weight:600">❌ السحابة فارغة!</span>'; return; }
-                applyCloud(data);
-                statusEl.innerHTML = '<span style="color:#16a34a;font-weight:600">✅ تم تحميل '+data.stock.length+' منتج!</span>';
-            });
-        };
-    }
+    // لا حاجة لربط أحداث السحابة هنا بعد الآن
 }
 
 function printReport() {
@@ -105,7 +59,7 @@ function printReport() {
         '<div class="title">📚 مكتبة حشايشي</div><div class="sub">تقرير: '+periods[S.rep]+' | '+new Date().toLocaleDateString("ar-DZ",{year:"numeric",month:"long",day:"numeric"})+'</div>'+
         '<div class="summary"><div class="box"><div class="box-label">إجمالي المبيعات</div><div class="box-val">'+fmt(rT)+' دج</div></div><div class="box"><div class="box-label">أرباح المبيعات</div><div class="box-val">'+fmt(rP)+' دج</div></div><div class="box"><div class="box-label">الطباعة</div><div class="box-val">'+fmt(rPR)+' دج</div></div><div class="box"><div class="box-label">ربح Flixy</div><div class="box-val">'+fmt(rFR)+' دج</div></div><div class="box"><div class="box-label">المصاريف</div><div class="box-val" style="color:#c62828">'+fmt(rE)+' دج</div></div><div class="box"><div class="box-label">عدد الفواتير</div><div class="box-val">'+rs.length+'</div></div></div>'+
         '<div class="net" style="color:'+(rNet>=0?'#1b5e20':'#c62828')+';border-color:'+(rNet>=0?'#1b5e20':'#c62828')+'">صافي الربح: '+fmt(rNet)+' دج</div>'+
-        (rs.length>0?'   <table><thead><th>#</th><th>الوقت</th><th>الأصناف</th><th>الإجمالي</th><th>الربح</th></thead><tbody>'+rs.slice().reverse().map(function(s,i){ return '   <tr><td>'+(rs.length-i)+'</td><td style="font-size:11px">'+ld(s.date)+'</td><td style="font-size:11px">'+s.items.map(function(it){ return esc(it.n)+'×'+it.q; }).join('، ')+'</td><td style="font-weight:bold">'+s.total+' دج</td><td style="color:#2e7d32;font-weight:bold">'+s.profit+' دج</td></tr>'; }).join('')+'</tbody></table>':'')+
+        (rs.length>0?'<table><thead><th>#</th><th>الوقت</th><th>الأصناف</th><th>الإجمالي</th><th>الربح</th></thead><tbody>'+rs.slice().reverse().map(function(s,i){ return '<tr><td>'+(rs.length-i)+'</td><td style="font-size:11px">'+ld(s.date)+'</td><td style="font-size:11px">'+s.items.map(function(it){ return esc(it.n)+'×'+it.q; }).join('، ')+'</td><td style="font-weight:bold">'+s.total+' دج</td><td style="color:#2e7d32;font-weight:bold">'+s.profit+' دج</td></tr>'; }).join('')+'</tbody></table>':'')+
     '</body></html>';
     var w = window.open('','_blank','width=800,height=700');
     if(!w){ toast("يرجى السماح بالنوافذ","e"); return; }
