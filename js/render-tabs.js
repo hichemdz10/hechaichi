@@ -1,5 +1,6 @@
 function renderTabs() {
-    var tabKeys = ["home","stock","print","flixy","clients","expenses","report","settings"];
+    // أزل "settings" لأنه غير موجود في TAB_STYLES
+    var tabKeys = ["home","stock","print","flixy","clients","expenses","report"];
     var low = lowItems().length;
 
     var navBtns = tabKeys.map(function(k) {
@@ -13,7 +14,7 @@ function renderTabs() {
         '</button>';
     }).join('');
 
-    // إحصائيات مضغوطة في أسفل السايدبار
+    // إحصائيات مضغوطة — تظهر فقط على الكمبيوتر
     var net = tNet();
     var sideStats =
         '<div class="sidebar-stats">' +
@@ -45,5 +46,5 @@ function renderTabs() {
             '</div>' +
         '</div>';
 
-    return '<div class="sidebar">' + navBtns + '<div style="flex:1"></div>' + sideStats + '</div>';
+    return '<div class="sidebar">' + navBtns + '<div style="flex:1;min-height:16px"></div>' + sideStats + '</div>';
 }
