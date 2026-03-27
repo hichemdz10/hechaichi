@@ -11,12 +11,13 @@ function startSplitCamera() {
     var video = document.getElementById('splitCameraVideo');
     if (!video) return false;
 
+    // تقليل الدقة لتحسين الأداء
     navigator.mediaDevices.getUserMedia({
         video: {
             facingMode: { exact: "environment" },
-            width:  { ideal: 3840 },
-            height: { ideal: 2160 },
-            focusMode: "continuous"
+            width:  { ideal: 1280 },
+            height: { ideal: 720 }
+            // focusMode: "continuous"  // تم إزالته لتخفيف الحمل
         },
         audio: false
     })
@@ -26,6 +27,7 @@ function startSplitCamera() {
         video.play();
         camDetector = new BarcodeDetector({ formats: ['ean_13','ean_8','code_128','code_39','qr_code','upc_a','upc_e'] });
         if (camLoop) clearInterval(camLoop);
+        // زيادة الفاصل إلى 500ms
         camLoop = setInterval(function() {
             if (scanCooldown || !video.videoWidth) return;
             camDetector.detect(video).then(function(barcodes) {
@@ -34,27 +36,41 @@ function startSplitCamera() {
                 if (code === lastScanned) return;
                 lastScanned = code;
                 scanCooldown = true;
-                var item = S.stock.find(function(s){ return s.barcode===code; });
+                var item = S.stock.find(function(s){ return s.barcode === code; });
                 if (!item) {
-                    beep(false); stopSplitCamera(); openQuickAdd(code);
-                    setTimeout(function(){ scanCooldown=false; lastScanned=""; }, 1500);
+                    // منتج غير موجود – فتح نافذة الإضافة
+                    beep(false);
+                    stopSplitCamera(); // أوقف الكاميرا قبل فتح النافذة
+                    openQuickAdd(code);
+                    setTimeout(function(){ scanCooldown = false; lastScanned = ""; }, 1500);
                     return;
                 }
                 if (item.q <= 0) {
-                    beep(false); toast("نفذ المخزون: "+item.n,"e");
-                    setTimeout(function(){ scanCooldown=false; lastScanned=""; }, 1500);
+                    beep(false);
+                    toast("نفذ المخزون: "+item.n,"e");
+                    setTimeout(function(){ scanCooldown = false; lastScanned = ""; }, 1500);
                     return;
                 }
-                beep(true); addToCartHome(item.id);
+                // تم العثور على المنتج وكميته >0
+                beep(true);
+                addToCartHome(item.id);
+                // تحديث واجهة السلة المقسومة
                 var cartPanel = document.getElementById('splitCartContent');
-                if (cartPanel) cartPanel.innerHTML = renderCartPanelContent(refreshSplitCart);
-                bindCartEvents(refreshSplitCart);
-                setTimeout(function(){ scanCooldown=false; lastScanned=""; }, 800);
-            }).catch(function(){});
-        }, 300);
+                if (cartPanel) {
+                    cartPanel.innerHTML = renderCartPanelContent(refreshSplitCart);
+                    bindCartEvents(refreshSplitCart);
+                }
+                setTimeout(function(){ scanCooldown = false; lastScanned = ""; }, 800);
+            }).catch(function(e) {
+                // console.warn("Barcode detection error:", e);
+            });
+        }, 500);  // 500ms بدلاً من 300ms
         cameraActive = true;
     })
-    .catch(function() { toast("لا يمكن تشغيل الكاميرا","e"); cameraActive = false; });
+    .catch(function(err) {
+        toast("لا يمكن تشغيل الكاميرا: "+ (err.message || "غير معروف"),"e");
+        cameraActive = false;
+    });
     return true;
 }
 
