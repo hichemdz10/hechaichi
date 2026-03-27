@@ -10,7 +10,7 @@ function render() {
     else if (S.tab === "print")    tabContent = renderPrint();
     else if (S.tab === "flixy")    tabContent = renderFlixy();
     else if (S.tab === "clients")  tabContent = renderClients();
-    else if (S.tab === "expenses") tabContent = renderExpences();
+    else if (S.tab === "expences") tabContent = renderExpences();
     else if (S.tab === "report")   tabContent = renderReport();
     else if (S.tab === "settings") tabContent = renderSettings();
 
