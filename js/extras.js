@@ -1,22 +1,19 @@
-// زر الوضع الليلي
 function createDarkModeBtn() {
     if (document.getElementById('darkModeToggle')) return;
     var btn = document.createElement('button');
     btn.id = 'darkModeToggle';
-    var isDark = S.settings.darkMode;
+    var isDark = localStorage.getItem('hch_dark') === '1';
     if (isDark) document.body.classList.add('dark-mode');
     btn.textContent = isDark ? '☀️' : '🌙';
     btn.title = 'تبديل الوضع الليلي';
     btn.onclick = function() {
         var dark = document.body.classList.toggle('dark-mode');
         btn.textContent = dark ? '☀️' : '🌙';
-        S.settings.darkMode = dark;
-        saveSettings();
+        localStorage.setItem('hch_dark', dark ? '1' : '0');
     };
     document.body.appendChild(btn);
 }
 
-// لوحة الأداء اليومي
 function injectLiveBar() {
     if (window.innerWidth < 769) return;
     if (S.tab !== 'home' || S.cameraActiveInHome) return;
@@ -118,13 +115,11 @@ function refreshExtras() {
     injectLiveBar();
 }
 
-// تشغيل أول مرة
 window.addEventListener('load', function() {
     createDarkModeBtn();
     setTimeout(injectLiveBar, 600);
 });
 
-// تحديث عند النقر (تغيير التبويب)
 document.addEventListener('click', function() {
     setTimeout(function() {
         createDarkModeBtn();
@@ -134,5 +129,4 @@ document.addEventListener('click', function() {
     }, 400);
 });
 
-// تحديث دوري
 setInterval(refreshExtras, 15000);
