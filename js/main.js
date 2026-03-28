@@ -55,13 +55,13 @@ function render() {
         }, 1000);
     }
 
-    // ✅ ربط أحداث كل التبويبات
     if (S.tab === "home")     bindHomeEvents();
-    if (S.tab === "stock")    bindStockEvents();
-    if (S.tab === "flixy")    bindFlixyEvents();
-    if (S.tab === "report")   bindReportEvents();
-    if (S.tab === "settings") bindSettingsEvents();
-    bindCartEvents(refreshGlobalCart);
+if (S.tab === "flixy")    bindFlixyIdoomEvents();   // <-- هذا السطر الجديد
+if (S.tab === "report")   bindReportEvents();
+if (S.tab === "settings") bindSettingsEvents();
+if (S.tab === "stock")    bindStockEvents();
+bindCartEvents(refreshGlobalCart);
+bindCartEvents(refreshCartColumn);
 }
 
 scheduleMidnight();
