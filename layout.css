@@ -43,21 +43,26 @@
 }
 
 /* ============================================================
-   السلة الثابتة — ديسكتوب
+   السلة الثابتة — ديسكتوب (fixed على اليسار)
    ============================================================ */
 .cart-aside {
     width: 340px;
     flex-shrink: 0;
-    /* ثابتة بالنسبة لـ viewport — تبدأ من أسفل top-bar */
-    position: sticky;
-    top: 0;          /* سيُحسب بـ JS أو top يساوي ارتفاع top-bar */
-    align-self: flex-start;
-    height: calc(100vh - 0px); /* سيتم تعديله بـ JS */
+    position: fixed;   /* ثابتة تماماً بالنسبة لـ viewport */
+    left: 0;
+    /* top و height يُضبطان بـ JS في _fixCartHeight */
     overflow-y: auto;
     background: var(--card);
-    border-right: 2px solid var(--border2);
+    border-left: 2px solid var(--border2);
     display: flex;
     flex-direction: column;
+    z-index: 100;
+    box-shadow: -4px 0 20px rgba(20,40,100,.07);
+}
+
+/* تعويض عرض السلة في المحتوى */
+.body-row {
+    padding-left: 340px;
 }
 
 .cart-aside-inner {
@@ -67,7 +72,10 @@
     flex-direction: column;
 }
 
-/* ── ضبط top ديناميكي بـ JS ── */
+/* زر الإغلاق — موبايل فقط */
+.cart-close-mob {
+    display: none;
+}
 
 /* ============================================================
    شريط التنقل
@@ -206,27 +214,44 @@
    ============================================================ */
 @media (max-width: 768px) {
 
-    /* السلة: sheet سفلي */
+    /* السلة: sheet سفلي في الموبايل */
     .cart-aside {
         position: fixed;
         bottom: -100%;
         left: 0; right: 0;
-        width: 100%;
-        height: 88vh;
-        max-height: 88vh;
+        top: auto !important;
+        width: 100% !important;
+        height: 88vh !important;
+        max-height: 88vh !important;
         border-radius: 22px 22px 0 0;
-        border-right: none;
+        border-left: none;
         border-top: 2px solid var(--border2);
         z-index: 600;
         transition: bottom .3s cubic-bezier(.4,0,.2,1);
         box-shadow: 0 -8px 32px rgba(0,0,0,.18);
-        align-self: auto;
     }
     .cart-aside.open { bottom: 0; }
 
-    .cart-aside-inner {
-        padding: 10px 12px;
+    .cart-aside-inner { padding: 10px 12px; }
+
+    /* زر الإغلاق مرئي */
+    .cart-close-mob {
+        display: block;
+        background: linear-gradient(135deg,#c62828,#e53935);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 10px;
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        cursor: pointer;
+        font-family: 'Tajawal', sans-serif;
+        width: 100%;
     }
+
+    /* تعويض padding الموبايل */
+    .body-row { padding-left: 0; }
 
     /* overlay */
     .mob-overlay {
