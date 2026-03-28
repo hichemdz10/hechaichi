@@ -1,24 +1,17 @@
-// main.js - النسخة المصححة
-
 function render() {
-    // التأكد من تهيئة حالة الكاميرا في البداية لتجنب أخطاء undefined
     if (typeof S.cameraActiveInHome === 'undefined') S.cameraActiveInHome = false;
 
     var tabContent = '';
-    
-    // توجيه العرض بناءً على التبويب النشط
+
     if      (S.tab === "home")     tabContent = renderHome();
     else if (S.tab === "stock")    tabContent = renderStock();
     else if (S.tab === "print")    tabContent = renderPrint();
     else if (S.tab === "flixy")    tabContent = renderFlixy();
     else if (S.tab === "clients")  tabContent = renderClients();
-    // تصحيح الخطأ الإملائي: تم توحيد الاستدعاء ليتوافق مع الملف render-expences.js 
-    // أو renderExpenses إذا قمت بتغيير اسم الدالة داخل الملف الآخر.
-    else if (S.tab === "expenses") tabContent = typeof renderExpenses === 'function' ? renderExpenses() : renderExpences(); 
+    else if (S.tab === "expenses") tabContent = renderExpenses(); // ✅ إصلاح: حذف الـ fallback الخاطئ renderExpences
     else if (S.tab === "report")   tabContent = renderReport();
     else if (S.tab === "settings") tabContent = renderSettings();
 
-    // هيكل السلة الجانبية
     var cartSlide =
         '<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>' +
         '<div class="cart-sidebar" id="cartPanel">' +
@@ -26,7 +19,6 @@ function render() {
             '<div id="cartPanelContent">' + renderCartPanelContent(refreshGlobalCart) + '</div>' +
         '</div>';
 
-    // حقن المحتوى في العنصر الرئيسي
     document.getElementById('root').innerHTML =
         '<div class="app-container">' +
             renderTabs() +
@@ -37,17 +29,14 @@ function render() {
             cartSlide +
         '</div>';
 
-    // --- إدارة التفاعلات والأحداث (Event Binding) ---
-
-    // 1. تصحيح مزامنة الوضع الليلي (Dark Mode)
-    // نعتمد على القيمة الموجودة في S.settings لضمان التوحيد
+    // ✅ مزامنة الوضع الليلي من S.settings فقط
     if (S.settings && S.settings.darkMode) {
         document.body.classList.add('dark-mode');
     } else {
         document.body.classList.remove('dark-mode');
     }
 
-    // 2. تحديث الساعة والتاريخ بشكل دوري
+    // ✅ تحديث الساعة بشكل دوري (مرة واحدة فقط)
     if (!clockTimer) {
         clockTimer = setInterval(function() {
             var c = document.getElementById('clockLbl');
@@ -57,24 +46,21 @@ function render() {
         }, 1000);
     }
 
-    // 3. ربط أحداث التبويبات (فقط إذا كان التبويب معروضاً)
+    // ربط أحداث التبويبات
     if (S.tab === "home")     bindHomeEvents();
     if (S.tab === "stock")    bindStockEvents();
     if (S.tab === "flixy")    bindFlixyEvents();
     if (S.tab === "report")   bindReportEvents();
     if (S.tab === "settings") bindSettingsEvents();
-    
-    // ربط أحداث السلة دائماً لأنها مشتركة
+
+    // السلة مشتركة دائماً
     bindCartEvents(refreshGlobalCart);
 
-    // استدعاء الوظائف الإضافية (مثل شريط الملخص العلوي)
     if (typeof refreshExtras === 'function') refreshExtras();
 }
 
-// تشغيل الجدولة لصفر الساعة (لتحديث التقارير اليومية تلقائياً)
 if (typeof scheduleMidnight === 'function') scheduleMidnight();
 
-// محاولة تشغيل التطبيق مع معالجة الأخطاء الكارثية
 try {
     render();
 } catch(e) {
