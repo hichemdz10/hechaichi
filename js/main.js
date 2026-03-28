@@ -14,46 +14,41 @@ function render() {
     document.getElementById('root').innerHTML =
         '<div class="app-root">' +
 
-            // ① الهيدر + شريط التنقل — ثابتان في الأعلى
-            '<div class="top-bar">' +
+            '<div class="top-bar" id="stickyTop">' +
                 renderHeader() +
                 renderTabs() +
             '</div>' +
 
-            // ② جسم الصفحة
             '<div class="body-row">' +
 
-                // محتوى التبويب
                 '<div class="content-col">' +
                     '<div class="tab-content" id="tabContent">' +
                         tabContent +
                     '</div>' +
                 '</div>' +
 
-                // السلة — ثابتة دائماً في الديسكتوب
                 '<aside class="cart-aside" id="cartPanel">' +
                     '<div class="cart-aside-inner">' +
-                        '<div id="cartPanelContent">' +
-                            renderCartPanelContent(refreshGlobalCart) +
-                        '</div>' +
+                        // زر الإغلاق للموبايل فقط
+                        '<button class="cart-close-mob" onclick="closeCart()">✕ إغلاق</button>' +
+                        '<div id="cartPanelContent"></div>' +
                     '</div>' +
                 '</aside>' +
 
             '</div>' +
 
-            // overlay الموبايل
             '<div class="mob-overlay" id="cartOverlay" onclick="closeCart()"></div>' +
 
         '</div>';
 
-    // وضع ليلي
+    // مزامنة الوضع الليلي
     if (S.settings && S.settings.darkMode) {
         document.body.classList.add('dark-mode');
     } else {
         document.body.classList.remove('dark-mode');
     }
 
-    // ساعة
+    // ساعة — مرة واحدة فقط
     if (!clockTimer) {
         clockTimer = setInterval(function() {
             var c = document.getElementById('clockLbl');
@@ -63,25 +58,42 @@ function render() {
         }, 1000);
     }
 
-    // أحداث
+    // ربط أحداث التبويبات
     if (S.tab === "home")     bindHomeEvents();
     if (S.tab === "stock")    bindStockEvents();
     if (S.tab === "flixy")    bindFlixyEvents();
     if (S.tab === "report")   bindReportEvents();
     if (S.tab === "settings") bindSettingsEvents();
-    bindCartEvents(refreshGlobalCart);
+
+    // ✅ رسم السلة وربط أحداثها بعد بناء DOM مباشرة
+    _rebuildCart();
+
+    // ضبط ارتفاع السلة
+    _fixCartHeight();
 
     if (typeof refreshExtras === 'function') refreshExtras();
 }
 
-// دوال السلة في الموبايل
-function openCart()   {
+// ✅ دالة موحّدة لإعادة رسم السلة وربط أحداثها
+function _rebuildCart() {
+    var el = document.getElementById('cartPanelContent');
+    if (!el) return;
+    el.innerHTML = renderCartPanelContent(_rebuildCart);
+    bindCartEvents(_rebuildCart);
+}
+
+// ✅ هذه هي الدوال الرسمية — تستخدم _rebuildCart داخلياً
+function refreshGlobalCart() { _rebuildCart(); }
+function refreshSplitCart()  { _rebuildCart(); }
+
+// فتح/إغلاق السلة في الموبايل
+function openCart() {
     var p = document.getElementById('cartPanel');
     var o = document.getElementById('cartOverlay');
     if (p) p.classList.add('open');
     if (o) o.classList.add('open');
 }
-function closeCart()  {
+function closeCart() {
     var p = document.getElementById('cartPanel');
     var o = document.getElementById('cartOverlay');
     if (p) p.classList.remove('open');
@@ -89,14 +101,27 @@ function closeCart()  {
 }
 function toggleCart() {
     var p = document.getElementById('cartPanel');
-    if (p && p.classList.contains('open')) closeCart(); else openCart();
+    if (p && p.classList.contains('open')) closeCart();
+    else openCart();
 }
 
-function refreshGlobalCart() {
-    var el = document.getElementById('cartPanelContent');
-    if (el) { el.innerHTML = renderCartPanelContent(refreshGlobalCart); bindCartEvents(refreshGlobalCart); }
+// ضبط ارتفاع السلة الثابتة ديناميكياً
+function _fixCartHeight() {
+    var top  = document.getElementById('stickyTop');
+    var cart = document.getElementById('cartPanel');
+    if (!top || !cart) return;
+    if (window.innerWidth > 768) {
+        var h = top.offsetHeight;
+        cart.style.top       = h + 'px';
+        cart.style.height    = 'calc(100vh - ' + h + 'px)';
+        cart.style.maxHeight = 'calc(100vh - ' + h + 'px)';
+    } else {
+        cart.style.top = '';
+        cart.style.height = '';
+        cart.style.maxHeight = '';
+    }
 }
-function refreshSplitCart() { refreshGlobalCart(); }
+window.addEventListener('resize', _fixCartHeight);
 
 if (typeof scheduleMidnight === 'function') scheduleMidnight();
 
