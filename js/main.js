@@ -5,7 +5,7 @@ function render() {
     if      (S.tab === "home")     tabContent = renderHome();
     else if (S.tab === "stock")    tabContent = renderStock();
     else if (S.tab === "print")    tabContent = renderPrint();
-else if (S.tab === "flixy") tabContent = renderFlixyIdoom();
+    else if (S.tab === "flixy")    tabContent = renderFlixy();
     else if (S.tab === "clients")  tabContent = renderClients();
     else if (S.tab === "expenses") tabContent = renderExpences(); // اسم الملف بالإملاء القديم
     else if (S.tab === "report")   tabContent = renderReport();
@@ -55,13 +55,13 @@ else if (S.tab === "flixy") tabContent = renderFlixyIdoom();
         }, 1000);
     }
 
+    // ✅ ربط أحداث كل التبويبات
     if (S.tab === "home")     bindHomeEvents();
-if (S.tab === "flixy")    bindFlixyIdoomEvents();   // <-- هذا السطر الجديد
-if (S.tab === "report")   bindReportEvents();
-if (S.tab === "settings") bindSettingsEvents();
-if (S.tab === "stock")    bindStockEvents();
-bindCartEvents(refreshGlobalCart);
-bindCartEvents(refreshCartColumn);
+    if (S.tab === "stock")    bindStockEvents();
+    if (S.tab === "flixy")    bindFlixyEvents();
+    if (S.tab === "report")   bindReportEvents();
+    if (S.tab === "settings") bindSettingsEvents();
+    bindCartEvents(refreshGlobalCart);
 }
 
 scheduleMidnight();
