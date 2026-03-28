@@ -5,7 +5,7 @@ function render() {
     if      (S.tab === "home")     tabContent = renderHome();
     else if (S.tab === "stock")    tabContent = renderStock();
     else if (S.tab === "print")    tabContent = renderPrint();
-    else if (S.tab === "flixy")    tabContent = renderFlixy();
+else if (S.tab === "flixy") tabContent = renderFlixyIdoom();
     else if (S.tab === "clients")  tabContent = renderClients();
     else if (S.tab === "expenses") tabContent = renderExpences(); // اسم الملف بالإملاء القديم
     else if (S.tab === "report")   tabContent = renderReport();
