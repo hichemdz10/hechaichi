@@ -1,16 +1,27 @@
 function createDarkModeBtn() {
     if (document.getElementById('darkModeToggle')) return;
+
     var btn = document.createElement('button');
     btn.id = 'darkModeToggle';
-    var isDark = localStorage.getItem('hch_dark') === '1';
+
+    // ✅ الإصلاح: اقرأ دائماً من S.settings كمصدر وحيد للحقيقة
+    var isDark = S.settings ? S.settings.darkMode : (localStorage.getItem('hch_dark') === '1');
     if (isDark) document.body.classList.add('dark-mode');
     btn.textContent = isDark ? '☀️' : '🌙';
     btn.title = 'تبديل الوضع الليلي';
+
     btn.onclick = function() {
         var dark = document.body.classList.toggle('dark-mode');
         btn.textContent = dark ? '☀️' : '🌙';
-        localStorage.setItem('hch_dark', dark ? '1' : '0');
+        // ✅ الإصلاح الرئيسي: حدّث S.settings حتى لا يُلغيها render()
+        if (S.settings) {
+            S.settings.darkMode = dark;
+            saveSettings();
+        } else {
+            localStorage.setItem('hch_dark', dark ? '1' : '0');
+        }
     };
+
     document.body.appendChild(btn);
 }
 
@@ -21,6 +32,7 @@ function injectLiveBar() {
     var tc = document.querySelector('.tab-content');
     if (!tc) return;
 
+    // آخر 7 أيام
     var last7 = [];
     for (var i = 6; i >= 0; i--) {
         var d = new Date();
@@ -28,12 +40,14 @@ function injectLiveBar() {
         var key = dk(d);
         last7.push({
             day: d.toLocaleDateString('ar-DZ', { weekday: 'short' }),
-            val: S.sales.filter(function(s) { return dk(new Date(s.date)) === key; })
-                        .reduce(function(a, s) { return a + s.total; }, 0)
+            val: S.sales
+                    .filter(function(s) { return dk(new Date(s.date)) === key; })
+                    .reduce(function(a, s) { return a + s.total; }, 0)
         });
     }
     var maxVal = Math.max.apply(null, last7.map(function(x) { return x.val; })) || 1;
 
+    // أفضل مبيعات اليوم
     var itemSales = {};
     tSales().forEach(function(sale) {
         sale.items.forEach(function(it) {
@@ -61,7 +75,7 @@ function injectLiveBar() {
     var topHTML = topItems.length === 0
         ? '<div style="color:var(--text3);font-size:12px;text-align:center;padding:10px">لا مبيعات اليوم</div>'
         : topItems.map(function(it, i) {
-            var medals = ['🥇','🥈','🥉'];
+            var medals = ['🥇', '🥈', '🥉'];
             var col = CC[it.cat] || 'var(--blue)';
             return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">' +
                 '<span>' + medals[i] + '</span>' +
@@ -92,10 +106,10 @@ function injectLiveBar() {
             '<div style="font-size:10px;font-weight:700;color:var(--text3);margin-bottom:10px">⚡ ملخص اليوم</div>' +
             '<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">' +
             [
-                { l: 'فواتير',  v: String(tSales().length), c: 'var(--blue)'  },
-                { l: 'بالسلة',  v: String(S.cart.length),   c: 'var(--orange)'},
-                { l: 'صافي',    v: fmt(tNet()) + ' دج',     c: tNet() >= 0 ? 'var(--green)' : 'var(--red)' },
-                { l: 'مصاريف', v: fmt(tET()) + ' دج',      c: 'var(--red)'  }
+                { l: 'فواتير', v: String(tSales().length),    c: 'var(--blue)'  },
+                { l: 'بالسلة', v: String(S.cart.length),      c: 'var(--orange)'},
+                { l: 'صافي',   v: fmt(tNet()) + ' دج',        c: tNet() >= 0 ? 'var(--green)' : 'var(--red)' },
+                { l: 'مصاريف', v: fmt(tET())  + ' دج',        c: 'var(--red)'  }
             ].map(function(x) {
                 return '<div style="background:var(--bg2);border-radius:9px;padding:8px 9px;border:1px solid var(--border)">' +
                     '<div style="font-size:9px;color:var(--text3);font-weight:600;margin-bottom:2px">' + x.l + '</div>' +
