@@ -1106,3 +1106,238 @@ input:checked + .toggle-slider:before {
 .low-stock-table td {
     border-bottom: 1px solid #ffe0e0;
 }
+
+/* ============================================================
+   هيكل الصفحة الجديد
+   ============================================================ */
+
+.app-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* الجزء العلوي: هيدر + شريط تنقل */
+.sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    background: var(--bg);
+    box-shadow: 0 2px 16px rgba(30,60,130,.1);
+}
+
+/* جسم الصفحة */
+.page-body {
+    display: flex;
+    flex: 1;
+    align-items: flex-start;
+    min-height: 0;
+}
+
+.main-content-area {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.main-content-area .tab-content {
+    padding: 22px;
+    animation: fadeUp .28s ease;
+}
+
+/* ============================================================
+   شريط التنقل الأفقي
+   ============================================================ */
+
+.main-nav {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 0 12px;
+    overflow: hidden;
+}
+
+.nav-scroll {
+    display: flex;
+    overflow-x: auto;
+    gap: 2px;
+    padding: 8px 0;
+    flex: 1;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.nav-scroll::-webkit-scrollbar { display: none; }
+
+.nav-tab {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 16px;
+    border: 1.5px solid transparent;
+    border-radius: 40px;
+    background: transparent;
+    color: var(--text2);
+    font-family: 'Tajawal', sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: var(--t);
+    position: relative;
+    flex-shrink: 0;
+}
+.nav-tab:hover {
+    background: var(--bg2);
+    color: var(--text);
+    border-color: var(--border2);
+}
+.nav-tab.active {
+    background: linear-gradient(135deg, var(--blue), var(--blue2));
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 4px 14px rgba(54,104,214,.35);
+}
+.nav-tab-icon  { font-size: 17px; }
+.nav-tab-label { font-size: 13px; }
+
+.nav-tab-badge {
+    position: absolute;
+    top: 2px;
+    left: 6px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 800;
+    padding: 1px 5px;
+    border-radius: 99px;
+    min-width: 16px;
+    text-align: center;
+    animation: pulse-b 2s infinite;
+}
+
+/* ملخص سريع (ديسكتوب فقط) */
+.nav-quick-stats {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+    padding-right: 8px;
+    border-right: 1px solid var(--border);
+    margin-right: 4px;
+}
+.nav-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 4px 10px;
+    min-width: 64px;
+}
+.nav-stat-lbl { font-size: 9px;  color: var(--text3); font-weight: 600; }
+.nav-stat-val { font-size: 12px; color: var(--text);  font-weight: 800; }
+.nav-stat-net.pos { background: rgba(5,150,105,.1);  border-color: rgba(5,150,105,.25); }
+.nav-stat-net.neg { background: rgba(220,38,38,.1);   border-color: rgba(220,38,38,.25); }
+.nav-stat-net.pos .nav-stat-val { color: var(--green); }
+.nav-stat-net.neg .nav-stat-val { color: var(--red); }
+
+/* ============================================================
+   السلة الثابتة
+   ============================================================ */
+
+/* ديسكتوب: عمود ثابت على اليسار (RTL) */
+.cart-column {
+    width: 360px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    max-height: 100vh;
+    overflow-y: auto;
+    background: var(--card);
+    border-right: 1px solid var(--border2);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+/* زر الإغلاق مخفي في الديسكتوب */
+.cart-col-close { display: none; }
+
+/* زر السلة في الهيدر مخفي في الديسكتوب */
+@media (min-width: 769px) {
+    .cart-hdr-btn { display: none !important; }
+    .sidebar      { display: none !important; } /* إخفاء السايدبار القديم */
+}
+
+/* ============================================================
+   موبايل
+   ============================================================ */
+@media (max-width: 768px) {
+
+    /* السلة: sheet سفلي */
+    .cart-column {
+        position: fixed;
+        bottom: -100%;
+        left: 0;
+        right: 0;
+        width: 100%;
+        max-height: 88vh;
+        border-radius: 24px 24px 0 0;
+        border-right: none;
+        border-top: 1px solid var(--border2);
+        z-index: 600;
+        transition: bottom .32s cubic-bezier(.4,0,.2,1);
+        padding-bottom: calc(16px + env(safe-area-inset-bottom));
+        box-shadow: 0 -8px 32px rgba(0,0,0,.18);
+    }
+    .cart-column.open { bottom: 0; }
+
+    /* زر الإغلاق مرئي في الموبايل */
+    .cart-col-close {
+        display: block;
+        background: linear-gradient(135deg,#c62828,#e53935);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 10px;
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        cursor: pointer;
+        font-family: 'Tajawal', sans-serif;
+        width: 100%;
+        text-align: center;
+    }
+
+    /* محتوى التبويب */
+    .main-content-area .tab-content {
+        padding: 10px;
+        padding-bottom: 16px;
+    }
+
+    /* شريط التنقل: مضغوط في الموبايل */
+    .nav-quick-stats { display: none; }
+
+    .nav-tab        { padding: 8px 10px; }
+    .nav-tab-label  { font-size: 11px; }
+    .main-nav       { padding: 0 6px; }
+
+    /* الهيدر */
+    .header-banner { height: 90px; object-position: center center; }
+}
+
+@media (max-width: 420px) {
+    .nav-tab-label { display: none; }
+    .nav-tab       { padding: 9px 11px; }
+}
+
+/* ============================================================
+   إخفاء السايدبار القديم بالكامل
+   ============================================================ */
+.sidebar,
+.cart-sidebar,
+.app-container,
+.app-layout { display: none !important; }
