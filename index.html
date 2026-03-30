@@ -4,48 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
   <title>مكتبة حشايشي</title>
-  /* ====== DESKTOP CASHIER PATCH ====== */
-@media(min-width:769px){
-
-  /* 1. إخفاء قسم الكاميرا نهائياً */
-  .cashier-scan { display: none !important; }
-
-  /* 2. إعادة ترتيب الـ grid بدون صف الكاميرا */
-  .cashier-grid {
-    grid-template-columns: 1fr 440px;
-    grid-template-rows: auto auto;
-    gap: 14px;
-  }
-  .cashier-search { grid-column: 1; grid-row: 1; }
-  .cashier-sum    { grid-column: 1; grid-row: 2; }
-  .cart-wrap      {
-    grid-column: 2;
-    grid-row: 1 / span 2;
-    max-height: calc(100vh - 115px);
-  }
-
-  /* 3. قائمة السلة أطول */
-  #cart-list { max-height: 420px; }
-
-  /* 4. أسماء وأسعار العناصر أكبر */
-  .ci-name  { font-size: 14px; }
-  .ci-unit  { font-size: 11px; }
-  .ci-price { font-size: 15px; font-weight: 800; }
-  .qty-n    { font-size: 14px; font-weight: 800; width: 28px; }
-  .qty-btn  { width: 30px; height: 30px; font-size: 15px; }
-
-  /* 5. منطقة الملخص */
-  .cart-sum { padding: 16px; margin: 10px 0; }
-  .sum-row  { font-size: 14px; margin-bottom: 8px; }
-
-  /* 6. المجموع الكلي — ضخم */
-  .sum-total        { font-size: 22px !important; padding-top: 12px; margin-top: 8px; }
-  #cart-tot         { font-size: 32px !important; font-weight: 900 !important; color: #7c3aed; }
-  #cart-cnt, #cart-sub { font-size: 14px; font-weight: 700; }
-
-  /* 7. زر إتمام الدفع أكبر */
-  #pay-btn-wrap .btn-p { font-size: 15px !important; padding: 13px !important; }
-}
+  
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;background:#f0f2f8;background-image:radial-gradient(ellipse at 85% 5%,rgba(76,29,149,.07) 0%,transparent 55%),radial-gradient(ellipse at 15% 95%,rgba(157,23,77,.05) 0%,transparent 55%);display:flex;height:100vh;overflow:hidden;direction:rtl;font-size:14px;color:#1e293b;transition:background .3s}
