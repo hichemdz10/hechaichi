@@ -389,6 +389,20 @@ body.dark-mode ::-webkit-scrollbar-thumb{background:#475569;}
     <div class="topbar-r">
       <div class="time-badge" id="clock-badge">--:--:--</div>
       <button class="icon-btn" onclick="toggleTheme()" id="theme-btn" title="تبديل المظهر">🌙</button>
+      <button class="icon-btn" 
+    onclick="window.open('./display.html','_blank')" 
+    title="فتح شاشة الزبون">
+    📺
+  </button>
+
+  <button class="icon-btn" 
+    onclick="window.open('./display-admin.html','_blank')" 
+    title="لوحة تحكم الشاشة">
+    🎛️
+  </button>
+
+<!-- ثم يكمل باقي الأزرار الموجودة: -->
+  <button class="icon-btn" onclick="openModal('m-cloud')" ...>
       <button class="icon-btn" onclick="openModal('m-cloud')" title="المزامنة السحابية">☁️<span class="sync-dot" id="sync-dot"></span></button>
       <button class="icon-btn" onclick="exportBackup()" title="نسخة احتياطية">💾</button>
       <button class="icon-btn" onclick="document.getElementById('import-file').click()" title="استيراد">📥</button>
