@@ -986,6 +986,159 @@ function runDemo(){
 
 runDemo();
 </script>
+<!-- ══════════════════════════════════════════════
+     ✅ FIXES: DB Keys + Admin Config + Demo Control
+     ══════════════════════════════════════════════ -->
+<script>
+'use strict';
 
+// ╔══════════════════════════════════════════╗
+// ║ FIX 1: تصحيح readDB — مفاتيح POS الصحيحة ║
+// ╚══════════════════════════════════════════╝
+// المشكلة: display.html تقرأ 'hashayshi_db' لكن POS يحفظ في hch_p, hch_s ...
+readDB = function() {
+  try {
+    var p  = localStorage.getItem('hch_p');
+    var s  = localStorage.getItem('hch_s');
+    var cl = localStorage.getItem('hch_cl');
+    var products = p  ? JSON.parse(p)  : [];
+    var sales    = s  ? JSON.parse(s)  : [];
+    var clients  = cl ? JSON.parse(cl) : [];
+    if (!products.length && !sales.length) return null;
+    return { products: products, sales: sales, clients: clients };
+  } catch(e) { return null; }
+};
+
+// ╔══════════════════════════════════════════╗
+// ║ FIX 2: تحميل إعدادات لوحة التحكم الإدارية ║
+// ╚══════════════════════════════════════════╝
+var _adminTs  = 0;
+var _slideDur = 6000;
+
+var _BG = {
+  purple:'radial-gradient(ellipse at center,rgba(124,58,237,.15) 0%,transparent 70%)',
+  blue:  'radial-gradient(ellipse at center,rgba(59,130,246,.15) 0%,transparent 70%)',
+  green: 'radial-gradient(ellipse at center,rgba(16,185,129,.15) 0%,transparent 70%)',
+  orange:'radial-gradient(ellipse at center,rgba(245,158,11,.15) 0%,transparent 70%)',
+  pink:  'radial-gradient(ellipse at center,rgba(236,72,153,.15) 0%,transparent 70%)',
+  teal:  'radial-gradient(ellipse at center,rgba(20,184,166,.15) 0%,transparent 70%)',
+  dark:  'linear-gradient(135deg,rgba(15,23,42,.95),rgba(30,41,59,.9))'
+};
+
+function _buildSlides(slides, images, durMs) {
+  var body = document.querySelector('#screen-ads .ads-body');
+  var dots = document.getElementById('slide-dots');
+  if (!body || !dots) return;
+
+  body.querySelectorAll('.slide').forEach(function(el){ el.remove(); });
+  stopAdsSlideshow();
+  state.totalSlides = slides.length;
+  state.currentSlide = 0;
+  _slideDur = durMs || 6000;
+
+  var dotsH = '';
+
+  slides.forEach(function(s, i) {
+    var div = document.createElement('div');
+    div.className = 'slide' + (i === 0 ? ' active' : '');
+    div.id = 'slide-' + i;
+
+    // صورة إعلانية
+    var imgH = '';
+    if (s.type === 'image' && s.imageId && images && images.length) {
+      for (var k = 0; k < images.length; k++) {
+        if (images[k].id === s.imageId) {
+          imgH = '<img src="' + images[k].data + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.75;z-index:0;">';
+          break;
+        }
+      }
+    }
+
+    var bgH = '<div style="position:absolute;inset:0;background:' + (_BG[s.color]||_BG.purple) + ';z-index:1;"></div>';
+    var cH  = '';
+
+    if (s.type === 'stats') {
+      var db2 = readDB();
+      var pc = db2 && db2.products ? db2.products.length : 0;
+      var cc = db2 && db2.clients  ? db2.clients.length  : 0;
+      cH = '<div class="slide-stats" style="position:relative;z-index:2;width:100%;height:100%;">' +
+        '<div class="stat-big-card"><div class="sbc-icon">⭐</div><div class="sbc-label">تقييم العملاء</div><div class="sbc-val gold">5 / 5</div><div class="sbc-sub">خدمة عملاء ممتازة</div></div>' +
+        '<div class="stat-big-card"><div class="sbc-icon">📦</div><div class="sbc-label">منتجات متاحة</div><div class="sbc-val purple">' + (pc ? pc + '+' : '---') + '</div><div class="sbc-sub">صنف متنوع ومتجدد</div></div>' +
+        '<div class="stat-big-card"><div class="sbc-icon">🤝</div><div class="sbc-label">زبائننا الكرام</div><div class="sbc-val green">' + (cc ? cc + '+' : '---') + '</div><div class="sbc-sub">عائلة متنامية</div></div>' +
+        '</div>';
+    } else if (s.type === 'welcome') {
+      cH = '<div style="position:relative;z-index:2;text-align:center;display:flex;flex-direction:column;align-items:center;gap:20px;padding:40px;">' +
+        '<div class="welcome-logo">📚</div>' +
+        '<div class="welcome-title">' + (s.title||'أهلاً بكم') + '</div>' +
+        (s.desc ? '<div class="welcome-sub">' + s.desc + '</div>' : '') +
+        '</div>';
+    } else {
+      cH = '<div style="position:relative;z-index:2;text-align:center;display:flex;flex-direction:column;align-items:center;gap:24px;padding:40px;width:100%;">' +
+        (s.badge ? '<div class="slide-promo-tag">' + s.badge + '</div>' : '') +
+        '<div class="slide-promo-title glow-text">' + (s.title||'') + '</div>' +
+        (s.desc ? '<div class="slide-promo-desc">' + s.desc + '</div>' : '') +
+        '</div>';
+    }
+
+    div.innerHTML = imgH + bgH + cH;
+    body.insertBefore(div, dots);
+    dotsH += '<div class="slide-dot' + (i===0?' active':'') + '" onclick="goToSlide(' + i + ')"></div>';
+  });
+
+  dots.innerHTML = dotsH;
+  if (state.mode === 'ads') startAdsSlideshow();
+}
+
+function _applyAdminConfig() {
+  var raw = localStorage.getItem('hashayshi_display_full_config');
+  if (!raw) return false;
+  try {
+    var cfg = JSON.parse(raw);
+    if (cfg.ts === _adminTs) return true; // لم يتغير
+    _adminTs = cfg.ts;
+
+    // تحديث شريط الأخبار
+    if (cfg.ticker && cfg.ticker.length) {
+      var inner = document.getElementById('ticker-inner');
+      if (inner) inner.innerHTML = cfg.ticker.map(function(t) {
+        return '<span>' + t + '</span><span class="ticker-sep">✦</span>';
+      }).join('');
+    }
+
+    if (cfg.slideDuration) _slideDur = cfg.slideDuration;
+
+    // بناء الشرائح الديناميكية
+    if (cfg.slides && cfg.slides.length) {
+      _buildSlides(cfg.slides, cfg.images||[], cfg.slideDuration||6000);
+    }
+    return true;
+  } catch(e) { return false; }
+}
+
+// تجاوز startAdsSlideshow لاستخدام المدة من الإدارة
+startAdsSlideshow = function() {
+  goToSlide(0);
+  stopAdsSlideshow();
+  state.adsSlideTimer = setInterval(function() {
+    state.currentSlide = (state.currentSlide + 1) % state.totalSlides;
+    goToSlide(state.currentSlide);
+  }, _slideDur || 6000);
+};
+
+// ╔══════════════════════════════════════════╗
+// ║ FIX 3: إيقاف الديمو عند وجود إعدادات إدارة ║
+// ╚══════════════════════════════════════════╝
+if (typeof demoSale === 'function') {
+  var _origDemo = demoSale;
+  demoSale = function() {
+    if (localStorage.getItem('hashayshi_display_full_config')) return; // لا ديمو إذا يوجد إعدادات
+    _origDemo();
+  };
+}
+
+// ══ تشغيل ══
+_applyAdminConfig();
+setInterval(_applyAdminConfig, 5000); // تحديث كل 5 ثواني
+</script>
 </body>
 </html>
