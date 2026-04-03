@@ -1140,5 +1140,219 @@ if (typeof demoSale === 'function') {
 _applyAdminConfig();
 setInterval(_applyAdminConfig, 5000); // تحديث كل 5 ثواني
 </script>
+   <!-- ═══════════════════════════════════════════════════════
+     FIX v3 — إصلاح شامل لشاشة الزبون
+     يُضاف هذا الكود قبل </body> مباشرة في display.html
+     ═══════════════════════════════════════════════════════ -->
+<script>
+(function () {
+
+  /* ──────────────────────────────────────────────────────
+     FIX 1 — state.mode
+     المشكلة: يبدأ بـ 'ads' لكن showAds() تحتوي على
+     if(state.mode==='ads') return;
+     فشاشة الإعلانات لا تظهر أبداً!
+     الحل: نجعله 'cashier' لتعمل showAds() عند الاستدعاء
+  ────────────────────────────────────────────────────── */
+  if (typeof state !== 'undefined') {
+    state.mode = 'cashier';
+  }
+
+  /* ──────────────────────────────────────────────────────
+     FIX 2 — readDB
+     المشكلة: تقرأ 'hashayshi_db' لكن POS يحفظ في
+     hch_p / hch_s / hch_cl
+     الحل: تقرأ المفاتيح الصحيحة
+     + إذا يوجد إعداد إداري → تُرجع بيعة وهمية لمنع الديمو
+  ────────────────────────────────────────────────────── */
+  window.readDB = function () {
+    try {
+      var hasCfg = !!localStorage.getItem('hashayshi_display_full_config');
+      var p  = localStorage.getItem('hch_p');
+      var s  = localStorage.getItem('hch_s');
+      var cl = localStorage.getItem('hch_cl');
+      var products = p  ? JSON.parse(p)  : [];
+      var sales    = s  ? JSON.parse(s)  : [];
+      var clients  = cl ? JSON.parse(cl) : [];
+      if (hasCfg && !sales.length) {
+        // بيعة وهمية بتاريخ اليوم → hasRecentSales = true → لا ديمو
+        sales = [{ id: '_admin_cfg', dateStr: new Date().toISOString().slice(0, 10) }];
+      }
+      if (!products.length && !sales.length) return null;
+      return { products: products, sales: sales, clients: clients };
+    } catch (e) { return null; }
+  };
+
+  /* ──────────────────────────────────────────────────────
+     FIX 3 — إعدادات لوحة التحكم الإدارية
+     تقرأ hashayshi_display_full_config وتبني الشرائح
+  ────────────────────────────────────────────────────── */
+  var _adminTs  = 0;
+  var _adminDur = 6000;
+
+  var _BGSRC = {
+    purple: 'radial-gradient(ellipse at center,rgba(124,58,237,.25) 0%,transparent 70%)',
+    blue:   'radial-gradient(ellipse at center,rgba(59,130,246,.25) 0%,transparent 70%)',
+    green:  'radial-gradient(ellipse at center,rgba(16,185,129,.25) 0%,transparent 70%)',
+    orange: 'radial-gradient(ellipse at center,rgba(245,158,11,.25) 0%,transparent 70%)',
+    pink:   'radial-gradient(ellipse at center,rgba(236,72,153,.25) 0%,transparent 70%)',
+    teal:   'radial-gradient(ellipse at center,rgba(20,184,166,.25) 0%,transparent 70%)',
+    dark:   'linear-gradient(135deg,rgba(15,23,42,.95),rgba(30,41,59,.9))'
+  };
+
+  function _getImg(imgs, id) {
+    for (var i = 0; i < imgs.length; i++) if (imgs[i].id === id) return imgs[i];
+    return null;
+  }
+
+  function _buildSlides(slides, images, dur) {
+    var body = document.querySelector('#screen-ads .ads-body');
+    var dots = document.getElementById('slide-dots');
+    if (!body || !dots || !slides.length) return;
+
+    // إيقاف الشرائح الحالية
+    if (typeof stopAdsSlideshow === 'function') stopAdsSlideshow();
+
+    // حذف الشرائح القديمة
+    var old = body.querySelectorAll('.slide');
+    for (var k = 0; k < old.length; k++) old[k].remove();
+
+    _adminDur = dur || 6000;
+    if (typeof state !== 'undefined') {
+      state.totalSlides  = slides.length;
+      state.currentSlide = 0;
+    }
+
+    var dotsH = '';
+
+    for (var i = 0; i < slides.length; i++) {
+      var s   = slides[i];
+      var div = document.createElement('div');
+      var bg  = _BGSRC[s.color] || _BGSRC.purple;
+
+      // تحديد class حسب النوع
+      var tc = s.type === 'welcome' ? ' slide-welcome'
+             : s.type === 'stats'   ? ''
+             : ' slide-promo';
+      div.className = 'slide' + tc + (i === 0 ? ' active' : '');
+      div.id        = 'slide-' + i;
+
+      // صورة خلفية (إذا كان النوع image)
+      var imgH = '';
+      if (s.imageId) {
+        var imgObj = _getImg(images, s.imageId);
+        if (imgObj) {
+          imgH = '<img src="' + imgObj.data +
+            '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.75;z-index:0;">';
+        }
+      }
+
+      // طبقة الخلفية الملونة
+      var bgH = '<div class="slide-promo-bg" style="background:' + bg + ';"></div>';
+
+      // المحتوى
+      var content = '';
+
+      if (s.type === 'stats') {
+        var db2 = readDB();
+        var pc  = db2 && db2.products
+                  ? db2.products.filter(function(x){ return x.id !== '_admin_cfg'; }).length
+                  : 0;
+        var cc  = db2 && db2.clients ? db2.clients.length : 0;
+        content =
+          '<div class="slide-stats" style="position:relative;z-index:2;width:100%;height:100%;">' +
+            '<div class="stat-big-card"><div class="sbc-icon">⭐</div><div class="sbc-label">تقييم العملاء</div><div class="sbc-val gold">5 / 5</div><div class="sbc-sub">خدمة ممتازة</div></div>' +
+            '<div class="stat-big-card"><div class="sbc-icon">📦</div><div class="sbc-label">منتجات متاحة</div><div class="sbc-val purple">' + (pc > 0 ? pc + '+' : '---') + '</div><div class="sbc-sub">صنف متجدد</div></div>' +
+            '<div class="stat-big-card"><div class="sbc-icon">🤝</div><div class="sbc-label">زبائننا الكرام</div><div class="sbc-val green">' + (cc > 0 ? cc + '+' : '---') + '</div><div class="sbc-sub">عائلة متنامية</div></div>' +
+          '</div>';
+      } else if (s.type === 'welcome') {
+        content =
+          '<div class="welcome-logo" style="position:relative;z-index:2;">📚</div>' +
+          '<div class="welcome-title" style="position:relative;z-index:2;">' + (s.title || 'أهلاً بكم') + '</div>' +
+          (s.desc ? '<div class="welcome-sub" style="position:relative;z-index:2;">' + s.desc + '</div>' : '');
+      } else {
+        // promo / custom / image
+        content =
+          '<div class="slide-promo-content" style="position:relative;z-index:2;">' +
+            (s.badge ? '<div class="slide-promo-tag">' + s.badge + '</div>' : '') +
+            '<div class="slide-promo-title glow-text">' + (s.title || '') + '</div>' +
+            (s.desc ? '<div class="slide-promo-desc">' + s.desc + '</div>' : '') +
+          '</div>';
+      }
+
+      div.innerHTML = imgH + bgH + content;
+      body.insertBefore(div, dots);
+      dotsH += '<div class="slide-dot' + (i === 0 ? ' active' : '') +
+                '" onclick="goToSlide(' + i + ')"></div>';
+    }
+
+    dots.innerHTML = dotsH;
+  }
+
+  /* ──────────────────────────────────────────────────────
+     FIX 4 — استبدال startAdsSlideshow باستخدام مدة الإدارة
+  ────────────────────────────────────────────────────── */
+  window.startAdsSlideshow = function () {
+    if (typeof stopAdsSlideshow === 'function') stopAdsSlideshow();
+    if (typeof goToSlide === 'function') goToSlide(0);
+    if (typeof state === 'undefined') return;
+    state.adsSlideTimer = setInterval(function () {
+      if (typeof state === 'undefined') return;
+      state.currentSlide = (state.currentSlide + 1) % state.totalSlides;
+      if (typeof goToSlide === 'function') goToSlide(state.currentSlide);
+    }, _adminDur || 6000);
+  };
+
+  /* ──────────────────────────────────────────────────────
+     FIX 5 — تحديث شريط الأخبار
+  ────────────────────────────────────────────────────── */
+  function _updateTicker(msgs) {
+    var inner = document.getElementById('ticker-inner');
+    if (!inner || !msgs || !msgs.length) return;
+    inner.innerHTML = msgs.map(function (t) {
+      return '<span>' + t + '</span><span class="ticker-sep">✦</span>';
+    }).join('');
+  }
+
+  /* ──────────────────────────────────────────────────────
+     دالة تطبيق إعدادات لوحة التحكم
+  ────────────────────────────────────────────────────── */
+  function _applyAdminConfig() {
+    var raw = localStorage.getItem('hashayshi_display_full_config');
+    if (!raw) return;
+    try {
+      var cfg = JSON.parse(raw);
+      if (cfg.ts === _adminTs) return; // لم يتغير
+      _adminTs = cfg.ts;
+
+      if (cfg.ticker && cfg.ticker.length) _updateTicker(cfg.ticker);
+      if (cfg.slideDuration) _adminDur = cfg.slideDuration;
+
+      if (cfg.slides && cfg.slides.length) {
+        var active = cfg.slides.filter(function (sl) { return sl.active !== false; });
+        if (active.length) {
+          _buildSlides(active, cfg.images || [], _adminDur);
+          // إعادة تشغيل الشرائح إذا كنا في وضع الإعلانات
+          if (typeof state !== 'undefined' && state.mode === 'ads') {
+            setTimeout(function () {
+              if (typeof startAdsSlideshow === 'function') startAdsSlideshow();
+            }, 100);
+          }
+        }
+      }
+    } catch (e) {}
+  }
+
+  /* ──────────────────────────────────────────────────────
+     تشغيل الإصلاحات
+  ────────────────────────────────────────────────────── */
+  // نطبق الإعدادات الإدارية قبل الـ timeout الأصلي (1000ms)
+  setTimeout(_applyAdminConfig, 300);
+
+  // polling كل 3 ثواني لالتقاط التغييرات من لوحة التحكم
+  setInterval(_applyAdminConfig, 3000);
+
+})();
+</script>
 </body>
 </html>
