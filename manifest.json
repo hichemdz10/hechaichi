@@ -2,7 +2,7 @@
   "name": "مكتبة حشايشي",
   "short_name": "حشايشي",
   "description": "نظام نقطة البيع — مكتبة حشايشي",
-  "start_url": "./pos.html",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
@@ -31,7 +31,7 @@
       "name": "الكاشيير",
       "short_name": "كاشيير",
       "description": "فتح الكاشيير مباشرة",
-      "url": "./pos.html",
+      "url": "./index.html",
       "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
     },
     {
