@@ -1449,5 +1449,76 @@ window.onload=function(){
   if(autoSync) cloudPull(false, function(){ showPage('dashboard'); });
 };
 </script>
+  
+<script>
+// تسجيل Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('./sw.js')
+      .then(function(reg) {
+        console.log('[PWA] ✅ Service Worker مسجّل:', reg.scope);
+
+        // إذا في تحديث جديد — أبلّغ المستخدم
+        reg.addEventListener('updatefound', function() {
+          var newSW = reg.installing;
+          newSW.addEventListener('statechange', function() {
+            if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+              // يوجد تحديث جديد
+              if (confirm('🔄 يوجد تحديث جديد للتطبيق. هل تريد التحديث الآن؟')) {
+                newSW.postMessage('SKIP_WAITING');
+                window.location.reload();
+              }
+            }
+          });
+        });
+      })
+      .catch(function(err) {
+        console.log('[PWA] ❌ فشل التسجيل:', err);
+      });
+  });
+}
+
+// زر "تثبيت التطبيق" — يظهر تلقائياً عند الدعم
+var deferredPrompt;
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  deferredPrompt = e;
+
+  // أنشئ زر تثبيت في الـ topbar
+  var btn = document.createElement('button');
+  btn.className = 'icon-btn';
+  btn.title = 'تثبيت التطبيق';
+  btn.textContent = '📲';
+  btn.style.cssText = 'animation: pulse2 2s infinite;';
+  btn.onclick = function() {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(r) {
+      if (r.outcome === 'accepted') {
+        btn.remove();
+        if(typeof toast === 'function') toast('تم تثبيت التطبيق! 🎉', 'success');
+      }
+      deferredPrompt = null;
+    });
+  };
+
+  // أضف الزر في الـ topbar
+  var topbarR = document.querySelector('.topbar-r');
+  if (topbarR) topbarR.prepend(btn);
+});
+
+// عند التثبيت الناجح
+window.addEventListener('appinstalled', function() {
+  if(typeof toast === 'function') toast('✅ تم تثبيت مكتبة حشايشي كتطبيق!', 'success', 4000);
+  deferredPrompt = null;
+});
+</script>
+
+<!-- CSS إضافي للزر (اختياري) -->
+<style>
+@keyframes pulse2 {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); box-shadow: 0 0 0 4px rgba(124,58,237,0.2); }
+}
+</style
 </body>
 </html>
