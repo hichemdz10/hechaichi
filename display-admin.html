@@ -3,398 +3,236 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة تحكم شاشة الزبون</title>
+<title>لوحة تحكم شاشة الزبون المتقدمة</title>
 <style>
-/* ═══════════════════════════════════════
-   SECTION 1 — RESET & VARIABLES
-   ═══════════════════════════════════════ */
+/* ═════ التنسيقات الأساسية ═════ */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-:root{
-  --p:#7c3aed;--p2:#6d28d9;--g:#16a34a;--r:#dc2626;
-  --bg:#f0f2f8;--card:#fff;--border:#e5e7eb;
-  --text:#1e1b4b;--sub:#64748b;--muted:#9ca3af;
-}
+:root{--p:#7c3aed;--p2:#6d28d9;--g:#16a34a;--r:#dc2626;--bg:#f0f2f8;--card:#fff;--border:#e5e7eb;--text:#1e1b4b;--sub:#64748b;--muted:#9ca3af;}
 body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text);direction:rtl;min-height:100vh;}
-
-/* ═══════════════════════════════════════
-   SECTION 2 — LAYOUT
-   ═══════════════════════════════════════ */
 .topbar{background:linear-gradient(135deg,#4c1d95,#7c3aed);color:#fff;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 20px rgba(124,58,237,.3);}
 .topbar-brand{display:flex;align-items:center;gap:12px;}
 .topbar-icon{width:44px;height:44px;background:rgba(255,255,255,.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;}
-.topbar-title{font-size:18px;font-weight:900;}
-.topbar-sub{font-size:11px;opacity:.7;margin-top:2px;}
-.live-badge{display:flex;align-items:center;gap:8px;background:rgba(16,185,129,.2);border:1px solid rgba(16,185,129,.4);padding:7px 16px;border-radius:20px;font-size:12px;font-weight:700;}
-.live-dot{width:8px;height:8px;border-radius:50%;background:#10b981;animation:pulse 1.5s infinite;}
-@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(16,185,129,.5)}50%{opacity:.6;box-shadow:0 0 0 6px rgba(16,185,129,0)}}
-
-.container{max-width:1100px;margin:0 auto;padding:24px 16px;display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start;}
+.container{max-width:1200px;margin:0 auto;padding:24px 16px;display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start;}
 @media(max-width:768px){.container{grid-template-columns:1fr;}}
-
-/* ═══════════════════════════════════════
-   SECTION 3 — CARDS & FORMS
-   ═══════════════════════════════════════ */
 .card{background:var(--card);border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.06);margin-bottom:16px;}
-.card-title{font-size:14px;font-weight:800;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.card-title{font-size:14px;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:8px;padding-bottom:12px;border-bottom:1px solid var(--border);}
 .label{display:block;font-size:12px;font-weight:700;color:var(--sub);margin-bottom:6px;}
-.input{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:inherit;outline:none;direction:rtl;background:#fff;color:var(--text);transition:.2s;}
+.input{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none;background:#fff;transition:.2s;}
 .input:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(124,58,237,.1);}
 .fg{margin-bottom:14px;}
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.btn{padding:10px 18px;border-radius:10px;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px;transition:.2s;white-space:nowrap;}
+.btn{padding:10px 18px;border-radius:10px;border:none;font-size:13px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:.2s;}
 .btn:active{transform:scale(.96);}
-.btn-p{background:var(--p);color:#fff;}
-.btn-p:hover{background:var(--p2);}
+.btn-p{background:var(--p);color:#fff;}.btn-p:hover{background:var(--p2);}
 .btn-g{background:var(--g);color:#fff;}
 .btn-r{background:var(--r);color:#fff;}
 .btn-out{background:#fff;color:var(--p);border:1.5px solid var(--p);}
 .btn-gray{background:#f4f6fb;color:var(--text);border:1px solid var(--border);}
-.btn-full{width:100%;justify-content:center;}
-.btn-sm{padding:6px 12px;font-size:12px;}
+.btn-full{width:100%;justify-content:center;}.btn-sm{padding:6px 12px;font-size:12px;}
 
-/* ═══════════════════════════════════════
-   SECTION 4 — SLIDES MANAGER
-   ═══════════════════════════════════════ */
+/* ═════ قائمة الشرائح ═════ */
 .slides-list{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
-.slide-item{background:#f8fafc;border:1.5px solid var(--border);border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;cursor:grab;transition:.2s;position:relative;}
-.slide-item:hover{border-color:#c4b5fd;background:#faf5ff;}
-.slide-item.dragging{opacity:.5;border:2px dashed var(--p);}
-.slide-drag{color:var(--muted);font-size:18px;cursor:grab;flex-shrink:0;}
-.slide-thumb{width:72px;height:48px;border-radius:8px;object-fit:cover;border:1px solid var(--border);flex-shrink:0;background:#e2e8f0;display:flex;align-items:center;justify-content:center;font-size:22px;overflow:hidden;}
+.slide-item{background:#f8fafc;border:1.5px solid var(--border);border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;}
+.slide-thumb{width:60px;height:40px;border-radius:6px;background:#e2e8f0;display:flex;align-items:center;justify-content:center;overflow:hidden;}
 .slide-thumb img{width:100%;height:100%;object-fit:cover;}
 .slide-info{flex:1;min-width:0;}
-.slide-type-badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800;margin-bottom:4px;}
-.sb-welcome{background:#ede9fe;color:var(--p);}
-.sb-promo{background:#fef3c7;color:#d97706;}
-.sb-stats{background:#dcfce7;color:#16a34a;}
-.sb-image{background:#dbeafe;color:#2563eb;}
-.sb-custom{background:#f3f4f6;color:#374151;}
-.slide-title-text{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.slide-dur{font-size:10px;color:var(--muted);margin-top:2px;}
-.slide-actions{display:flex;gap:6px;flex-shrink:0;}
-.ic-btn{width:30px;height:30px;border-radius:8px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:.2s;}
-.ic-edit{background:#f0f9ff;color:#0284c7;}
-.ic-edit:hover{background:#0284c7;color:#fff;}
-.ic-del{background:#fef2f2;color:var(--r);}
-.ic-del:hover{background:var(--r);color:#fff;}
-.ic-toggle{background:#f0fdf4;color:var(--g);}
-.ic-toggle.off{background:#f9fafb;color:var(--muted);}
-.slide-item.disabled{opacity:.5;}
+.slide-actions{display:flex;gap:6px;}
+.ic-btn{width:30px;height:30px;border-radius:8px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 
-/* ═══════════════════════════════════════
-   SECTION 5 — IMAGE UPLOAD ZONE
-   ═══════════════════════════════════════ */
-.upload-zone{border:2px dashed #c4b5fd;border-radius:14px;padding:28px;text-align:center;cursor:pointer;transition:.2s;background:#faf5ff;margin-bottom:12px;}
-.upload-zone:hover,.upload-zone.drag-over{border-color:var(--p);background:#ede9fe;}
-.upload-zone-icon{font-size:40px;margin-bottom:8px;}
-.upload-zone-text{font-size:13px;font-weight:700;color:var(--p);}
-.upload-zone-sub{font-size:11px;color:var(--muted);margin-top:4px;}
-.img-preview-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;}
-.img-thumb-wrap{position:relative;border-radius:10px;overflow:hidden;aspect-ratio:16/9;background:#e2e8f0;}
+/* ═════ المكتبة والتخزين ═════ */
+.upload-zone{border:2px dashed #c4b5fd;border-radius:14px;padding:20px;text-align:center;cursor:pointer;background:#faf5ff;margin-bottom:12px;}
+.img-preview-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.img-thumb-wrap{position:relative;border-radius:8px;overflow:hidden;aspect-ratio:16/9;}
 .img-thumb-wrap img{width:100%;height:100%;object-fit:cover;}
-.img-thumb-del{position:absolute;top:4px;left:4px;width:22px;height:22px;background:rgba(220,38,38,.9);border-radius:50%;border:none;color:#fff;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-.img-size-badge{position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,.6);color:#fff;font-size:9px;padding:2px 5px;border-radius:4px;}
+.img-thumb-del{position:absolute;top:4px;left:4px;background:rgba(220,38,38,.9);color:#fff;border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;}
 
-/* ═══ INLINE SLIDE IMAGE UPLOAD ═══ */
-.slide-img-upload-box{border:2px dashed #c4b5fd;border-radius:12px;padding:16px;text-align:center;cursor:pointer;background:#faf5ff;transition:.2s;margin-bottom:10px;}
-.slide-img-upload-box:hover{border-color:var(--p);background:#ede9fe;}
-.slide-img-upload-box.has-img{border-style:solid;border-color:#a78bfa;background:#f5f3ff;}
-.slide-img-upload-icon{font-size:28px;margin-bottom:4px;}
-.slide-img-upload-text{font-size:12px;font-weight:700;color:var(--p);}
-.slide-img-upload-sub{font-size:10px;color:var(--muted);margin-top:2px;}
-.slide-img-thumb-preview{width:100%;border-radius:8px;max-height:130px;object-fit:cover;display:block;margin-bottom:8px;}
-.slide-img-clear-btn{width:100%;padding:5px;border-radius:8px;border:none;background:#fef2f2;color:var(--r);font-size:11px;font-weight:700;cursor:pointer;}
-
-/* ═══════════════════════════════════════
-   SECTION 6 — TICKER MANAGER
-   ═══════════════════════════════════════ */
-.ticker-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#f8fafc;border-radius:10px;border:1px solid var(--border);margin-bottom:8px;}
-.ticker-text{flex:1;font-size:12px;font-weight:600;color:var(--text);}
-.ticker-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:2px 6px;border-radius:6px;transition:.2s;}
-.ticker-del:hover{color:var(--r);background:#fef2f2;}
-
-/* ═══════════════════════════════════════
-   SECTION 7 — PREVIEW PANEL
-   ═══════════════════════════════════════ */
-.preview-wrap{background:#0a0a1a;border-radius:16px;overflow:hidden;border:3px solid var(--p);box-shadow:0 8px 30px rgba(124,58,237,.3);}
-.preview-header{background:rgba(255,255,255,.05);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.08);}
-.preview-title{color:rgba(255,255,255,.8);font-size:11px;font-weight:700;}
-.preview-screen{height:180px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
-.preview-content{text-align:center;color:#fff;padding:20px;}
-.preview-ticker{background:rgba(124,58,237,.2);padding:6px 14px;font-size:10px;color:rgba(255,255,255,.6);text-align:center;border-top:1px solid rgba(124,58,237,.3);}
-
-/* ═══════════════════════════════════════
-   SECTION 8 — STATUS & TOAST
-   ═══════════════════════════════════════ */
-.status-bar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px;}
-.stat-mini{background:var(--card);border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.04);border:1px solid var(--border);}
-.stat-mini-val{font-size:20px;font-weight:900;color:var(--p);}
-.stat-mini-lbl{font-size:10px;color:var(--muted);font-weight:600;margin-top:2px;}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1e1b4b;color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;z-index:9999;transition:.4s cubic-bezier(.175,.885,.32,1.275);opacity:0;}
-.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
-.toast.ok{background:linear-gradient(135deg,#16a34a,#15803d);}
-.toast.err{background:linear-gradient(135deg,#dc2626,#b91c1c);}
-
-/* MODAL */
-.modal-ov{display:none;position:fixed;inset:0;background:rgba(15,10,40,.6);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(4px);padding:16px;}
+/* ═════ المودال ═════ */
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(15,10,40,.6);z-index:999;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px);}
 .modal-ov.show{display:flex;}
-.modal{background:#fff;border-radius:20px;padding:24px;width:100%;max-width:460px;box-shadow:0 24px 64px rgba(0,0,0,.3);max-height:90vh;overflow-y:auto;}
-.modal-title{font-size:16px;font-weight:800;margin-bottom:18px;}
-.modal-foot{display:flex;gap:10px;margin-top:20px;}
-.color-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
-.color-opt{width:32px;height:32px;border-radius:8px;cursor:pointer;border:3px solid transparent;transition:.2s;}
+.modal{background:#fff;border-radius:20px;padding:24px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;}
+.color-row{display:flex;gap:8px;flex-wrap:wrap;}
+.color-opt{width:30px;height:30px;border-radius:8px;cursor:pointer;border:3px solid transparent;}
 .color-opt.sel{border-color:#1e1b4b;transform:scale(1.1);}
-select.input option{background:#fff;}
 
-/* Storage warning */
-.storage-warn{background:#fef3c7;border:1px solid #fcd34d;border-radius:10px;padding:8px 12px;font-size:11px;color:#92400e;display:none;margin-bottom:10px;}
-.storage-warn.show{display:block;}
+/* ═════ الإشعارات ═════ */
+.toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%, 80px);background:#1e1b4b;color:#fff;padding:12px 20px;border-radius:12px;font-weight:600;transition:.4s;opacity:0;z-index:9999;}
+.toast.show{transform:translate(-50%, 0);opacity:1;}
+.toast.ok{background:#16a34a;}.toast.err{background:#dc2626;}
+
+.range-wrap{display:flex;align-items:center;gap:10px;}
+.range-wrap input{flex:1;}
 </style>
 </head>
 <body>
 
-<!-- ═══ TOPBAR ═══ -->
 <div class="topbar">
   <div class="topbar-brand">
     <div class="topbar-icon">📺</div>
     <div>
-      <div class="topbar-title">لوحة تحكم شاشة الزبون</div>
-      <div class="topbar-sub">مكتبة حشايشي — Customer Display Admin</div>
+      <div style="font-weight:900;font-size:18px">لوحة تحكم الشاشة الذكية</div>
+      <div style="font-size:11px;opacity:.8">مكتبة حشايشي — إصدار V3 (IndexedDB)</div>
     </div>
-  </div>
-  <div class="live-badge">
-    <div class="live-dot"></div>
-    <span id="live-status">متصل بالشاشة</span>
   </div>
 </div>
 
-<!-- ═══ MAIN CONTENT ═══ -->
 <div class="container">
-
-  <!-- ═══ LEFT COLUMN ═══ -->
+  <!-- العمود الأيسر (الإعدادات والشرائح) -->
   <div>
-
-    <!-- STATUS BAR -->
-    <div class="status-bar">
-      <div class="stat-mini"><div class="stat-mini-val" id="st-slides">0</div><div class="stat-mini-lbl">شرائح</div></div>
-      <div class="stat-mini"><div class="stat-mini-val" id="st-imgs">0</div><div class="stat-mini-lbl">صورة</div></div>
-      <div class="stat-mini"><div class="stat-mini-val" id="st-ticker">0</div><div class="stat-mini-lbl">رسالة</div></div>
-    </div>
-
-    <!-- ═══ SECTION A: SLIDES MANAGER ═══ -->
+    <!-- قسم الشرائح -->
     <div class="card">
-      <div class="card-title">🎞️ إدارة الشرائح
-        <button class="btn btn-p btn-sm" onclick="openAddSlide()" style="margin-right:auto">➕ شريحة جديدة</button>
+      <div class="card-title">🎞️ إدارة الشرائح الذكية
+        <button class="btn btn-p btn-sm" onclick="openSlideModal()" style="margin-right:auto">➕ شريحة جديدة</button>
       </div>
       <div class="slides-list" id="slides-list"></div>
-      <div style="display:flex;gap:10px">
-        <button class="btn btn-g btn-full" onclick="saveAndPush()">💾 حفظ وإرسال للشاشة</button>
-        <button class="btn btn-gray" onclick="previewSlide()" title="معاينة">👁️</button>
-      </div>
+      <button class="btn btn-g btn-full" onclick="pushToDisplay()">📡 حفظ وإرسال للشاشة</button>
     </div>
 
-    <!-- ═══ SECTION B: IMAGE LIBRARY ═══ -->
+    <!-- قسم مكتبة الصور (IndexedDB) -->
     <div class="card">
-      <div class="card-title">🖼️ مكتبة الصور الإعلانية
-        <span style="font-size:10px;color:var(--muted);margin-right:auto;font-weight:600" id="storage-info"></span>
+      <div class="card-title">🖼️ مكتبة الصور (غير محدودة)
+        <span style="font-size:10px;color:var(--g);margin-right:auto">✓ IndexedDB</span>
       </div>
-      <div class="storage-warn" id="storage-warn">
-        ⚠️ مساحة التخزين المحلي ممتلئة تقريباً — احذف بعض الصور أو استخدم صوراً أصغر حجماً
+      <div class="upload-zone" onclick="document.getElementById('img-input').click()">
+        <div style="font-size:24px;margin-bottom:8px">📸</div>
+        <div style="font-size:13px;font-weight:700;color:var(--p)">انقر لرفع صور عالية الدقة</div>
       </div>
-      <div class="upload-zone" id="upload-zone"
-           onclick="document.getElementById('img-input').click()"
-           ondragover="onDragOver(event)"
-           ondragleave="onDragLeave(event)"
-           ondrop="onDrop(event)">
-        <div class="upload-zone-icon">📸</div>
-        <div class="upload-zone-text">انقر أو اسحب صوراً هنا</div>
-        <div class="upload-zone-sub">تُضغط تلقائياً إلى 640px — PNG, JPG, GIF</div>
-      </div>
-      <input type="file" id="img-input" accept="image/*" multiple style="display:none" onchange="onImgSelect(event)">
+      <input type="file" id="img-input" accept="image/*" multiple style="display:none" onchange="uploadImages(event)">
       <div class="img-preview-grid" id="img-grid"></div>
     </div>
-
-    <!-- ═══ SECTION C: TICKER ═══ -->
+    
+    <!-- قسم شريط الأخبار -->
     <div class="card">
       <div class="card-title">📢 شريط الأخبار المتحرك</div>
-      <div id="ticker-list"></div>
-      <div style="display:flex;gap:8px;margin-top:8px">
-        <input id="new-ticker" class="input" placeholder="أدخل رسالة جديدة للشريط..." style="flex:1">
-        <button class="btn btn-p" onclick="addTicker()">➕ إضافة</button>
+      <div id="ticker-list" style="margin-bottom:10px;font-size:12px;"></div>
+      <div style="display:flex;gap:8px">
+        <input id="new-ticker" class="input" placeholder="خبر جديد...">
+        <button class="btn btn-p" onclick="addTicker()">➕</button>
       </div>
     </div>
+  </div>
 
-    <!-- ═══ SECTION D: SETTINGS ═══ -->
+  <!-- العمود الأيمن (الإعدادات العامة) -->
+  <div>
     <div class="card">
-      <div class="card-title">⚙️ إعدادات الشاشة</div>
+      <div class="card-title">⚙️ الإعدادات العامة للشاشة</div>
+      
+      <div class="fg">
+        <label class="label">اسم المتجر</label>
+        <input id="cfg-name" class="input" value="مكتبة حشايشي">
+      </div>
+      
       <div class="frow">
         <div class="fg">
-          <label class="label">مدة كل شريحة (ثانية)</label>
-          <input id="set-dur" type="number" class="input" value="6" min="3" max="30">
+          <label class="label">تفعيل الأصوات (الكاشير)</label>
+          <select id="cfg-sounds" class="input">
+            <option value="1">🔊 مفعل (صوت الدفع)</option>
+            <option value="0">🔇 معطل</option>
+          </select>
         </div>
         <div class="fg">
-          <label class="label">وقت الخمول قبل الإعلانات (ثانية)</label>
-          <input id="set-idle" type="number" class="input" value="45" min="10">
+          <label class="label">وضع توفير الطاقة (Eco)</label>
+          <select id="cfg-eco" class="input">
+            <option value="300">بعد 5 دقائق خمول</option>
+            <option value="600">بعد 10 دقائق</option>
+            <option value="0">إيقاف</option>
+          </select>
         </div>
       </div>
-      <div class="frow">
-        <div class="fg">
-          <label class="label">اسم المكتبة في الشاشة</label>
-          <input id="set-shopname" class="input" value="مكتبة حشايشي">
-        </div>
-        <div class="fg">
-          <label class="label">شعار الترحيب</label>
-          <input id="set-welcome" class="input" value="أهلاً بكم">
-        </div>
+
+      <div class="fg">
+        <label class="label">رابط الفاتورة الذكية / التقييم (QR Code)</label>
+        <input id="cfg-qr" class="input" placeholder="https://g.page/r/...">
+      </div>
+
+      <div class="fg">
+        <label class="label">اقتراح ذكي أسفل السلة (Cross-selling)</label>
+        <input id="cfg-cross" class="input" placeholder="مثال: هل نسيت ورق A4؟ متوفر بخصم!">
+      </div>
+
+      <button class="btn btn-g btn-full" onclick="pushToDisplay()">💾 تطبيق الإعدادات</button>
+    </div>
+  </div>
+</div>
+
+<!-- مودال إضافة/تعديل شريحة -->
+<div id="m-slide" class="modal-ov">
+  <div class="modal">
+    <div class="card-title">✏️ إعدادات الشريحة الذكية</div>
+    <input type="hidden" id="sl-id">
+    
+    <div class="frow">
+      <div class="fg">
+        <label class="label">نوع الشريحة</label>
+        <select id="sl-type" class="input">
+          <option value="welcome">🏠 ترحيب</option>
+          <option value="promo">🎉 عرض / مخصص</option>
+          <option value="stats">📊 إحصائيات المتجر</option>
+        </select>
       </div>
       <div class="fg">
-        <label class="label">رسالة تحت الشعار</label>
-        <input id="set-sub" class="input" value="مكتبتكم المفضلة — جودة بلا تنازل">
-      </div>
-      <button class="btn btn-g btn-full" onclick="saveAndPush()">💾 تطبيق الإعدادات</button>
-    </div>
-
-  </div><!-- end left column -->
-
-  <!-- ═══ RIGHT COLUMN ═══ -->
-  <div>
-
-    <!-- PREVIEW -->
-    <div class="card" style="padding:0;overflow:hidden;margin-bottom:16px">
-      <div style="padding:14px 16px;font-size:13px;font-weight:800;border-bottom:1px solid var(--border)">👁️ معاينة مباشرة</div>
-      <div class="preview-wrap" style="border-radius:0;border:none;">
-        <div class="preview-header">
-          <span class="preview-title" id="prev-shopname">📚 مكتبة حشايشي</span>
-          <span style="color:rgba(255,255,255,.4);font-size:10px" id="prev-clock">--:--</span>
+        <label class="label">لون الخلفية الأساسي</label>
+        <div class="color-row" id="color-row">
+          <div class="color-opt sel" data-c="purple" style="background:#7c3aed" onclick="selColor(this)"></div>
+          <div class="color-opt" data-c="blue" style="background:#3b82f6" onclick="selColor(this)"></div>
+          <div class="color-opt" data-c="green" style="background:#10b981" onclick="selColor(this)"></div>
+          <div class="color-opt" data-c="dark" style="background:#1e293b" onclick="selColor(this)"></div>
         </div>
-        <div class="preview-screen" id="preview-screen">
-          <div class="preview-content" id="preview-content">
-            <div style="font-size:36px;margin-bottom:8px">📚</div>
-            <div style="font-size:18px;font-weight:900" id="prev-welcome">أهلاً بكم</div>
-            <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:6px" id="prev-sub">مكتبتكم المفضلة</div>
-          </div>
-        </div>
-        <div class="preview-ticker" id="preview-ticker">📢 أخبارنا ✦ أهلاً وسهلاً بكم في مكتبة حشايشي</div>
       </div>
-    </div>
-
-    <!-- QUICK ACTIONS -->
-    <div class="card">
-      <div class="card-title">⚡ إجراءات سريعة</div>
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <button class="btn btn-p btn-full" onclick="pushNowToDisplay()">📡 إرسال فوري للشاشة</button>
-        <button class="btn btn-out btn-full" onclick="clearDisplayCart()">🧹 مسح السلة من الشاشة</button>
-        <button class="btn btn-gray btn-full" onclick="openDisplayInNewTab()">🔗 فتح شاشة الزبون</button>
-        <button class="btn btn-gray btn-full" onclick="exportConfig()">💾 تصدير الإعدادات</button>
-        <button class="btn btn-gray btn-full" onclick="document.getElementById('import-cfg').click()">📥 استيراد إعدادات</button>
-        <input type="file" id="import-cfg" accept=".json" style="display:none" onchange="importConfig(event)">
-      </div>
-    </div>
-
-    <!-- DISPLAY STATUS -->
-    <div class="card">
-      <div class="card-title">📊 حالة الشاشة الآن</div>
-      <div id="display-status" style="font-size:12px;line-height:2;color:var(--sub)">
-        جارٍ التحميل...
-      </div>
-    </div>
-
-  </div><!-- end right column -->
-</div><!-- end container -->
-
-<!-- ═══ ADD/EDIT SLIDE MODAL ═══ -->
-<div id="m-slide" class="modal-ov" onclick="if(event.target===this)this.classList.remove('show')">
-  <div class="modal">
-    <div class="modal-title" id="slide-modal-title">➕ شريحة جديدة</div>
-    <input type="hidden" id="slide-edit-idx" value="-1">
-
-    <div class="fg">
-      <label class="label">نوع الشريحة</label>
-      <select id="slide-type" class="input" onchange="onSlideTypeChange()">
-        <option value="welcome">🏠 ترحيب</option>
-        <option value="promo">🎉 عرض ترويجي</option>
-        <option value="stats">📊 إحصائيات</option>
-        <option value="image">🖼️ صورة إعلانية</option>
-        <option value="custom">✏️ مخصص</option>
-      </select>
     </div>
 
     <div class="fg">
       <label class="label">العنوان الرئيسي</label>
-      <input id="slide-title" class="input" placeholder="مثال: عروض الموسم">
+      <input id="sl-title" class="input" placeholder="أدخل العنوان...">
+    </div>
+    
+    <div class="fg">
+      <label class="label">النص الفرعي / الوصف</label>
+      <input id="sl-desc" class="input" placeholder="أدخل الوصف...">
     </div>
 
-    <div class="fg" id="slide-desc-wrap">
-      <label class="label">النص التفصيلي</label>
-      <textarea id="slide-desc" class="input" rows="2" placeholder="وصف قصير..."></textarea>
-    </div>
-
-    <div class="fg" id="slide-badge-wrap">
-      <label class="label">نص الشارة (اختياري)</label>
-      <input id="slide-badge" class="input" placeholder="مثال: 🖨️ خدمات الطباعة المتكاملة">
-    </div>
-
-    <!-- ══ IMAGE SECTION FOR IMAGE SLIDES ══ -->
-    <div id="slide-img-wrap" style="display:none">
-
-      <!-- Tab switcher: upload new OR choose from library -->
-      <div style="display:flex;gap:6px;margin-bottom:10px">
-        <button id="tab-upload" class="btn btn-p btn-sm" style="flex:1;justify-content:center" onclick="switchImgTab('upload')">📤 رفع صورة جديدة</button>
-        <button id="tab-library" class="btn btn-gray btn-sm" style="flex:1;justify-content:center" onclick="switchImgTab('library')">🗂️ من المكتبة</button>
-      </div>
-
-      <!-- UPLOAD TAB -->
-      <div id="img-tab-upload">
-        <div id="slide-img-upload-box" class="slide-img-upload-box" onclick="document.getElementById('slide-img-file').click()">
-          <div id="slide-img-upload-inner">
-            <div class="slide-img-upload-icon">🖼️</div>
-            <div class="slide-img-upload-text">انقر لاختيار صورة</div>
-            <div class="slide-img-upload-sub">تُضغط تلقائياً — PNG, JPG</div>
+    <!-- ميزات متقدمة للخطوط والخلفيات -->
+    <div class="card" style="background:#f8fafc;padding:12px;margin-bottom:14px;box-shadow:none;border:1px solid var(--border)">
+      <div style="font-size:12px;font-weight:700;margin-bottom:10px;color:var(--p)">✨ تأثيرات سينمائية</div>
+      
+      <div class="frow">
+        <div class="fg">
+          <label class="label">حجم الخط (Title)</label>
+          <div class="range-wrap">
+            <input type="range" id="sl-size" min="30" max="100" value="64" oninput="document.getElementById('sz-val').innerText=this.value+'px'">
+            <span id="sz-val" style="font-size:11px;font-weight:bold">64px</span>
           </div>
         </div>
-        <input type="file" id="slide-img-file" accept="image/*" style="display:none" onchange="onSlideImgUpload(event)">
-      </div>
-
-      <!-- LIBRARY TAB -->
-      <div id="img-tab-library" style="display:none">
         <div class="fg">
-          <label class="label">اختر من المكتبة</label>
-          <select id="slide-img-sel" class="input" onchange="onImgSelChange()"></select>
-          <div id="slide-img-preview" style="margin-top:8px;border-radius:10px;overflow:hidden;max-height:120px;"></div>
+          <label class="label">تأثير النص (Effect)</label>
+          <select id="sl-fx" class="input">
+            <option value="glow">إشعاع نيون (Glow)</option>
+            <option value="shadow">ظل عميق (Drop Shadow)</option>
+            <option value="3d">تأثير 3D</option>
+            <option value="none">بدون تأثير</option>
+          </select>
         </div>
       </div>
 
-    </div><!-- end slide-img-wrap -->
-
-    <div class="fg">
-      <label class="label">لون الخلفية</label>
-      <div class="color-row" id="color-row">
-        <div class="color-opt sel" data-c="purple" style="background:linear-gradient(135deg,#4c1d95,#7c3aed)" onclick="selColor(this)"></div>
-        <div class="color-opt" data-c="blue" style="background:linear-gradient(135deg,#1e40af,#3b82f6)" onclick="selColor(this)"></div>
-        <div class="color-opt" data-c="green" style="background:linear-gradient(135deg,#14532d,#16a34a)" onclick="selColor(this)"></div>
-        <div class="color-opt" data-c="orange" style="background:linear-gradient(135deg,#92400e,#f59e0b)" onclick="selColor(this)"></div>
-        <div class="color-opt" data-c="pink" style="background:linear-gradient(135deg,#9d174d,#ec4899)" onclick="selColor(this)"></div>
-        <div class="color-opt" data-c="teal" style="background:linear-gradient(135deg,#134e4a,#14b8a6)" onclick="selColor(this)"></div>
-        <div class="color-opt" data-c="dark" style="background:linear-gradient(135deg,#0f172a,#1e293b)" onclick="selColor(this)"></div>
+      <div class="fg">
+        <label class="label">صورة الخلفية (Ken Burns Effect)</label>
+        <select id="sl-bg" class="input"><option value="">بدون صورة خلفية (لون فقط)</option></select>
       </div>
     </div>
 
     <div class="frow">
       <div class="fg">
-        <label class="label">مدة العرض (ثانية)</label>
-        <input id="slide-dur" type="number" class="input" value="6" min="3" max="60">
+        <label class="label">مدة العرض (ثواني)</label>
+        <input type="number" id="sl-dur" class="input" value="6">
       </div>
-      <div class="fg" style="display:flex;align-items:flex-end">
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding-bottom:4px">
-          <input type="checkbox" id="slide-active" checked style="width:18px;height:18px;accent-color:var(--p)">
-          <span style="font-size:13px;font-weight:700">مفعّلة</span>
-        </label>
+      <div class="fg">
+        <label class="label">مجدولة (لا تعرض قبل)</label>
+        <input type="time" id="sl-time" class="input" title="اتركه فارغاً للعرض الدائم">
       </div>
     </div>
 
-    <div class="modal-foot">
-      <button class="btn btn-g" style="flex:1" onclick="saveSlide()">💾 حفظ الشريحة</button>
-      <button class="btn btn-gray" onclick="closeModal()">إلغاء</button>
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button class="btn btn-p" style="flex:1" onclick="saveSlide()">💾 حفظ</button>
+      <button class="btn btn-gray" onclick="document.getElementById('m-slide').classList.remove('show')">إلغاء</button>
     </div>
   </div>
 </div>
@@ -402,641 +240,231 @@ select.input option{background:#fff;}
 <div class="toast" id="toast"></div>
 
 <script>
-// ═══════════════════════════════════════════
-// SECTION 1 — STATE & CONFIG
-// ═══════════════════════════════════════════
-var CFG_KEY  = 'hashayshi_display_config';
-var IMGS_KEY = 'hashayshi_display_images';
+/* ═══════════════════════════════════════════
+   1. IndexedDB Wrapper (لتخزين الصور بلا حدود)
+   ═══════════════════════════════════════════ */
+const DB_NAME = 'HashayshiDisplayDB';
+const STORE_NAME = 'images';
+let db;
 
-var config = {
-  shopName: 'مكتبة حشايشي',
-  welcomeText: 'أهلاً بكم',
-  welcomeSub: 'مكتبتكم المفضلة — جودة بلا تنازل',
-  slideDuration: 6,
-  idleTimeout: 45,
+function initDB(callback) {
+  const req = indexedDB.open(DB_NAME, 1);
+  req.onupgradeneeded = e => e.target.result.createObjectStore(STORE_NAME, { keyPath: 'id' });
+  req.onsuccess = e => { db = e.target.result; callback(); };
+}
+
+function saveImageToDB(imgObj, cb) {
+  const tx = db.transaction(STORE_NAME, 'readwrite');
+  tx.objectStore(STORE_NAME).put(imgObj);
+  tx.oncomplete = cb;
+}
+
+function getImagesFromDB(cb) {
+  const tx = db.transaction(STORE_NAME, 'readonly');
+  const req = tx.objectStore(STORE_NAME).getAll();
+  req.onsuccess = () => cb(req.result);
+}
+
+function deleteImageFromDB(id, cb) {
+  const tx = db.transaction(STORE_NAME, 'readwrite');
+  tx.objectStore(STORE_NAME).delete(id);
+  tx.oncomplete = cb;
+}
+
+/* ═══════════════════════════════════════════
+   2. إدارة الإعدادات والشرائح (Config)
+   ═══════════════════════════════════════════ */
+let config = {
+  shopName: 'مكتبة حشايشي', sounds: 1, ecoMode: 300, qrLink: '', crossSell: '',
+  ticker: ['أهلاً وسهلاً بكم في مكتبة حشايشي', 'تشكيلة واسعة من الأدوات المدرسية'],
   slides: [
-    {id:'s1',type:'welcome',title:'أهلاً بكم',desc:'مكتبتكم المفضلة — جودة بلا تنازل',badge:'',color:'purple',dur:8,active:true,imageData:null},
-    {id:'s2',type:'promo',title:'خدمة الطباعة',desc:'طباعة ملونة وأبيض وأسود، تصوير وتجليد',badge:'🖨️ خدمات الطباعة المتكاملة',color:'blue',dur:6,active:true,imageData:null},
-    {id:'s3',type:'stats',title:'إحصائياتنا',desc:'أرقام تتحدث عن نفسها',badge:'',color:'green',dur:6,active:true,imageData:null},
-    {id:'s4',type:'custom',title:'خدمات الاتصالات',desc:'فليكسي موبيليس، جازي، أوريدو — بطاقات الإنترنت',badge:'📱 شحن جميع الشبكات',color:'teal',dur:6,active:true,imageData:null}
-  ],
-  ticker: [
-    'أهلاً وسهلاً بكم في مكتبة حشايشي',
-    'أوسع تشكيلة من اللوازم المدرسية والمكتبية',
-    'خدمات الطباعة متاحة بأحسن الأسعار',
-    'شحن رصيد جميع الشبكات',
-    'نشكركم على ثقتكم بنا دائماً'
+    {id:'s1', type:'welcome', title:'أهلاً بكم', desc:'مكتبتكم المفضلة', color:'purple', dur:6, size:64, fx:'glow'}
   ]
 };
+let selectedColor = 'purple';
 
-var images = [];          // مكتبة الصور: [{id, name, data (base64 مضغوط)}]
-var selectedColor = 'purple';
-var dragIdx = -1;
-var pendingSlideImageData = null;  // ← صورة الشريحة المرفوعة مؤقتاً
-
-var COLORS = {
-  purple: 'radial-gradient(ellipse at center,rgba(124,58,237,0.15) 0%,transparent 70%)',
-  blue:   'radial-gradient(ellipse at center,rgba(59,130,246,0.15) 0%,transparent 70%)',
-  green:  'radial-gradient(ellipse at center,rgba(16,185,129,0.15) 0%,transparent 70%)',
-  orange: 'radial-gradient(ellipse at center,rgba(245,158,11,0.15) 0%,transparent 70%)',
-  pink:   'radial-gradient(ellipse at center,rgba(236,72,153,0.15) 0%,transparent 70%)',
-  teal:   'radial-gradient(ellipse at center,rgba(20,184,166,0.15) 0%,transparent 70%)',
-  dark:   'radial-gradient(ellipse at center,rgba(30,41,59,0.8) 0%,transparent 70%)'
-};
-
-// ═══════════════════════════════════════════
-// SECTION 2 — IMAGE COMPRESSION (الجديد ✨)
-// ═══════════════════════════════════════════
-/**
- * يضغط الصورة باستخدام Canvas إلى أقصى عرض 640px وجودة JPEG 75%
- * هذا يقلل حجم الصورة من عدة MB إلى أقل من 100KB في الغالب
- */
-function compressImage(file, maxWidth, quality, callback) {
-  maxWidth = maxWidth || 640;
-  quality  = quality  || 0.75;
-  var reader = new FileReader();
-  reader.onload = function(ev) {
-    var img = new Image();
-    img.onload = function() {
-      var w = img.width, h = img.height;
-      if (w > maxWidth) { h = Math.round(h * maxWidth / w); w = maxWidth; }
-      var canvas = document.createElement('canvas');
-      canvas.width = w; canvas.height = h;
-      var ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, w, h);
-      var compressed = canvas.toDataURL('image/jpeg', quality);
-      var sizeKB = Math.round((compressed.length * 3/4) / 1024);
-      callback(compressed, sizeKB);
-    };
-    img.onerror = function(){ callback(null, 0); };
-    img.src = ev.target.result;
-  };
-  reader.onerror = function(){ callback(null, 0); };
-  reader.readAsDataURL(file);
-}
-
-// ═══════════════════════════════════════════
-// SECTION 3 — LOAD & SAVE
-// ═══════════════════════════════════════════
-function loadConfig(){
-  try {
-    var raw = localStorage.getItem(CFG_KEY);
-    if(raw) Object.assign(config, JSON.parse(raw));
-  } catch(e) {}
-  try {
-    var imgs = localStorage.getItem(IMGS_KEY);
-    if(imgs) images = JSON.parse(imgs);
-  } catch(e) {}
-}
-
-function saveConfig(){
-  try {
-    localStorage.setItem(CFG_KEY, JSON.stringify(config));
-    localStorage.setItem(IMGS_KEY, JSON.stringify(images));
-    updateStorageInfo();
-  } catch(e) {
-    if(e.name === 'QuotaExceededError') {
-      toast('⚠️ مساحة التخزين ممتلئة! احذف بعض الصور', 'err', 4000);
-      document.getElementById('storage-warn').classList.add('show');
-    }
-  }
-}
-
-function updateStorageInfo(){
-  try {
-    var total = 0;
-    for(var k in localStorage){ total += (localStorage.getItem(k)||'').length; }
-    var kb = Math.round(total / 1024);
-    document.getElementById('storage-info').textContent = 'مُستخدم: ~' + kb + ' KB / 5120 KB';
-    document.getElementById('storage-warn').classList.toggle('show', kb > 4500);
-  } catch(e){}
-}
-
-// إرسال الإعدادات الكاملة لشاشة العرض
-// ⭐ الإصلاح الرئيسي: imageData مضمّنة مباشرة داخل كل شريحة
-function pushNowToDisplay(){
-  var slidesWithImages = config.slides
-    .filter(function(s){ return s.active; })
-    .map(function(s){
-      var slide = JSON.parse(JSON.stringify(s)); // نسخة
-      // إذا الشريحة لها imageData مضمّنة — استخدمها مباشرة
-      // إذا لها imageId من المكتبة — ابحث وأضف imageData
-      if(!slide.imageData && slide.imageId) {
-        var libImg = getImageById(slide.imageId);
-        if(libImg) slide.imageData = libImg.data;
-      }
-      return slide;
-    });
-
-  var payload = {
-    shopName:      config.shopName,
-    welcomeText:   config.welcomeText,
-    welcomeSub:    config.welcomeSub,
-    slideDuration: config.slideDuration * 1000,
-    idleTimeout:   config.idleTimeout  * 1000,
-    slides:        slidesWithImages,
-    ticker:        config.ticker,
-    ts:            Date.now()
-  };
-
-  try {
-    localStorage.setItem('hashayshi_display_full_config', JSON.stringify(payload));
-    toast('تم الإرسال للشاشة ✅', 'ok');
-    updateStatus();
-  } catch(e) {
-    if(e.name === 'QuotaExceededError') {
-      toast('⚠️ الصور كبيرة جداً! قلّل عدد الشرائح ذات الصور', 'err', 4000);
-    }
-  }
-}
-
-function saveAndPush(){
-  config.shopName      = document.getElementById('set-shopname').value || 'مكتبة حشايشي';
-  config.welcomeText   = document.getElementById('set-welcome').value  || 'أهلاً بكم';
-  config.welcomeSub    = document.getElementById('set-sub').value      || '';
-  config.slideDuration = parseInt(document.getElementById('set-dur').value)  || 6;
-  config.idleTimeout   = parseInt(document.getElementById('set-idle').value) || 45;
-  saveConfig();
-  pushNowToDisplay();
-  updatePreview();
-}
-
-function clearDisplayCart(){
-  localStorage.setItem('hashayshi_display_cart', JSON.stringify({active:false,items:[],total:0}));
-  toast('تم مسح السلة من الشاشة ✅', 'ok');
-}
-
-function openDisplayInNewTab(){
-  toast('افتح ملف display.html في تاب جديد بنفس المتصفح 💡', 'ok', 3000);
-}
-
-function exportConfig(){
-  var data = {config: config, images: images};
-  var blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'display_config.json';
-  a.click();
-  toast('تم التصدير ✅', 'ok');
-}
-
-function importConfig(e){
-  var file = e.target.files[0];
-  if(!file) return;
-  var r = new FileReader();
-  r.onload = function(ev){
-    try{
-      var d = JSON.parse(ev.target.result);
-      if(d.config) Object.assign(config, d.config);
-      if(d.images) images = d.images;
-      saveConfig();
-      renderAll();
-      toast('تم الاستيراد ✅', 'ok');
-    } catch(e){ toast('ملف غير صالح ❌','err'); }
-  };
-  r.readAsText(file);
-  e.target.value = '';
-}
-
-// ═══════════════════════════════════════════
-// SECTION 4 — SLIDES RENDER & MANAGE
-// ═══════════════════════════════════════════
-var TYPE_LABELS  = {welcome:'ترحيب',promo:'عرض',stats:'إحصائيات',image:'صورة',custom:'مخصص'};
-var TYPE_CLASSES = {welcome:'sb-welcome',promo:'sb-promo',stats:'sb-stats',image:'sb-image',custom:'sb-custom'};
-var TYPE_ICONS   = {welcome:'🏠',promo:'🎉',stats:'📊',image:'🖼️',custom:'✏️'};
-
-function renderSlides(){
-  var el = document.getElementById('slides-list');
-  if(!config.slides.length){
-    el.innerHTML='<div style="text-align:center;color:var(--muted);padding:20px;font-size:13px">لا توجد شرائح — أضف شريحة جديدة</div>';
-    return;
-  }
-  el.innerHTML = config.slides.map(function(s,i){
-    // ⭐ عرض صورة مصغّرة: imageData مضمّنة أولاً، ثم المكتبة
-    var imgData = s.imageData || (s.imageId ? (getImageById(s.imageId)||{}).data : null);
-    var thumbHtml = (s.type==='image' && imgData)
-      ? '<div class="slide-thumb"><img src="'+imgData+'" alt=""></div>'
-      : '<div class="slide-thumb" style="font-size:24px">'+TYPE_ICONS[s.type]+'</div>';
-
-    return '<div class="slide-item'+(s.active?'':' disabled')+'" draggable="true" data-idx="'+i+'"'+
-      ' ondragstart="dragStart(event,'+i+')" ondragover="dragOver(event,'+i+')" ondrop="dropSlide(event,'+i+')">'+
-      '<span class="slide-drag">⠿</span>'+
-      thumbHtml+
-      '<div class="slide-info">'+
-        '<span class="slide-type-badge '+TYPE_CLASSES[s.type]+'">'+TYPE_LABELS[s.type]+'</span>'+
-        '<div class="slide-title-text">'+s.title+'</div>'+
-        '<div class="slide-dur">⏱️ '+s.dur+' ث'+(imgData?' 🖼️':'')+'</div>'+
-      '</div>'+
-      '<div class="slide-actions">'+
-        '<button class="ic-btn ic-toggle'+(s.active?'':' off')+'" onclick="toggleSlide('+i+')" title="تفعيل/تعطيل">'+(s.active?'✅':'⭕')+'</button>'+
-        '<button class="ic-btn ic-edit" onclick="openEditSlide('+i+')" title="تعديل">✏️</button>'+
-        '<button class="ic-btn ic-del" onclick="delSlide('+i+')" title="حذف">🗑️</button>'+
-      '</div>'+
-    '</div>';
-  }).join('');
-  document.getElementById('st-slides').textContent = config.slides.length;
-}
-
-function toggleSlide(idx){
-  config.slides[idx].active = !config.slides[idx].active;
-  saveConfig(); renderSlides();
-}
-
-function delSlide(idx){
-  if(!confirm('حذف هذه الشريحة؟')) return;
-  config.slides.splice(idx,1);
-  saveConfig(); renderSlides();
-  toast('تم الحذف ✅','ok');
-}
-
-function dragStart(e,idx){ dragIdx=idx; e.dataTransfer.effectAllowed='move'; }
-function dragOver(e,idx){ e.preventDefault(); e.dataTransfer.dropEffect='move'; }
-function dropSlide(e,idx){
-  e.preventDefault();
-  if(dragIdx<0||dragIdx===idx) return;
-  var moved = config.slides.splice(dragIdx,1)[0];
-  config.slides.splice(idx,0,moved);
-  dragIdx=-1; saveConfig(); renderSlides();
-}
-
-// ═══════════════════════════════════════════
-// SECTION 5 — SLIDE MODAL
-// ═══════════════════════════════════════════
-function openAddSlide(){
-  document.getElementById('slide-modal-title').textContent = '➕ شريحة جديدة';
-  document.getElementById('slide-edit-idx').value = '-1';
-  document.getElementById('slide-type').value  = 'welcome';
-  document.getElementById('slide-title').value = '';
-  document.getElementById('slide-desc').value  = '';
-  document.getElementById('slide-badge').value = '';
-  document.getElementById('slide-dur').value   = '6';
-  document.getElementById('slide-active').checked = true;
-  selectedColor = 'purple';
-  pendingSlideImageData = null;
-  document.querySelectorAll('.color-opt').forEach(function(el){el.classList.remove('sel');});
-  document.querySelector('[data-c="purple"]').classList.add('sel');
-  onSlideTypeChange();
-  document.getElementById('m-slide').classList.add('show');
-}
-
-function openEditSlide(idx){
-  var s = config.slides[idx];
-  document.getElementById('slide-modal-title').textContent = '✏️ تعديل الشريحة';
-  document.getElementById('slide-edit-idx').value = idx;
-  document.getElementById('slide-type').value  = s.type;
-  document.getElementById('slide-title').value = s.title;
-  document.getElementById('slide-desc').value  = s.desc  || '';
-  document.getElementById('slide-badge').value = s.badge || '';
-  document.getElementById('slide-dur').value   = s.dur   || 6;
-  document.getElementById('slide-active').checked = s.active !== false;
-  selectedColor = s.color || 'purple';
-  document.querySelectorAll('.color-opt').forEach(function(el){
-    el.classList.toggle('sel', el.getAttribute('data-c') === selectedColor);
-  });
-  // Load existing image
-  pendingSlideImageData = s.imageData || null;
-  onSlideTypeChange();
-  // If has imageId from library, select it
-  if(s.imageId && !s.imageData){
-    switchImgTab('library');
-    document.getElementById('slide-img-sel').value = s.imageId;
-    onImgSelChange();
-  } else if(s.imageData){
-    switchImgTab('upload');
-    showSlideImgPreview(s.imageData);
-  }
-  document.getElementById('m-slide').classList.add('show');
-}
-
-function saveSlide(){
-  var idx  = parseInt(document.getElementById('slide-edit-idx').value);
-  var type = document.getElementById('slide-type').value;
-
-  // ⭐ حفظ imageData: من الرفع المباشر أولاً، ثم من المكتبة
-  var imgData = null;
-  var imgId   = null;
-  if(type === 'image'){
-    var activeTab = document.getElementById('img-tab-upload').style.display !== 'none' ? 'upload' : 'library';
-    if(activeTab === 'upload'){
-      imgData = pendingSlideImageData || null;
-    } else {
-      imgId   = document.getElementById('slide-img-sel').value || null;
-      var libImg = imgId ? getImageById(imgId) : null;
-      if(libImg) imgData = libImg.data;
-    }
-  }
-
-  var slide = {
-    id:        idx >= 0 ? config.slides[idx].id : 's' + Date.now(),
-    type:      type,
-    title:     document.getElementById('slide-title').value  || 'شريحة جديدة',
-    desc:      document.getElementById('slide-desc').value,
-    badge:     document.getElementById('slide-badge').value,
-    color:     selectedColor,
-    dur:       parseInt(document.getElementById('slide-dur').value) || 6,
-    active:    document.getElementById('slide-active').checked,
-    imageData: imgData,   // ⭐ مضمّنة مباشرة
-    imageId:   imgId      // مرجع المكتبة (احتياطي)
-  };
-
-  if(idx >= 0) config.slides[idx] = slide;
-  else         config.slides.push(slide);
-
-  pendingSlideImageData = null;
-  saveConfig(); renderSlides(); closeModal();
-  toast((idx >= 0 ? 'تم التعديل' : 'تمت الإضافة') + ' ✅', 'ok');
-}
-
-function closeModal(){
-  document.getElementById('m-slide').classList.remove('show');
-  pendingSlideImageData = null;
-}
-
-function onSlideTypeChange(){
-  var t = document.getElementById('slide-type').value;
-  var isImg = t === 'image';
-  document.getElementById('slide-img-wrap').style.display   = isImg ? 'block' : 'none';
-  document.getElementById('slide-badge-wrap').style.display = (t==='promo'||t==='custom') ? 'block' : 'none';
-  if(isImg){
-    refreshLibrarySel();
-    // Default to upload tab
-    if(!pendingSlideImageData) switchImgTab('upload');
-  }
-}
-
-// ── Image Tabs ──
-function switchImgTab(tab){
-  var isUpload = tab === 'upload';
-  document.getElementById('img-tab-upload').style.display  = isUpload ? 'block' : 'none';
-  document.getElementById('img-tab-library').style.display = isUpload ? 'none'  : 'block';
-  document.getElementById('tab-upload').className  = 'btn btn-sm ' + (isUpload ? 'btn-p'    : 'btn-gray') + ' ';
-  document.getElementById('tab-library').className = 'btn btn-sm ' + (isUpload ? 'btn-gray' : 'btn-p')    + ' ';
-  document.getElementById('tab-upload').style.flex  = '1';
-  document.getElementById('tab-library').style.flex = '1';
-  document.getElementById('tab-upload').style.justifyContent  = 'center';
-  document.getElementById('tab-library').style.justifyContent = 'center';
-}
-
-// ── Direct slide image upload ──
-function onSlideImgUpload(e){
-  var file = e.target.files[0];
-  if(!file) return;
-  if(!file.type.startsWith('image/')){ toast('اختر صورة صالحة ❌','err'); return; }
-  e.target.value = '';
-  compressImage(file, 800, 0.80, function(data, sizeKB){
-    if(!data){ toast('فشل قراءة الصورة ❌','err'); return; }
-    pendingSlideImageData = data;
-    showSlideImgPreview(data, sizeKB);
-    toast('تم تحميل الصورة ('+sizeKB+' KB) ✅','ok');
-  });
-}
-
-function showSlideImgPreview(data, sizeKB){
-  var box = document.getElementById('slide-img-upload-box');
-  box.classList.add('has-img');
-  box.innerHTML =
-    '<img class="slide-img-thumb-preview" src="'+data+'" alt="معاينة">' +
-    (sizeKB ? '<div style="font-size:10px;color:var(--muted);margin-bottom:6px">📦 '+sizeKB+' KB</div>' : '') +
-    '<button class="slide-img-clear-btn" onclick="clearSlideImg(event)">🗑️ إزالة الصورة</button>';
-}
-
-function clearSlideImg(e){
-  e.stopPropagation();
-  pendingSlideImageData = null;
-  var box = document.getElementById('slide-img-upload-box');
-  box.classList.remove('has-img');
-  box.innerHTML =
-    '<div id="slide-img-upload-inner">'+
-      '<div class="slide-img-upload-icon">🖼️</div>'+
-      '<div class="slide-img-upload-text">انقر لاختيار صورة</div>'+
-      '<div class="slide-img-upload-sub">تُضغط تلقائياً — PNG, JPG</div>'+
-    '</div>';
-  box.onclick = function(){ document.getElementById('slide-img-file').click(); };
-}
-
-// ── Library selector ──
-function refreshLibrarySel(){
-  var sel = document.getElementById('slide-img-sel');
-  sel.innerHTML = images.length
-    ? images.map(function(img){ return '<option value="'+img.id+'">'+img.name+'</option>'; }).join('')
-    : '<option value="">لا توجد صور في المكتبة — ارفع صورة أولاً</option>';
-  onImgSelChange();
-}
-
-function onImgSelChange(){
-  var sel = document.getElementById('slide-img-sel');
-  var id  = sel.value;
-  var prev = document.getElementById('slide-img-preview');
-  var img  = getImageById(id);
-  prev.innerHTML = img
-    ? '<img src="'+img.data+'" style="width:100%;border-radius:8px;max-height:120px;object-fit:cover">'
-    : '';
-}
-
-function selColor(el){
-  document.querySelectorAll('.color-opt').forEach(function(e){e.classList.remove('sel');});
-  el.classList.add('sel');
-  selectedColor = el.getAttribute('data-c');
-}
-
-// ═══════════════════════════════════════════
-// SECTION 6 — IMAGE LIBRARY MANAGER
-// ═══════════════════════════════════════════
-function onImgSelect(e){ processFiles(Array.from(e.target.files)); e.target.value=''; }
-
-function onDragOver(e){
-  e.preventDefault();
-  document.getElementById('upload-zone').classList.add('drag-over');
-}
-function onDragLeave(e){
-  document.getElementById('upload-zone').classList.remove('drag-over');
-}
-function onDrop(e){
-  e.preventDefault();
-  document.getElementById('upload-zone').classList.remove('drag-over');
-  processFiles(Array.from(e.dataTransfer.files));
-}
-
-function processFiles(files){
-  var toLoad = files.filter(function(f){ return f.type.startsWith('image/'); });
-  if(!toLoad.length){ toast('اختر صور صالحة فقط ❌','err'); return; }
-  var done = 0;
-  toLoad.forEach(function(file){
-    // ⭐ ضغط الصورة قبل الحفظ
-    compressImage(file, 640, 0.75, function(data, sizeKB){
-      if(!data){ toast('فشل قراءة الصورة: '+file.name,'err'); return; }
-      images.push({
-        id:   'img' + Date.now() + Math.random().toString(36).slice(2,5),
-        name: file.name,
-        data: data,
-        sizeKB: sizeKB
-      });
-      done++;
-      if(done === toLoad.length){
-        saveConfig();
-        renderImages();
-        toast('تم رفع '+done+' صورة ✅ (مضغوطة)', 'ok');
-      }
-    });
-  });
-}
-
-function renderImages(){
-  var grid = document.getElementById('img-grid');
-  grid.innerHTML = images.map(function(img,i){
-    return '<div class="img-thumb-wrap">'+
-      '<img src="'+img.data+'" alt="'+img.name+'" loading="lazy">'+
-      '<button class="img-thumb-del" onclick="delImage('+i+')" title="حذف">✕</button>'+
-      (img.sizeKB ? '<div class="img-size-badge">'+img.sizeKB+'KB</div>' : '')+
-    '</div>';
-  }).join('');
-  document.getElementById('st-imgs').textContent = images.length;
-}
-
-function delImage(idx){
-  if(!confirm('حذف هذه الصورة من المكتبة؟')) return;
-  var id = images[idx].id;
-  images.splice(idx,1);
-  // نظّف مراجع هذه الصورة من الشرائح
-  config.slides.forEach(function(s){ if(s.imageId === id) s.imageId = null; });
-  saveConfig(); renderImages();
-  toast('تم الحذف ✅','ok');
-}
-
-function getImageById(id){
-  return images.find(function(img){ return img.id === id; }) || null;
-}
-
-// ═══════════════════════════════════════════
-// SECTION 7 — TICKER MANAGER
-// ═══════════════════════════════════════════
-function renderTicker(){
-  var el = document.getElementById('ticker-list');
-  el.innerHTML = config.ticker.map(function(t,i){
-    return '<div class="ticker-item">'+
-      '<span class="ticker-text">'+t+'</span>'+
-      '<button class="ticker-del" onclick="delTicker('+i+')" title="حذف">✕</button>'+
-    '</div>';
-  }).join('') || '<div style="color:var(--muted);font-size:12px;padding:8px">لا توجد رسائل</div>';
-  document.getElementById('st-ticker').textContent = config.ticker.length;
-  document.getElementById('preview-ticker').textContent = '📢 أخبارنا ✦ ' + config.ticker.join(' ✦ ');
-}
-
-function addTicker(){
-  var val = document.getElementById('new-ticker').value.trim();
-  if(!val){ toast('أدخل نص الرسالة ❌','err'); return; }
-  config.ticker.push(val);
-  document.getElementById('new-ticker').value = '';
-  saveConfig(); renderTicker();
-  toast('تمت الإضافة ✅','ok');
-}
-
-function delTicker(idx){
-  config.ticker.splice(idx,1);
-  saveConfig(); renderTicker();
-}
-
-// ═══════════════════════════════════════════
-// SECTION 8 — PREVIEW & STATUS
-// ═══════════════════════════════════════════
-function updatePreview(){
-  document.getElementById('prev-shopname').textContent = '📚 ' + config.shopName;
-  document.getElementById('prev-welcome').textContent  = config.welcomeText;
-  document.getElementById('prev-sub').textContent      = config.welcomeSub;
-  renderTicker();
-  var now = new Date();
-  document.getElementById('prev-clock').textContent =
-    now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
-}
-
-function previewSlide(){
-  var active = config.slides.filter(function(s){ return s.active; });
-  if(!active.length){ toast('لا توجد شرائح مفعّلة ❌','err'); return; }
-  var i = 0;
-  var screen = document.getElementById('preview-screen');
-  function show(){
-    var s   = active[i % active.length];
-    var bg  = COLORS[s.color] || COLORS.purple;
-    var imgData = s.imageData || (s.imageId ? (getImageById(s.imageId)||{}).data : null);
-    screen.style.background = '#0a0a1a';
-    var imgEl = imgData
-      ? '<img src="'+imgData+'" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;opacity:.85">'
-      : '';
-    screen.innerHTML =
-      imgEl +
-      '<div style="position:absolute;inset:0;background:'+bg+'"></div>'+
-      '<div class="preview-content" style="position:relative;z-index:1">'+
-        '<div style="font-size:22px;font-weight:900;color:#fff;margin-bottom:6px;text-shadow:0 2px 8px rgba(0,0,0,.5)">'+s.title+'</div>'+
-        (s.desc  ? '<div style="font-size:10px;color:rgba(255,255,255,.7);text-shadow:0 1px 4px rgba(0,0,0,.5)">'+s.desc+'</div>'  : '')+
-        (s.badge ? '<div style="margin-top:8px;background:rgba(124,58,237,.5);backdrop-filter:blur(4px);color:#fff;padding:4px 14px;border-radius:20px;font-size:10px;font-weight:700">'+s.badge+'</div>' : '')+
-      '</div>';
-    i++;
-  }
-  show();
-  var interval = setInterval(function(){
-    if(!document.getElementById('m-slide').classList.contains('show')) show();
-    else clearInterval(interval);
-  }, 2500);
-  toast('بدأت المعاينة — تتغير كل 2.5 ث','ok',3000);
-}
-
-function updateStatus(){
-  var cartRaw = localStorage.getItem('hashayshi_display_cart');
-  var cfgRaw  = localStorage.getItem('hashayshi_display_full_config');
-  var cart = null, cfgTs = null;
-  try{ if(cartRaw) cart   = JSON.parse(cartRaw);              } catch(e){}
-  try{ if(cfgRaw)  cfgTs  = JSON.parse(cfgRaw).ts;            } catch(e){}
-  var imgSlides = config.slides.filter(function(s){ return s.type==='image' && (s.imageData||s.imageId); }).length;
-
-  document.getElementById('display-status').innerHTML =
-    '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span>📡 آخر إرسال:</span><strong>'+(cfgTs?new Date(cfgTs).toLocaleTimeString('ar-DZ'):'لم يتم')+'</strong></div>'+
-    '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span>🛒 السلة:</span><strong style="color:'+(cart&&cart.active?'#16a34a':'#9ca3af')+'">'+(cart&&cart.active?'نشطة ('+cart.items.length+' أصناف)':'فارغة')+'</strong></div>'+
-    '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span>🎞️ الشرائح:</span><strong>'+config.slides.filter(function(s){return s.active;}).length+' / '+config.slides.length+' مفعّلة</strong></div>'+
-    '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span>🖼️ شرائح بصور:</span><strong style="color:'+(imgSlides?'#7c3aed':'#9ca3af')+'">'+imgSlides+'</strong></div>'+
-    '<div style="display:flex;justify-content:space-between;padding:6px 0"><span>📚 المكتبة:</span><strong>'+images.length+' صورة</strong></div>';
-}
-
-// ═══════════════════════════════════════════
-// SECTION 9 — SETTINGS FORM
-// ═══════════════════════════════════════════
-function loadSettingsForm(){
-  document.getElementById('set-shopname').value = config.shopName;
-  document.getElementById('set-welcome').value  = config.welcomeText;
-  document.getElementById('set-sub').value      = config.welcomeSub;
-  document.getElementById('set-dur').value      = config.slideDuration;
-  document.getElementById('set-idle').value     = config.idleTimeout;
-}
-
-// ═══════════════════════════════════════════
-// SECTION 10 — TOAST & UTILS
-// ═══════════════════════════════════════════
-function toast(msg, type, dur){
-  var t = document.getElementById('toast');
-  t.className = 'toast show ' + (type||'');
-  t.textContent = msg;
-  clearTimeout(t._to);
-  t._to = setTimeout(function(){ t.className='toast'; }, dur||2500);
-}
-
-function renderAll(){
+function loadConfig() {
+  const c = localStorage.getItem('hch_display_cfg');
+  if(c) config = Object.assign(config, JSON.parse(c));
+  
+  document.getElementById('cfg-name').value = config.shopName;
+  document.getElementById('cfg-sounds').value = config.sounds;
+  document.getElementById('cfg-eco').value = config.ecoMode;
+  document.getElementById('cfg-qr').value = config.qrLink;
+  document.getElementById('cfg-cross').value = config.crossSell;
+  
   renderSlides();
-  renderImages();
   renderTicker();
-  loadSettingsForm();
-  updatePreview();
-  updateStatus();
-  updateStorageInfo();
 }
 
-// ═══════════════════════════════════════════
-// SECTION 11 — INIT
-// ═══════════════════════════════════════════
-window.onload = function(){
-  loadConfig();
-  renderAll();
-  setInterval(updatePreview, 30000);
-  setInterval(updateStatus, 3000);
-};
+function renderTicker() {
+  document.getElementById('ticker-list').innerHTML = config.ticker.map((t, i) => 
+    `<div style="display:flex;justify-content:space-between;background:#f1f5f9;padding:6px 10px;margin-bottom:4px;border-radius:6px;">
+      <span>${t}</span><span style="color:red;cursor:pointer" onclick="delTicker(${i})">✕</span>
+    </div>`
+  ).join('');
+}
+function addTicker(){ 
+  const v = document.getElementById('new-ticker').value; 
+  if(v){ config.ticker.push(v); document.getElementById('new-ticker').value=''; renderTicker(); }
+}
+function delTicker(i){ config.ticker.splice(i,1); renderTicker(); }
+
+function renderSlides() {
+  getImagesFromDB(images => {
+    document.getElementById('slides-list').innerHTML = config.slides.map((s, i) => {
+      let bgImg = images.find(img => img.id === s.bgId);
+      return `
+      <div class="slide-item">
+        <div class="slide-thumb" style="background:${s.color === 'purple' ? '#7c3aed' : s.color==='blue'?'#3b82f6':s.color==='green'?'#10b981':'#1e293b'}">
+          ${bgImg ? `<img src="${bgImg.data}">` : `<span style="color:#fff">🎨</span>`}
+        </div>
+        <div class="slide-info">
+          <div style="font-weight:bold;font-size:13px">${s.title || 'بدون عنوان'}</div>
+          <div style="font-size:10px;color:var(--sub)">⏱ ${s.dur}ث | ${s.type} | خط: ${s.size}px</div>
+        </div>
+        <div class="slide-actions">
+          <button class="ic-btn" style="background:#e0f2fe;color:#0284c7" onclick="editSlide(${i})">✏️</button>
+          <button class="ic-btn" style="background:#fee2e2;color:#dc2626" onclick="delSlide(${i})">🗑️</button>
+        </div>
+      </div>`;
+    }).join('');
+    
+    // تحديث قائمة الصور في المودال
+    let bgSel = document.getElementById('sl-bg');
+    bgSel.innerHTML = '<option value="">بدون صورة خلفية (لون فقط)</option>' + 
+      images.map(img => `<option value="${img.id}">${img.name}</option>`).join('');
+  });
+}
+
+function openSlideModal(idx = -1) {
+  const isNew = idx === -1;
+  const s = isNew ? {id:'s'+Date.now(), type:'promo', title:'', desc:'', color:'purple', dur:6, size:64, fx:'glow', bgId:'', time:''} : config.slides[idx];
+  
+  document.getElementById('sl-id').value = isNew ? -1 : idx;
+  document.getElementById('sl-type').value = s.type;
+  document.getElementById('sl-title').value = s.title;
+  document.getElementById('sl-desc').value = s.desc;
+  document.getElementById('sl-dur').value = s.dur;
+  document.getElementById('sl-size').value = s.size || 64;
+  document.getElementById('sz-val').innerText = (s.size || 64) + 'px';
+  document.getElementById('sl-fx').value = s.fx || 'glow';
+  document.getElementById('sl-time').value = s.time || '';
+  
+  setTimeout(()=> document.getElementById('sl-bg').value = s.bgId || '', 100);
+  
+  document.querySelectorAll('.color-opt').forEach(el => el.classList.remove('sel'));
+  document.querySelector(`.color-opt[data-c="${s.color}"]`).classList.add('sel');
+  selectedColor = s.color;
+  
+  document.getElementById('m-slide').classList.add('show');
+}
+
+function selColor(el) {
+  document.querySelectorAll('.color-opt').forEach(e => e.classList.remove('sel'));
+  el.classList.add('sel');
+  selectedColor = el.dataset.c;
+}
+
+function saveSlide() {
+  const idx = parseInt(document.getElementById('sl-id').value);
+  const slide = {
+    id: idx === -1 ? 's'+Date.now() : config.slides[idx].id,
+    type: document.getElementById('sl-type').value,
+    title: document.getElementById('sl-title').value,
+    desc: document.getElementById('sl-desc').value,
+    color: selectedColor,
+    dur: parseInt(document.getElementById('sl-dur').value) || 6,
+    size: parseInt(document.getElementById('sl-size').value),
+    fx: document.getElementById('sl-fx').value,
+    bgId: document.getElementById('sl-bg').value,
+    time: document.getElementById('sl-time').value
+  };
+  
+  if(idx === -1) config.slides.push(slide);
+  else config.slides[idx] = slide;
+  
+  document.getElementById('m-slide').classList.remove('show');
+  renderSlides();
+}
+
+function delSlide(i) { if(confirm('حذف؟')) { config.slides.splice(i,1); renderSlides(); } }
+
+/* ═══════════════════════════════════════════
+   3. إدارة الصور (Compress & IDB)
+   ═══════════════════════════════════════════ */
+function uploadImages(e) {
+  const files = Array.from(e.target.files);
+  if(!files.length) return;
+  e.target.value = '';
+  
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let w = img.width, h = img.height;
+        if(w > 1280) { h = Math.round(h * 1280 / w); w = 1280; } // حجم ممتاز للشاشات
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        
+        const imgObj = {
+          id: 'img_'+Date.now()+Math.random(),
+          name: file.name,
+          data: canvas.toDataURL('image/jpeg', 0.8)
+        };
+        saveImageToDB(imgObj, renderImages);
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderImages() {
+  getImagesFromDB(images => {
+    document.getElementById('img-grid').innerHTML = images.map(img => 
+      `<div class="img-thumb-wrap">
+        <img src="${img.data}">
+        <button class="img-thumb-del" onclick="delImage('${img.id}')">✕</button>
+      </div>`
+    ).join('');
+    renderSlides(); // لتحديث الخيارات
+  });
+}
+
+function delImage(id) {
+  if(confirm('حذف الصورة؟ ستختفي من الشرائح المرتبطة بها.')) {
+    deleteImageFromDB(id, renderImages);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   4. الإرسال للشاشة (Push)
+   ═══════════════════════════════════════════ */
+function pushToDisplay() {
+  config.shopName = document.getElementById('cfg-name').value;
+  config.sounds = parseInt(document.getElementById('cfg-sounds').value);
+  config.ecoMode = parseInt(document.getElementById('cfg-eco').value);
+  config.qrLink = document.getElementById('cfg-qr').value;
+  config.crossSell = document.getElementById('cfg-cross').value;
+  
+  localStorage.setItem('hch_display_cfg', JSON.stringify(config));
+  
+  // إشارة التحديث للشاشة
+  localStorage.setItem('hch_display_sync', Date.now().toString());
+  
+  toast('تم حفظ الإعدادات وإرسالها للشاشة بنجاح ✅');
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.innerText = msg; t.className = 'toast show ok';
+  setTimeout(()=> t.className='toast', 3000);
+}
+
+window.onload = () => initDB(() => { loadConfig(); renderImages(); });
 </script>
 </body>
 </html>
