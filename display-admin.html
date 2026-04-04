@@ -93,6 +93,17 @@ body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;background:var(--bg);color:v
 .img-thumb-wrap{position:relative;border-radius:10px;overflow:hidden;aspect-ratio:16/9;background:#e2e8f0;}
 .img-thumb-wrap img{width:100%;height:100%;object-fit:cover;}
 .img-thumb-del{position:absolute;top:4px;left:4px;width:22px;height:22px;background:rgba(220,38,38,.9);border-radius:50%;border:none;color:#fff;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.img-size-badge{position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,.6);color:#fff;font-size:9px;padding:2px 5px;border-radius:4px;}
+
+/* ═══ INLINE SLIDE IMAGE UPLOAD ═══ */
+.slide-img-upload-box{border:2px dashed #c4b5fd;border-radius:12px;padding:16px;text-align:center;cursor:pointer;background:#faf5ff;transition:.2s;margin-bottom:10px;}
+.slide-img-upload-box:hover{border-color:var(--p);background:#ede9fe;}
+.slide-img-upload-box.has-img{border-style:solid;border-color:#a78bfa;background:#f5f3ff;}
+.slide-img-upload-icon{font-size:28px;margin-bottom:4px;}
+.slide-img-upload-text{font-size:12px;font-weight:700;color:var(--p);}
+.slide-img-upload-sub{font-size:10px;color:var(--muted);margin-top:2px;}
+.slide-img-thumb-preview{width:100%;border-radius:8px;max-height:130px;object-fit:cover;display:block;margin-bottom:8px;}
+.slide-img-clear-btn{width:100%;padding:5px;border-radius:8px;border:none;background:#fef2f2;color:var(--r);font-size:11px;font-weight:700;cursor:pointer;}
 
 /* ═══════════════════════════════════════
    SECTION 6 — TICKER MANAGER
@@ -134,6 +145,10 @@ body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;background:var(--bg);color:v
 .color-opt{width:32px;height:32px;border-radius:8px;cursor:pointer;border:3px solid transparent;transition:.2s;}
 .color-opt.sel{border-color:#1e1b4b;transform:scale(1.1);}
 select.input option{background:#fff;}
+
+/* Storage warning */
+.storage-warn{background:#fef3c7;border:1px solid #fcd34d;border-radius:10px;padding:8px 12px;font-size:11px;color:#92400e;display:none;margin-bottom:10px;}
+.storage-warn.show{display:block;}
 </style>
 </head>
 <body>
@@ -178,13 +193,22 @@ select.input option{background:#fff;}
       </div>
     </div>
 
-    <!-- ═══ SECTION B: IMAGE UPLOAD ═══ -->
+    <!-- ═══ SECTION B: IMAGE LIBRARY ═══ -->
     <div class="card">
-      <div class="card-title">🖼️ مكتبة الصور الإعلانية</div>
-      <div class="upload-zone" id="upload-zone" onclick="document.getElementById('img-input').click()" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+      <div class="card-title">🖼️ مكتبة الصور الإعلانية
+        <span style="font-size:10px;color:var(--muted);margin-right:auto;font-weight:600" id="storage-info"></span>
+      </div>
+      <div class="storage-warn" id="storage-warn">
+        ⚠️ مساحة التخزين المحلي ممتلئة تقريباً — احذف بعض الصور أو استخدم صوراً أصغر حجماً
+      </div>
+      <div class="upload-zone" id="upload-zone"
+           onclick="document.getElementById('img-input').click()"
+           ondragover="onDragOver(event)"
+           ondragleave="onDragLeave(event)"
+           ondrop="onDrop(event)">
         <div class="upload-zone-icon">📸</div>
-        <div class="upload-zone-text">انقر لرفع صور إعلانية</div>
-        <div class="upload-zone-sub">PNG, JPG, GIF — حجم أقصى 2MB للصورة</div>
+        <div class="upload-zone-text">انقر أو اسحب صوراً هنا</div>
+        <div class="upload-zone-sub">تُضغط تلقائياً إلى 640px — PNG, JPG, GIF</div>
       </div>
       <input type="file" id="img-input" accept="image/*" multiple style="display:none" onchange="onImgSelect(event)">
       <div class="img-preview-grid" id="img-grid"></div>
@@ -310,11 +334,37 @@ select.input option{background:#fff;}
       <input id="slide-badge" class="input" placeholder="مثال: 🖨️ خدمات الطباعة المتكاملة">
     </div>
 
-    <div class="fg" id="slide-img-wrap" style="display:none">
-      <label class="label">اختر صورة من المكتبة</label>
-      <select id="slide-img-sel" class="input"></select>
-      <div id="slide-img-preview" style="margin-top:8px;border-radius:10px;overflow:hidden;max-height:120px;"></div>
-    </div>
+    <!-- ══ IMAGE SECTION FOR IMAGE SLIDES ══ -->
+    <div id="slide-img-wrap" style="display:none">
+
+      <!-- Tab switcher: upload new OR choose from library -->
+      <div style="display:flex;gap:6px;margin-bottom:10px">
+        <button id="tab-upload" class="btn btn-p btn-sm" style="flex:1;justify-content:center" onclick="switchImgTab('upload')">📤 رفع صورة جديدة</button>
+        <button id="tab-library" class="btn btn-gray btn-sm" style="flex:1;justify-content:center" onclick="switchImgTab('library')">🗂️ من المكتبة</button>
+      </div>
+
+      <!-- UPLOAD TAB -->
+      <div id="img-tab-upload">
+        <div id="slide-img-upload-box" class="slide-img-upload-box" onclick="document.getElementById('slide-img-file').click()">
+          <div id="slide-img-upload-inner">
+            <div class="slide-img-upload-icon">🖼️</div>
+            <div class="slide-img-upload-text">انقر لاختيار صورة</div>
+            <div class="slide-img-upload-sub">تُضغط تلقائياً — PNG, JPG</div>
+          </div>
+        </div>
+        <input type="file" id="slide-img-file" accept="image/*" style="display:none" onchange="onSlideImgUpload(event)">
+      </div>
+
+      <!-- LIBRARY TAB -->
+      <div id="img-tab-library" style="display:none">
+        <div class="fg">
+          <label class="label">اختر من المكتبة</label>
+          <select id="slide-img-sel" class="input" onchange="onImgSelChange()"></select>
+          <div id="slide-img-preview" style="margin-top:8px;border-radius:10px;overflow:hidden;max-height:120px;"></div>
+        </div>
+      </div>
+
+    </div><!-- end slide-img-wrap -->
 
     <div class="fg">
       <label class="label">لون الخلفية</label>
@@ -355,7 +405,7 @@ select.input option{background:#fff;}
 // ═══════════════════════════════════════════
 // SECTION 1 — STATE & CONFIG
 // ═══════════════════════════════════════════
-var CFG_KEY = 'hashayshi_display_config';
+var CFG_KEY  = 'hashayshi_display_config';
 var IMGS_KEY = 'hashayshi_display_images';
 
 var config = {
@@ -365,10 +415,10 @@ var config = {
   slideDuration: 6,
   idleTimeout: 45,
   slides: [
-    {id:'s1',type:'welcome',title:'أهلاً بكم',desc:'مكتبتكم المفضلة — جودة بلا تنازل',badge:'',color:'purple',dur:8,active:true},
-    {id:'s2',type:'promo',title:'خدمة الطباعة',desc:'طباعة ملونة وأبيض وأسود، تصوير وتجليد',badge:'🖨️ خدمات الطباعة المتكاملة',color:'blue',dur:6,active:true},
-    {id:'s3',type:'stats',title:'إحصائياتنا',desc:'أرقام تتحدث عن نفسها',badge:'',color:'green',dur:6,active:true},
-    {id:'s4',type:'custom',title:'خدمات الاتصالات',desc:'فليكسي موبيليس، جازي، أوريدو — بطاقات الإنترنت',badge:'📱 شحن جميع الشبكات',color:'teal',dur:6,active:true}
+    {id:'s1',type:'welcome',title:'أهلاً بكم',desc:'مكتبتكم المفضلة — جودة بلا تنازل',badge:'',color:'purple',dur:8,active:true,imageData:null},
+    {id:'s2',type:'promo',title:'خدمة الطباعة',desc:'طباعة ملونة وأبيض وأسود، تصوير وتجليد',badge:'🖨️ خدمات الطباعة المتكاملة',color:'blue',dur:6,active:true,imageData:null},
+    {id:'s3',type:'stats',title:'إحصائياتنا',desc:'أرقام تتحدث عن نفسها',badge:'',color:'green',dur:6,active:true,imageData:null},
+    {id:'s4',type:'custom',title:'خدمات الاتصالات',desc:'فليكسي موبيليس، جازي، أوريدو — بطاقات الإنترنت',badge:'📱 شحن جميع الشبكات',color:'teal',dur:6,active:true,imageData:null}
   ],
   ticker: [
     'أهلاً وسهلاً بكم في مكتبة حشايشي',
@@ -379,9 +429,10 @@ var config = {
   ]
 };
 
-var images = []; // array of {id, name, data (base64)}
+var images = [];          // مكتبة الصور: [{id, name, data (base64 مضغوط)}]
 var selectedColor = 'purple';
 var dragIdx = -1;
+var pendingSlideImageData = null;  // ← صورة الشريحة المرفوعة مؤقتاً
 
 var COLORS = {
   purple: 'radial-gradient(ellipse at center,rgba(124,58,237,0.15) 0%,transparent 70%)',
@@ -394,44 +445,117 @@ var COLORS = {
 };
 
 // ═══════════════════════════════════════════
-// SECTION 2 — LOAD & SAVE
+// SECTION 2 — IMAGE COMPRESSION (الجديد ✨)
+// ═══════════════════════════════════════════
+/**
+ * يضغط الصورة باستخدام Canvas إلى أقصى عرض 640px وجودة JPEG 75%
+ * هذا يقلل حجم الصورة من عدة MB إلى أقل من 100KB في الغالب
+ */
+function compressImage(file, maxWidth, quality, callback) {
+  maxWidth = maxWidth || 640;
+  quality  = quality  || 0.75;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    var img = new Image();
+    img.onload = function() {
+      var w = img.width, h = img.height;
+      if (w > maxWidth) { h = Math.round(h * maxWidth / w); w = maxWidth; }
+      var canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      var compressed = canvas.toDataURL('image/jpeg', quality);
+      var sizeKB = Math.round((compressed.length * 3/4) / 1024);
+      callback(compressed, sizeKB);
+    };
+    img.onerror = function(){ callback(null, 0); };
+    img.src = ev.target.result;
+  };
+  reader.onerror = function(){ callback(null, 0); };
+  reader.readAsDataURL(file);
+}
+
+// ═══════════════════════════════════════════
+// SECTION 3 — LOAD & SAVE
 // ═══════════════════════════════════════════
 function loadConfig(){
-  var raw = localStorage.getItem(CFG_KEY);
-  if(raw){try{Object.assign(config, JSON.parse(raw));}catch(e){}}
-  var imgs = localStorage.getItem(IMGS_KEY);
-  if(imgs){try{images = JSON.parse(imgs);}catch(e){}}
+  try {
+    var raw = localStorage.getItem(CFG_KEY);
+    if(raw) Object.assign(config, JSON.parse(raw));
+  } catch(e) {}
+  try {
+    var imgs = localStorage.getItem(IMGS_KEY);
+    if(imgs) images = JSON.parse(imgs);
+  } catch(e) {}
 }
 
 function saveConfig(){
-  localStorage.setItem(CFG_KEY, JSON.stringify(config));
-  localStorage.setItem(IMGS_KEY, JSON.stringify(images));
+  try {
+    localStorage.setItem(CFG_KEY, JSON.stringify(config));
+    localStorage.setItem(IMGS_KEY, JSON.stringify(images));
+    updateStorageInfo();
+  } catch(e) {
+    if(e.name === 'QuotaExceededError') {
+      toast('⚠️ مساحة التخزين ممتلئة! احذف بعض الصور', 'err', 4000);
+      document.getElementById('storage-warn').classList.add('show');
+    }
+  }
 }
 
-// Push full config to display screen
+function updateStorageInfo(){
+  try {
+    var total = 0;
+    for(var k in localStorage){ total += (localStorage.getItem(k)||'').length; }
+    var kb = Math.round(total / 1024);
+    document.getElementById('storage-info').textContent = 'مُستخدم: ~' + kb + ' KB / 5120 KB';
+    document.getElementById('storage-warn').classList.toggle('show', kb > 4500);
+  } catch(e){}
+}
+
+// إرسال الإعدادات الكاملة لشاشة العرض
+// ⭐ الإصلاح الرئيسي: imageData مضمّنة مباشرة داخل كل شريحة
 function pushNowToDisplay(){
-  localStorage.setItem('hashayshi_display_full_config', JSON.stringify({
-    shopName: config.shopName,
-    welcomeText: config.welcomeText,
-    welcomeSub: config.welcomeSub,
+  var slidesWithImages = config.slides
+    .filter(function(s){ return s.active; })
+    .map(function(s){
+      var slide = JSON.parse(JSON.stringify(s)); // نسخة
+      // إذا الشريحة لها imageData مضمّنة — استخدمها مباشرة
+      // إذا لها imageId من المكتبة — ابحث وأضف imageData
+      if(!slide.imageData && slide.imageId) {
+        var libImg = getImageById(slide.imageId);
+        if(libImg) slide.imageData = libImg.data;
+      }
+      return slide;
+    });
+
+  var payload = {
+    shopName:      config.shopName,
+    welcomeText:   config.welcomeText,
+    welcomeSub:    config.welcomeSub,
     slideDuration: config.slideDuration * 1000,
-    idleTimeout: config.idleTimeout * 1000,
-    slides: config.slides.filter(function(s){return s.active;}),
-    ticker: config.ticker,
-    images: images,
-    ts: Date.now()
-  }));
-  toast('تم الإرسال للشاشة ✅', 'ok');
-  updateStatus();
+    idleTimeout:   config.idleTimeout  * 1000,
+    slides:        slidesWithImages,
+    ticker:        config.ticker,
+    ts:            Date.now()
+  };
+
+  try {
+    localStorage.setItem('hashayshi_display_full_config', JSON.stringify(payload));
+    toast('تم الإرسال للشاشة ✅', 'ok');
+    updateStatus();
+  } catch(e) {
+    if(e.name === 'QuotaExceededError') {
+      toast('⚠️ الصور كبيرة جداً! قلّل عدد الشرائح ذات الصور', 'err', 4000);
+    }
+  }
 }
 
 function saveAndPush(){
-  // Read settings form
-  config.shopName = document.getElementById('set-shopname').value || 'مكتبة حشايشي';
-  config.welcomeText = document.getElementById('set-welcome').value || 'أهلاً بكم';
-  config.welcomeSub = document.getElementById('set-sub').value || '';
-  config.slideDuration = parseInt(document.getElementById('set-dur').value) || 6;
-  config.idleTimeout = parseInt(document.getElementById('set-idle').value) || 45;
+  config.shopName      = document.getElementById('set-shopname').value || 'مكتبة حشايشي';
+  config.welcomeText   = document.getElementById('set-welcome').value  || 'أهلاً بكم';
+  config.welcomeSub    = document.getElementById('set-sub').value      || '';
+  config.slideDuration = parseInt(document.getElementById('set-dur').value)  || 6;
+  config.idleTimeout   = parseInt(document.getElementById('set-idle').value) || 45;
   saveConfig();
   pushNowToDisplay();
   updatePreview();
@@ -443,7 +567,7 @@ function clearDisplayCart(){
 }
 
 function openDisplayInNewTab(){
-  toast('افتح ملف شاشة الزبون في تاب جديد بنفس المتصفح 💡', 'ok', 3000);
+  toast('افتح ملف display.html في تاب جديد بنفس المتصفح 💡', 'ok', 3000);
 }
 
 function exportConfig(){
@@ -468,18 +592,18 @@ function importConfig(e){
       saveConfig();
       renderAll();
       toast('تم الاستيراد ✅', 'ok');
-    }catch(e){ toast('ملف غير صالح ❌','err'); }
+    } catch(e){ toast('ملف غير صالح ❌','err'); }
   };
   r.readAsText(file);
-  e.target.value='';
+  e.target.value = '';
 }
 
 // ═══════════════════════════════════════════
-// SECTION 3 — SLIDES RENDER & MANAGE
+// SECTION 4 — SLIDES RENDER & MANAGE
 // ═══════════════════════════════════════════
-var TYPE_LABELS = {welcome:'ترحيب',promo:'عرض',stats:'إحصائيات',image:'صورة',custom:'مخصص'};
+var TYPE_LABELS  = {welcome:'ترحيب',promo:'عرض',stats:'إحصائيات',image:'صورة',custom:'مخصص'};
 var TYPE_CLASSES = {welcome:'sb-welcome',promo:'sb-promo',stats:'sb-stats',image:'sb-image',custom:'sb-custom'};
-var TYPE_ICONS = {welcome:'🏠',promo:'🎉',stats:'📊',image:'🖼️',custom:'✏️'};
+var TYPE_ICONS   = {welcome:'🏠',promo:'🎉',stats:'📊',image:'🖼️',custom:'✏️'};
 
 function renderSlides(){
   var el = document.getElementById('slides-list');
@@ -488,17 +612,20 @@ function renderSlides(){
     return;
   }
   el.innerHTML = config.slides.map(function(s,i){
-    var thumb = s.type==='image' && s.imageId ? getImageById(s.imageId) : null;
-    var thumbHtml = thumb
-      ? '<div class="slide-thumb"><img src="'+thumb.data+'" alt=""></div>'
+    // ⭐ عرض صورة مصغّرة: imageData مضمّنة أولاً، ثم المكتبة
+    var imgData = s.imageData || (s.imageId ? (getImageById(s.imageId)||{}).data : null);
+    var thumbHtml = (s.type==='image' && imgData)
+      ? '<div class="slide-thumb"><img src="'+imgData+'" alt=""></div>'
       : '<div class="slide-thumb" style="font-size:24px">'+TYPE_ICONS[s.type]+'</div>';
-    return '<div class="slide-item'+(s.active?'':' disabled')+'" draggable="true" data-idx="'+i+'" ondragstart="dragStart(event,'+i+')" ondragover="dragOver(event,'+i+')" ondrop="dropSlide(event,'+i+')">'+
+
+    return '<div class="slide-item'+(s.active?'':' disabled')+'" draggable="true" data-idx="'+i+'"'+
+      ' ondragstart="dragStart(event,'+i+')" ondragover="dragOver(event,'+i+')" ondrop="dropSlide(event,'+i+')">'+
       '<span class="slide-drag">⠿</span>'+
       thumbHtml+
       '<div class="slide-info">'+
         '<span class="slide-type-badge '+TYPE_CLASSES[s.type]+'">'+TYPE_LABELS[s.type]+'</span>'+
         '<div class="slide-title-text">'+s.title+'</div>'+
-        '<div class="slide-dur">⏱️ '+s.dur+' ث</div>'+
+        '<div class="slide-dur">⏱️ '+s.dur+' ث'+(imgData?' 🖼️':'')+'</div>'+
       '</div>'+
       '<div class="slide-actions">'+
         '<button class="ic-btn ic-toggle'+(s.active?'':' off')+'" onclick="toggleSlide('+i+')" title="تفعيل/تعطيل">'+(s.active?'✅':'⭕')+'</button>'+
@@ -512,44 +639,40 @@ function renderSlides(){
 
 function toggleSlide(idx){
   config.slides[idx].active = !config.slides[idx].active;
-  saveConfig();
-  renderSlides();
+  saveConfig(); renderSlides();
 }
 
 function delSlide(idx){
   if(!confirm('حذف هذه الشريحة؟')) return;
   config.slides.splice(idx,1);
-  saveConfig();
-  renderSlides();
+  saveConfig(); renderSlides();
   toast('تم الحذف ✅','ok');
 }
 
-// Drag & Drop reorder
 function dragStart(e,idx){ dragIdx=idx; e.dataTransfer.effectAllowed='move'; }
 function dragOver(e,idx){ e.preventDefault(); e.dataTransfer.dropEffect='move'; }
 function dropSlide(e,idx){
   e.preventDefault();
-  if(dragIdx<0||dragIdx===idx)return;
+  if(dragIdx<0||dragIdx===idx) return;
   var moved = config.slides.splice(dragIdx,1)[0];
   config.slides.splice(idx,0,moved);
-  dragIdx=-1;
-  saveConfig();
-  renderSlides();
+  dragIdx=-1; saveConfig(); renderSlides();
 }
 
 // ═══════════════════════════════════════════
-// SECTION 4 — SLIDE MODAL
+// SECTION 5 — SLIDE MODAL
 // ═══════════════════════════════════════════
 function openAddSlide(){
   document.getElementById('slide-modal-title').textContent = '➕ شريحة جديدة';
   document.getElementById('slide-edit-idx').value = '-1';
-  document.getElementById('slide-type').value = 'welcome';
+  document.getElementById('slide-type').value  = 'welcome';
   document.getElementById('slide-title').value = '';
-  document.getElementById('slide-desc').value = '';
+  document.getElementById('slide-desc').value  = '';
   document.getElementById('slide-badge').value = '';
-  document.getElementById('slide-dur').value = '6';
+  document.getElementById('slide-dur').value   = '6';
   document.getElementById('slide-active').checked = true;
   selectedColor = 'purple';
+  pendingSlideImageData = null;
   document.querySelectorAll('.color-opt').forEach(function(el){el.classList.remove('sel');});
   document.querySelector('[data-c="purple"]').classList.add('sel');
   onSlideTypeChange();
@@ -560,69 +683,154 @@ function openEditSlide(idx){
   var s = config.slides[idx];
   document.getElementById('slide-modal-title').textContent = '✏️ تعديل الشريحة';
   document.getElementById('slide-edit-idx').value = idx;
-  document.getElementById('slide-type').value = s.type;
+  document.getElementById('slide-type').value  = s.type;
   document.getElementById('slide-title').value = s.title;
-  document.getElementById('slide-desc').value = s.desc||'';
-  document.getElementById('slide-badge').value = s.badge||'';
-  document.getElementById('slide-dur').value = s.dur||6;
-  document.getElementById('slide-active').checked = s.active!==false;
-  selectedColor = s.color||'purple';
+  document.getElementById('slide-desc').value  = s.desc  || '';
+  document.getElementById('slide-badge').value = s.badge || '';
+  document.getElementById('slide-dur').value   = s.dur   || 6;
+  document.getElementById('slide-active').checked = s.active !== false;
+  selectedColor = s.color || 'purple';
   document.querySelectorAll('.color-opt').forEach(function(el){
-    el.classList.toggle('sel', el.getAttribute('data-c')===selectedColor);
+    el.classList.toggle('sel', el.getAttribute('data-c') === selectedColor);
   });
+  // Load existing image
+  pendingSlideImageData = s.imageData || null;
   onSlideTypeChange();
-  if(s.imageId) document.getElementById('slide-img-sel').value = s.imageId;
+  // If has imageId from library, select it
+  if(s.imageId && !s.imageData){
+    switchImgTab('library');
+    document.getElementById('slide-img-sel').value = s.imageId;
+    onImgSelChange();
+  } else if(s.imageData){
+    switchImgTab('upload');
+    showSlideImgPreview(s.imageData);
+  }
   document.getElementById('m-slide').classList.add('show');
 }
 
 function saveSlide(){
-  var idx = parseInt(document.getElementById('slide-edit-idx').value);
+  var idx  = parseInt(document.getElementById('slide-edit-idx').value);
   var type = document.getElementById('slide-type').value;
-  var imgId = type==='image' ? document.getElementById('slide-img-sel').value : null;
+
+  // ⭐ حفظ imageData: من الرفع المباشر أولاً، ثم من المكتبة
+  var imgData = null;
+  var imgId   = null;
+  if(type === 'image'){
+    var activeTab = document.getElementById('img-tab-upload').style.display !== 'none' ? 'upload' : 'library';
+    if(activeTab === 'upload'){
+      imgData = pendingSlideImageData || null;
+    } else {
+      imgId   = document.getElementById('slide-img-sel').value || null;
+      var libImg = imgId ? getImageById(imgId) : null;
+      if(libImg) imgData = libImg.data;
+    }
+  }
+
   var slide = {
-    id: idx>=0 ? config.slides[idx].id : 's'+Date.now(),
-    type: type,
-    title: document.getElementById('slide-title').value || 'شريحة جديدة',
-    desc: document.getElementById('slide-desc').value,
-    badge: document.getElementById('slide-badge').value,
-    color: selectedColor,
-    dur: parseInt(document.getElementById('slide-dur').value)||6,
-    active: document.getElementById('slide-active').checked,
-    imageId: imgId
+    id:        idx >= 0 ? config.slides[idx].id : 's' + Date.now(),
+    type:      type,
+    title:     document.getElementById('slide-title').value  || 'شريحة جديدة',
+    desc:      document.getElementById('slide-desc').value,
+    badge:     document.getElementById('slide-badge').value,
+    color:     selectedColor,
+    dur:       parseInt(document.getElementById('slide-dur').value) || 6,
+    active:    document.getElementById('slide-active').checked,
+    imageData: imgData,   // ⭐ مضمّنة مباشرة
+    imageId:   imgId      // مرجع المكتبة (احتياطي)
   };
-  if(idx>=0) config.slides[idx]=slide;
-  else config.slides.push(slide);
-  saveConfig();
-  renderSlides();
-  closeModal();
-  toast((idx>=0?'تم التعديل':'تمت الإضافة')+' ✅','ok');
+
+  if(idx >= 0) config.slides[idx] = slide;
+  else         config.slides.push(slide);
+
+  pendingSlideImageData = null;
+  saveConfig(); renderSlides(); closeModal();
+  toast((idx >= 0 ? 'تم التعديل' : 'تمت الإضافة') + ' ✅', 'ok');
 }
 
 function closeModal(){
   document.getElementById('m-slide').classList.remove('show');
+  pendingSlideImageData = null;
 }
 
 function onSlideTypeChange(){
   var t = document.getElementById('slide-type').value;
-  var isImg = t==='image';
-  document.getElementById('slide-img-wrap').style.display = isImg?'block':'none';
-  document.getElementById('slide-badge-wrap').style.display = (t==='promo'||t==='custom')?'block':'none';
-  // Refresh image selector
+  var isImg = t === 'image';
+  document.getElementById('slide-img-wrap').style.display   = isImg ? 'block' : 'none';
+  document.getElementById('slide-badge-wrap').style.display = (t==='promo'||t==='custom') ? 'block' : 'none';
   if(isImg){
-    var sel = document.getElementById('slide-img-sel');
-    sel.innerHTML = images.length
-      ? images.map(function(img){return '<option value="'+img.id+'">'+img.name+'</option>';}).join('')
-      : '<option value="">لا توجد صور — ارفع صورة أولاً</option>';
-    onImgSelChange();
+    refreshLibrarySel();
+    // Default to upload tab
+    if(!pendingSlideImageData) switchImgTab('upload');
   }
+}
+
+// ── Image Tabs ──
+function switchImgTab(tab){
+  var isUpload = tab === 'upload';
+  document.getElementById('img-tab-upload').style.display  = isUpload ? 'block' : 'none';
+  document.getElementById('img-tab-library').style.display = isUpload ? 'none'  : 'block';
+  document.getElementById('tab-upload').className  = 'btn btn-sm ' + (isUpload ? 'btn-p'    : 'btn-gray') + ' ';
+  document.getElementById('tab-library').className = 'btn btn-sm ' + (isUpload ? 'btn-gray' : 'btn-p')    + ' ';
+  document.getElementById('tab-upload').style.flex  = '1';
+  document.getElementById('tab-library').style.flex = '1';
+  document.getElementById('tab-upload').style.justifyContent  = 'center';
+  document.getElementById('tab-library').style.justifyContent = 'center';
+}
+
+// ── Direct slide image upload ──
+function onSlideImgUpload(e){
+  var file = e.target.files[0];
+  if(!file) return;
+  if(!file.type.startsWith('image/')){ toast('اختر صورة صالحة ❌','err'); return; }
+  e.target.value = '';
+  compressImage(file, 800, 0.80, function(data, sizeKB){
+    if(!data){ toast('فشل قراءة الصورة ❌','err'); return; }
+    pendingSlideImageData = data;
+    showSlideImgPreview(data, sizeKB);
+    toast('تم تحميل الصورة ('+sizeKB+' KB) ✅','ok');
+  });
+}
+
+function showSlideImgPreview(data, sizeKB){
+  var box = document.getElementById('slide-img-upload-box');
+  box.classList.add('has-img');
+  box.innerHTML =
+    '<img class="slide-img-thumb-preview" src="'+data+'" alt="معاينة">' +
+    (sizeKB ? '<div style="font-size:10px;color:var(--muted);margin-bottom:6px">📦 '+sizeKB+' KB</div>' : '') +
+    '<button class="slide-img-clear-btn" onclick="clearSlideImg(event)">🗑️ إزالة الصورة</button>';
+}
+
+function clearSlideImg(e){
+  e.stopPropagation();
+  pendingSlideImageData = null;
+  var box = document.getElementById('slide-img-upload-box');
+  box.classList.remove('has-img');
+  box.innerHTML =
+    '<div id="slide-img-upload-inner">'+
+      '<div class="slide-img-upload-icon">🖼️</div>'+
+      '<div class="slide-img-upload-text">انقر لاختيار صورة</div>'+
+      '<div class="slide-img-upload-sub">تُضغط تلقائياً — PNG, JPG</div>'+
+    '</div>';
+  box.onclick = function(){ document.getElementById('slide-img-file').click(); };
+}
+
+// ── Library selector ──
+function refreshLibrarySel(){
+  var sel = document.getElementById('slide-img-sel');
+  sel.innerHTML = images.length
+    ? images.map(function(img){ return '<option value="'+img.id+'">'+img.name+'</option>'; }).join('')
+    : '<option value="">لا توجد صور في المكتبة — ارفع صورة أولاً</option>';
+  onImgSelChange();
 }
 
 function onImgSelChange(){
   var sel = document.getElementById('slide-img-sel');
-  var id = sel.value;
+  var id  = sel.value;
   var prev = document.getElementById('slide-img-preview');
-  var img = getImageById(id);
-  prev.innerHTML = img ? '<img src="'+img.data+'" style="width:100%;border-radius:8px;max-height:120px;object-fit:cover">' : '';
+  var img  = getImageById(id);
+  prev.innerHTML = img
+    ? '<img src="'+img.data+'" style="width:100%;border-radius:8px;max-height:120px;object-fit:cover">'
+    : '';
 }
 
 function selColor(el){
@@ -632,16 +840,17 @@ function selColor(el){
 }
 
 // ═══════════════════════════════════════════
-// SECTION 5 — IMAGE MANAGER
+// SECTION 6 — IMAGE LIBRARY MANAGER
 // ═══════════════════════════════════════════
-function onImgSelect(e){
-  var files = Array.from(e.target.files);
-  processFiles(files);
-  e.target.value='';
-}
+function onImgSelect(e){ processFiles(Array.from(e.target.files)); e.target.value=''; }
 
-function onDragOver(e){ e.preventDefault(); document.getElementById('upload-zone').classList.add('drag-over'); }
-function onDragLeave(e){ document.getElementById('upload-zone').classList.remove('drag-over'); }
+function onDragOver(e){
+  e.preventDefault();
+  document.getElementById('upload-zone').classList.add('drag-over');
+}
+function onDragLeave(e){
+  document.getElementById('upload-zone').classList.remove('drag-over');
+}
 function onDrop(e){
   e.preventDefault();
   document.getElementById('upload-zone').classList.remove('drag-over');
@@ -649,18 +858,26 @@ function onDrop(e){
 }
 
 function processFiles(files){
-  var toLoad = files.filter(function(f){return f.type.startsWith('image/');});
+  var toLoad = files.filter(function(f){ return f.type.startsWith('image/'); });
   if(!toLoad.length){ toast('اختر صور صالحة فقط ❌','err'); return; }
-  var loaded=0;
+  var done = 0;
   toLoad.forEach(function(file){
-    if(file.size > 2*1024*1024){ toast('الصورة '+file.name+' تجاوزت 2MB ❌','err'); return; }
-    var reader = new FileReader();
-    reader.onload = function(ev){
-      images.push({id:'img'+Date.now()+Math.random().toString(36).slice(2,5), name:file.name, data:ev.target.result});
-      loaded++;
-      if(loaded===toLoad.length){ saveConfig(); renderImages(); toast('تم رفع '+loaded+' صورة ✅','ok'); }
-    };
-    reader.readAsDataURL(file);
+    // ⭐ ضغط الصورة قبل الحفظ
+    compressImage(file, 640, 0.75, function(data, sizeKB){
+      if(!data){ toast('فشل قراءة الصورة: '+file.name,'err'); return; }
+      images.push({
+        id:   'img' + Date.now() + Math.random().toString(36).slice(2,5),
+        name: file.name,
+        data: data,
+        sizeKB: sizeKB
+      });
+      done++;
+      if(done === toLoad.length){
+        saveConfig();
+        renderImages();
+        toast('تم رفع '+done+' صورة ✅ (مضغوطة)', 'ok');
+      }
+    });
   });
 }
 
@@ -668,30 +885,30 @@ function renderImages(){
   var grid = document.getElementById('img-grid');
   grid.innerHTML = images.map(function(img,i){
     return '<div class="img-thumb-wrap">'+
-      '<img src="'+img.data+'" alt="'+img.name+'">'+
+      '<img src="'+img.data+'" alt="'+img.name+'" loading="lazy">'+
       '<button class="img-thumb-del" onclick="delImage('+i+')" title="حذف">✕</button>'+
+      (img.sizeKB ? '<div class="img-size-badge">'+img.sizeKB+'KB</div>' : '')+
     '</div>';
   }).join('');
   document.getElementById('st-imgs').textContent = images.length;
 }
 
 function delImage(idx){
-  if(!confirm('حذف هذه الصورة؟')) return;
+  if(!confirm('حذف هذه الصورة من المكتبة؟')) return;
   var id = images[idx].id;
   images.splice(idx,1);
-  // Remove from slides using this image
-  config.slides.forEach(function(s){if(s.imageId===id)s.imageId=null;});
-  saveConfig();
-  renderImages();
+  // نظّف مراجع هذه الصورة من الشرائح
+  config.slides.forEach(function(s){ if(s.imageId === id) s.imageId = null; });
+  saveConfig(); renderImages();
   toast('تم الحذف ✅','ok');
 }
 
 function getImageById(id){
-  return images.find(function(img){return img.id===id;}) || null;
+  return images.find(function(img){ return img.id === id; }) || null;
 }
 
 // ═══════════════════════════════════════════
-// SECTION 6 — TICKER MANAGER
+// SECTION 7 — TICKER MANAGER
 // ═══════════════════════════════════════════
 function renderTicker(){
   var el = document.getElementById('ticker-list');
@@ -702,7 +919,6 @@ function renderTicker(){
     '</div>';
   }).join('') || '<div style="color:var(--muted);font-size:12px;padding:8px">لا توجد رسائل</div>';
   document.getElementById('st-ticker').textContent = config.ticker.length;
-  // Update preview ticker
   document.getElementById('preview-ticker').textContent = '📢 أخبارنا ✦ ' + config.ticker.join(' ✦ ');
 }
 
@@ -710,51 +926,49 @@ function addTicker(){
   var val = document.getElementById('new-ticker').value.trim();
   if(!val){ toast('أدخل نص الرسالة ❌','err'); return; }
   config.ticker.push(val);
-  document.getElementById('new-ticker').value='';
-  saveConfig();
-  renderTicker();
+  document.getElementById('new-ticker').value = '';
+  saveConfig(); renderTicker();
   toast('تمت الإضافة ✅','ok');
 }
 
 function delTicker(idx){
   config.ticker.splice(idx,1);
-  saveConfig();
-  renderTicker();
+  saveConfig(); renderTicker();
 }
 
 // ═══════════════════════════════════════════
-// SECTION 7 — PREVIEW & STATUS
+// SECTION 8 — PREVIEW & STATUS
 // ═══════════════════════════════════════════
 function updatePreview(){
   document.getElementById('prev-shopname').textContent = '📚 ' + config.shopName;
-  document.getElementById('prev-welcome').textContent = config.welcomeText;
-  document.getElementById('prev-sub').textContent = config.welcomeSub;
+  document.getElementById('prev-welcome').textContent  = config.welcomeText;
+  document.getElementById('prev-sub').textContent      = config.welcomeSub;
   renderTicker();
-  // Update clock
   var now = new Date();
-  document.getElementById('prev-clock').textContent = 
-    now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+  document.getElementById('prev-clock').textContent =
+    now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
 }
 
 function previewSlide(){
-  var active = config.slides.filter(function(s){return s.active;});
+  var active = config.slides.filter(function(s){ return s.active; });
   if(!active.length){ toast('لا توجد شرائح مفعّلة ❌','err'); return; }
   var i = 0;
   var screen = document.getElementById('preview-screen');
   function show(){
-    var s = active[i % active.length];
-    var bg = COLORS[s.color]||COLORS.purple;
+    var s   = active[i % active.length];
+    var bg  = COLORS[s.color] || COLORS.purple;
+    var imgData = s.imageData || (s.imageId ? (getImageById(s.imageId)||{}).data : null);
     screen.style.background = '#0a0a1a';
-    var imgEl = '';
-    if(s.type==='image' && s.imageId){
-      var img = getImageById(s.imageId);
-      if(img) imgEl = '<img src="'+img.data+'" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;opacity:.7">';
-    }
-    screen.innerHTML = imgEl + '<div style="position:absolute;inset:0;background:'+bg+'"></div>'+
+    var imgEl = imgData
+      ? '<img src="'+imgData+'" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;opacity:.85">'
+      : '';
+    screen.innerHTML =
+      imgEl +
+      '<div style="position:absolute;inset:0;background:'+bg+'"></div>'+
       '<div class="preview-content" style="position:relative;z-index:1">'+
-        '<div style="font-size:22px;font-weight:900;color:#fff;margin-bottom:6px">'+s.title+'</div>'+
-        (s.desc?'<div style="font-size:10px;color:rgba(255,255,255,.6)">'+s.desc+'</div>':'')+
-        (s.badge?'<div style="margin-top:8px;background:rgba(124,58,237,.4);color:#fff;padding:4px 14px;border-radius:20px;font-size:10px;font-weight:700">'+s.badge+'</div>':'')+
+        '<div style="font-size:22px;font-weight:900;color:#fff;margin-bottom:6px;text-shadow:0 2px 8px rgba(0,0,0,.5)">'+s.title+'</div>'+
+        (s.desc  ? '<div style="font-size:10px;color:rgba(255,255,255,.7);text-shadow:0 1px 4px rgba(0,0,0,.5)">'+s.desc+'</div>'  : '')+
+        (s.badge ? '<div style="margin-top:8px;background:rgba(124,58,237,.5);backdrop-filter:blur(4px);color:#fff;padding:4px 14px;border-radius:20px;font-size:10px;font-weight:700">'+s.badge+'</div>' : '')+
       '</div>';
     i++;
   }
@@ -768,39 +982,40 @@ function previewSlide(){
 
 function updateStatus(){
   var cartRaw = localStorage.getItem('hashayshi_display_cart');
-  var cfgRaw = localStorage.getItem('hashayshi_display_full_config');
-  var cart = null;
-  try{ if(cartRaw) cart = JSON.parse(cartRaw); }catch(e){}
-  var cfgTs = null;
-  try{ if(cfgRaw){ var c=JSON.parse(cfgRaw); cfgTs=c.ts; } }catch(e){}
-  
-  var html = '';
-  html += '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span>📡 آخر إرسال:</span><strong>'+(cfgTs?new Date(cfgTs).toLocaleTimeString('ar-DZ'):'لم يتم')+'</strong></div>';
-  html += '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span>🛒 السلة:</span><strong style="color:'+(cart&&cart.active?'#16a34a':'#9ca3af')+'">'+(cart&&cart.active?'نشطة ('+cart.items.length+' أصناف)':'فارغة')+'</strong></div>';
-  html += '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span>🎞️ الشرائح:</span><strong>'+config.slides.filter(function(s){return s.active;}).length+' / '+config.slides.length+' مفعّلة</strong></div>';
-  html += '<div style="display:flex;justify-content:space-between;padding:6px 0"><span>🖼️ الصور:</span><strong>'+images.length+' صورة</strong></div>';
-  document.getElementById('display-status').innerHTML = html;
+  var cfgRaw  = localStorage.getItem('hashayshi_display_full_config');
+  var cart = null, cfgTs = null;
+  try{ if(cartRaw) cart   = JSON.parse(cartRaw);              } catch(e){}
+  try{ if(cfgRaw)  cfgTs  = JSON.parse(cfgRaw).ts;            } catch(e){}
+  var imgSlides = config.slides.filter(function(s){ return s.type==='image' && (s.imageData||s.imageId); }).length;
+
+  document.getElementById('display-status').innerHTML =
+    '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span>📡 آخر إرسال:</span><strong>'+(cfgTs?new Date(cfgTs).toLocaleTimeString('ar-DZ'):'لم يتم')+'</strong></div>'+
+    '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span>🛒 السلة:</span><strong style="color:'+(cart&&cart.active?'#16a34a':'#9ca3af')+'">'+(cart&&cart.active?'نشطة ('+cart.items.length+' أصناف)':'فارغة')+'</strong></div>'+
+    '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span>🎞️ الشرائح:</span><strong>'+config.slides.filter(function(s){return s.active;}).length+' / '+config.slides.length+' مفعّلة</strong></div>'+
+    '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span>🖼️ شرائح بصور:</span><strong style="color:'+(imgSlides?'#7c3aed':'#9ca3af')+'">'+imgSlides+'</strong></div>'+
+    '<div style="display:flex;justify-content:space-between;padding:6px 0"><span>📚 المكتبة:</span><strong>'+images.length+' صورة</strong></div>';
 }
 
 // ═══════════════════════════════════════════
-// SECTION 8 — SETTINGS FORM SYNC
+// SECTION 9 — SETTINGS FORM
 // ═══════════════════════════════════════════
 function loadSettingsForm(){
   document.getElementById('set-shopname').value = config.shopName;
-  document.getElementById('set-welcome').value = config.welcomeText;
-  document.getElementById('set-sub').value = config.welcomeSub;
-  document.getElementById('set-dur').value = config.slideDuration;
-  document.getElementById('set-idle').value = config.idleTimeout;
+  document.getElementById('set-welcome').value  = config.welcomeText;
+  document.getElementById('set-sub').value      = config.welcomeSub;
+  document.getElementById('set-dur').value      = config.slideDuration;
+  document.getElementById('set-idle').value     = config.idleTimeout;
 }
 
 // ═══════════════════════════════════════════
-// SECTION 9 — TOAST & UTILS
+// SECTION 10 — TOAST & UTILS
 // ═══════════════════════════════════════════
 function toast(msg, type, dur){
   var t = document.getElementById('toast');
   t.className = 'toast show ' + (type||'');
   t.textContent = msg;
-  setTimeout(function(){t.className='toast';}, dur||2500);
+  clearTimeout(t._to);
+  t._to = setTimeout(function(){ t.className='toast'; }, dur||2500);
 }
 
 function renderAll(){
@@ -810,19 +1025,17 @@ function renderAll(){
   loadSettingsForm();
   updatePreview();
   updateStatus();
+  updateStorageInfo();
 }
 
 // ═══════════════════════════════════════════
-// SECTION 10 — INIT
+// SECTION 11 — INIT
 // ═══════════════════════════════════════════
 window.onload = function(){
   loadConfig();
   renderAll();
   setInterval(updatePreview, 30000);
   setInterval(updateStatus, 3000);
-  // Listen for slide-img-sel changes
-  var imgSel = document.getElementById('slide-img-sel');
-  imgSel.addEventListener('change', onImgSelChange);
 };
 </script>
 </body>
