@@ -263,14 +263,22 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Cairo','Tajawal',s
   .slide-stats{grid-template-columns:1fr;}
 }
 </style>
+   <!-- ربط ملف الـ Manifest ليعمل كـ PWA -->
 <link rel="manifest" href="manifest.json">
+
+<!-- تحديد لون شريط الحالة ليتوافق مع التصميم المظلم للشاشة -->
 <meta name="theme-color" content="#0a0a1a">
+
+<!-- دعم أجهزة آبل iOS -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
 </head>
 <body>
 
-<!-- BACKGROUND LAYER -->
+<!-- ==========================================
+     BACKGROUND LAYER
+     ========================================== -->
 <div class="bg-layer">
   <div class="bg-grid"></div>
   <div class="bg-orb bg-orb1"></div>
@@ -279,8 +287,11 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Cairo','Tajawal',s
 </div>
 <div class="scanlines"></div>
 
-<!-- SCREEN 1: CASHIER POS DISPLAY -->
+<!-- ==========================================
+     SCREEN 1: CASHIER POS DISPLAY
+     ========================================== -->
 <div id="screen-cashier" class="screen">
+  <!-- Header -->
   <div class="cashier-header">
     <div class="shop-brand">
       <div class="shop-logo">📚</div>
@@ -295,7 +306,9 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Cairo','Tajawal',s
     </div>
   </div>
 
+  <!-- Body -->
   <div class="cashier-body">
+    <!-- Items List -->
     <div class="items-panel">
       <div class="items-title">🛒 قائمة مشترياتك</div>
       <div class="items-list" id="items-list">
@@ -306,11 +319,13 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Cairo','Tajawal',s
       </div>
     </div>
 
+    <!-- Totals -->
     <div class="total-panel">
       <div class="total-card shimmer">
         <div class="total-label">💰 إجمالي الفاتورة</div>
         <div class="total-value" id="total-display"><span class="currency">د.ج</span><span id="total-num">0.00</span></div>
       </div>
+
       <div id="subtotals-block" style="display:none;">
         <div class="total-card" style="padding:14px 20px;">
           <div class="subtotal-row">
@@ -327,8 +342,10 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Cairo','Tajawal',s
           </div>
         </div>
       </div>
+
       <div id="payment-method-block" style="display:none;"></div>
       <div id="change-block" style="display:none;"></div>
+
       <div style="flex:1;"></div>
       <div style="text-align:center;color:rgba(255,255,255,0.12);font-size:12px;line-height:1.8;">
         نشكركم على اختياركم مكتبة حشايشي<br>
@@ -337,6 +354,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Cairo','Tajawal',s
     </div>
   </div>
 
+  <!-- Thank You Overlay -->
   <div class="thankyou-overlay" id="thankyou-overlay">
     <div class="ty-particles" id="ty-particles"></div>
     <div class="ty-check">✓</div>
@@ -347,8 +365,11 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Cairo','Tajawal',s
   </div>
 </div>
 
-<!-- SCREEN 2: ADS / IDLE MODE -->
+<!-- ==========================================
+     SCREEN 2: ADS / IDLE MODE
+     ========================================== -->
 <div id="screen-ads" class="screen hidden">
+  <!-- Header -->
   <div class="ads-header">
     <div class="ads-shop-brand">
       <div class="shop-logo" style="width:42px;height:42px;font-size:22px;">📚</div>
@@ -357,32 +378,124 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Cairo','Tajawal',s
     <div class="ads-clock" id="ads-time">--:--</div>
   </div>
 
+  <!-- Slides Container -->
   <div class="ads-body">
-    <!-- Slides will be injected dynamically -->
-    <div class="slide-dots" id="slide-dots"></div>
+
+    <!-- Slide 1: Welcome -->
+    <div class="slide slide-welcome active" id="slide-0">
+      <div class="slide-promo-bg" style="background:radial-gradient(ellipse at center,rgba(124,58,237,0.12) 0%,transparent 70%),radial-gradient(ellipse at 80% 20%,rgba(245,158,11,0.08) 0%,transparent 50%);"></div>
+      <div class="welcome-logo">📚</div>
+      <div class="welcome-title">أهلاً بكم</div>
+      <div class="welcome-sub">مكتبتكم المفضلة — جودة بلا تنازل</div>
+      <div class="welcome-cta">
+        <div class="wcta-item"><span>📚</span> قرطاسية</div>
+        <div class="wcta-item"><span>🖨️</span> طباعة</div>
+        <div class="wcta-item"><span>📱</span> خدمات هاتف</div>
+        <div class="wcta-item"><span>🎨</span> لوازم مدرسية</div>
+        <div class="wcta-item"><span>📦</span> مستلزمات مكتبية</div>
+      </div>
+    </div>
+
+    <!-- Slide 2: Promotion -->
+    <div class="slide" id="slide-1">
+      <div class="slide-promo-bg" style="background:radial-gradient(ellipse at 30% 50%,rgba(168,85,247,0.15) 0%,transparent 60%),radial-gradient(ellipse at 80% 50%,rgba(124,58,237,0.1) 0%,transparent 50%);"></div>
+      <div class="slide-promo-content" style="width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:24px;padding:40px;">
+        <div class="slide-promo-tag">🎉 عرض حصري</div>
+        <div class="slide-promo-title glow-text" style="text-align:center;">خدمة الطباعة<br><span style="color:var(--accent2);">بأفضل الأسعار</span></div>
+        <div class="slide-promo-desc">طباعة ملونة وأبيض وأسود، تصوير وتجليد، بطاقات ولافتات — جميع الخدمات تحت سقف واحد</div>
+        <div class="slide-promo-badge">🖨️ خدمات الطباعة المتكاملة</div>
+      </div>
+    </div>
+
+    <!-- Slide 3: Stats -->
+    <div class="slide" id="slide-2">
+      <div class="slide-promo-bg" style="background:radial-gradient(ellipse at 20% 80%,rgba(16,185,129,0.1) 0%,transparent 60%);"></div>
+      <div class="slide-stats" style="width:100%;height:100%;">
+        <div class="stat-big-card">
+          <div class="sbc-icon">⭐</div>
+          <div class="sbc-label">تقييم العملاء</div>
+          <div class="sbc-val gold">5 / 5</div>
+          <div class="sbc-sub">خدمة عملاء ممتازة</div>
+        </div>
+        <div class="stat-big-card">
+          <div class="sbc-icon">📦</div>
+          <div class="sbc-label">منتجات متاحة</div>
+          <div class="sbc-val purple" id="ads-product-count">---</div>
+          <div class="sbc-sub">صنف متنوع ومتجدد</div>
+        </div>
+        <div class="stat-big-card">
+          <div class="sbc-icon">🤝</div>
+          <div class="sbc-label">زبائننا الكرام</div>
+          <div class="sbc-val green" id="ads-client-count">---</div>
+          <div class="sbc-sub">عائلة متنامية</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 4: Services -->
+    <div class="slide" id="slide-3">
+      <div class="slide-promo-bg" style="background:radial-gradient(ellipse at 70% 30%,rgba(59,130,246,0.12) 0%,transparent 60%);"></div>
+      <div class="slide-promo-content" style="width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:24px;padding:40px;">
+        <div class="slide-promo-tag" style="background:rgba(59,130,246,0.2);border-color:rgba(59,130,246,0.4);color:#60a5fa;">📱 خدمات الاتصالات</div>
+        <div class="slide-promo-title glow-text" style="text-align:center;font-size:clamp(28px,4vw,56px);">شحن رصيد<br><span style="color:#60a5fa;">جميع الشبكات</span></div>
+        <div class="slide-promo-desc">فليكسي موبيليس، جازي، أوريدو — بطاقات الإنترنت وتحويل الرصيد بسهولة وسرعة</div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;">
+          <div class="wcta-item" style="border-color:rgba(59,130,246,0.3);"><span>🟢</span> موبيليس</div>
+          <div class="wcta-item" style="border-color:rgba(59,130,246,0.3);"><span>🔴</span> جازي</div>
+          <div class="wcta-item" style="border-color:rgba(59,130,246,0.3);"><span>🟡</span> أوريدو</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide dots -->
+    <div class="slide-dots" id="slide-dots">
+      <div class="slide-dot active" onclick="goToSlide(0)"></div>
+      <div class="slide-dot" onclick="goToSlide(1)"></div>
+      <div class="slide-dot" onclick="goToSlide(2)"></div>
+      <div class="slide-dot" onclick="goToSlide(3)"></div>
+    </div>
   </div>
 
+  <!-- Ticker -->
   <div class="ads-ticker">
     <div class="ticker-label">📢 أخبارنا</div>
     <div class="ticker-track">
       <div class="ticker-inner" id="ticker-inner">
         <span>🎉 أهلاً وسهلاً بكم في مكتبة حشايشي</span>
         <span class="ticker-sep">✦</span>
+        <span>📚 أوسع تشكيلة من اللوازم المدرسية والمكتبية</span>
+        <span class="ticker-sep">✦</span>
+        <span>🖨️ خدمات الطباعة متاحة بأحسن الأسعار</span>
+        <span class="ticker-sep">✦</span>
+        <span>📱 شحن رصيد جميع الشبكات</span>
+        <span class="ticker-sep">✦</span>
+        <span>💙 نشكركم على ثقتكم بنا دائماً</span>
+        <span class="ticker-sep">✦</span>
+        <span>🎁 عروض خاصة ومتجددة طوال الموسم</span>
+        <span class="ticker-sep">✦</span>
       </div>
     </div>
   </div>
 </div>
 
+<!-- Mode Indicator -->
 <div class="mode-indicator"><div class="mode-indicator-bar" id="mode-bar"></div></div>
 
-<!-- JAVASCRIPT — PART 1: CORE ENGINE -->
+<!-- ==========================================
+     JAVASCRIPT — PART 1: CORE ENGINE
+     ========================================== -->
 <script>
-const IDLE_TIMEOUT = 45000;
-const THANKYOU_DURATION = 3500;
+// ============================================================
+// CONSTANTS & STATE
+// ============================================================
+const IDLE_TIMEOUT = 45000;   // 45s no activity → ads mode
+const ADS_SLIDE_INTERVAL = 6000; // 6s per slide
+const THANKYOU_DURATION = 3500;  // 3.5s thank you screen
+const STORAGE_KEY = 'hashayshi_db';
 
 let state = {
-  mode: 'cashier',
-  items: [],
+  mode: 'ads',          // 'cashier' | 'ads'
+  items: [],             // current sale items
   total: 0,
   discount: 0,
   paymentMethod: null,
@@ -390,32 +503,48 @@ let state = {
   idleTimer: null,
   adsSlideTimer: null,
   currentSlide: 0,
-  totalSlides: 0,
+  totalSlides: 4,
   showingThankyou: false,
 };
 
+// ============================================================
+// CLOCK
+// ============================================================
 function updateClocks(){
   const now = new Date();
   const timeStr = now.toLocaleTimeString('ar-DZ',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
   const dateStr = now.toLocaleDateString('ar-DZ',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
   const timeShort = now.toLocaleTimeString('ar-DZ',{hour:'2-digit',minute:'2-digit'});
-  document.getElementById('cash-time').textContent = timeStr;
-  document.getElementById('cash-date').textContent = dateStr;
-  document.getElementById('ads-time').textContent = timeShort;
+  el('cash-time').textContent = timeStr;
+  el('cash-date').textContent = dateStr;
+  el('ads-time').textContent = timeShort;
 }
 setInterval(updateClocks, 1000);
 updateClocks();
 
+// ============================================================
+// HELPERS
+// ============================================================
 function el(id){ return document.getElementById(id); }
 function fmt(n){ return Number(n).toLocaleString('ar-DZ',{minimumFractionDigits:2,maximumFractionDigits:2}); }
 
+function readDB(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  }catch(e){ return null; }
+}
+
+// ============================================================
+// SCREEN SWITCHER
+// ============================================================
 function showCashier(){
   if(state.mode === 'cashier') return;
   state.mode = 'cashier';
   el('screen-ads').classList.add('hidden');
   el('screen-cashier').classList.remove('hidden');
   el('screen-cashier').classList.add('screen-transition-in');
-  if(typeof stopAdsSlideshow === 'function') stopAdsSlideshow();
+  if (typeof stopAdsSlideshow === 'function') stopAdsSlideshow();
   el('mode-bar').style.background = 'linear-gradient(90deg,var(--green),#34d399)';
   el('mode-bar').style.width = '100%';
   setTimeout(()=>el('screen-cashier').classList.remove('screen-transition-in'),800);
@@ -427,38 +556,77 @@ function showAds(){
   el('screen-cashier').classList.add('hidden');
   el('screen-ads').classList.remove('hidden');
   el('screen-ads').classList.add('screen-transition-in');
-  if(typeof startAdsSlideshow === 'function') startAdsSlideshow();
+  if (typeof startAdsSlideshow === 'function') startAdsSlideshow();
+  loadAdsStats();
   el('mode-bar').style.background = 'linear-gradient(90deg,var(--accent),var(--accent2))';
   el('mode-bar').style.width = '100%';
   setTimeout(()=>el('screen-ads').classList.remove('screen-transition-in'),800);
 }
 
+// ============================================================
+// IDLE TIMER
+// ============================================================
 function resetIdleTimer(){
   clearTimeout(state.idleTimer);
   state.idleTimer = setTimeout(()=>{
-    if(!state.showingThankyou && state.items.length === 0) showAds();
+    if(!state.showingThankyou && state.items.length === 0){
+      showAds();
+    }
   }, IDLE_TIMEOUT);
 }
 
+// ============================================================
+// ADS SLIDESHOW
+// ============================================================
+function startAdsSlideshow(){
+  goToSlide(0);
+  if (typeof stopAdsSlideshow === 'function') stopAdsSlideshow();
+  state.adsSlideTimer = setInterval(()=>{
+    const next = (state.currentSlide + 1) % state.totalSlides;
+    goToSlide(next);
+  }, ADS_SLIDE_INTERVAL);
+}
+
+function stopAdsSlideshow(){
+  clearInterval(state.adsSlideTimer);
+}
+
 function goToSlide(idx){
+  // Hide current
   const oldSlide = document.querySelector('.slide.active');
   if(oldSlide) oldSlide.classList.remove('active');
   const oldDot = document.querySelector('.slide-dot.active');
   if(oldDot) oldDot.classList.remove('active');
 
+  // Show new
   state.currentSlide = idx;
   const slide = el('slide-'+idx);
   if(slide) slide.classList.add('active');
   const dots = document.querySelectorAll('.slide-dot');
   if(dots[idx]) dots[idx].classList.add('active');
 }
+
+function loadAdsStats(){
+  const db = readDB();
+  if(!db) return;
+  const prodCount = db.products ? db.products.length : 0;
+  const clientCount = db.clients ? db.clients.length : 0;
+  el('ads-product-count').textContent = prodCount > 0 ? prodCount + '+' : '---';
+  el('ads-client-count').textContent = clientCount > 0 ? clientCount + '+' : '---';
+}
 </script>
 
-<!-- JAVASCRIPT — PART 2: SALE DISPLAY ENGINE -->
+<!-- ==========================================
+     JAVASCRIPT — PART 2: SALE DISPLAY ENGINE
+     ========================================== -->
 <script>
+// ============================================================
+// RENDER ITEMS
+// ============================================================
 const PRODUCT_EMOJIS = {
   'قرطاسية':'✏️','كتاب':'📖','دفتر':'📓','قلم':'🖊️','مقص':'✂️',
-  'ورق':'📄','ألوان':'🎨','محفظة':'👝','مسطرة':'📏','مبراة':'🖍️', default:'📦'
+  'ورق':'📄','ألوان':'🎨','محفظة':'👝','مسطرة':'📏','مبراة':'🖍️',
+  default:'📦'
 };
 
 function getEmoji(name){
@@ -474,7 +642,10 @@ function renderItems(){
   
   if(state.items.length === 0){
     empty.style.display = 'flex';
-    Array.from(list.children).forEach(c=>{ if(c.id !== 'empty-state') c.remove(); });
+    // Remove all item rows but keep empty state
+    Array.from(list.children).forEach(c=>{
+      if(c.id !== 'empty-state') c.remove();
+    });
     el('subtotals-block').style.display = 'none';
     el('payment-method-block').style.display = 'none';
     el('change-block').style.display = 'none';
@@ -485,8 +656,14 @@ function renderItems(){
   empty.style.display = 'none';
   el('subtotals-block').style.display = 'block';
 
+  // Build item rows
+  // Show max 5 items to avoid overflow, with scroll feel
   const visibleItems = state.items.slice(-5);
-  Array.from(list.children).forEach(c=>{ if(c.id !== 'empty-state') c.remove(); });
+  
+  // Clear and re-render
+  Array.from(list.children).forEach(c=>{
+    if(c.id !== 'empty-state') c.remove();
+  });
   
   visibleItems.forEach((item, i) => {
     const row = document.createElement('div');
@@ -515,6 +692,7 @@ function renderItems(){
     list.insertBefore(moreEl, empty);
   }
   
+  // Update totals
   const sub = state.items.reduce((s,i)=>s+(i.price*i.qty),0);
   const total = sub - (state.discount || 0);
   
@@ -533,6 +711,9 @@ function renderItems(){
   renderPaymentInfo();
 }
 
+// ============================================================
+// PAYMENT INFO
+// ============================================================
 const PAYMENT_INFO = {
   cash: { label:'نقداً', sublabel:'الدفع الفوري', icon:'💵', cls:'pm-cash' },
   card: { label:'بطاقة بنكية', sublabel:'Visa / CIB / Edahabia', icon:'💳', cls:'pm-card' },
@@ -579,10 +760,14 @@ function renderPaymentInfo(){
   }
 }
 
+// ============================================================
+// THANK YOU SCREEN
+// ============================================================
 function showThankyou(total){
   state.showingThankyou = true;
   el('ty-total-display').textContent = fmt(total) + ' د.ج';
   
+  // Create particles
   const container = el('ty-particles');
   container.innerHTML = '';
   const colors = ['#7c3aed','#a855f7','#f59e0b','#10b981','#3b82f6','#ec4899'];
@@ -590,7 +775,17 @@ function showThankyou(total){
     const p = document.createElement('div');
     p.className = 'particle';
     const color = colors[Math.floor(Math.random() * colors.length)];
-    p.style.cssText = `background:${color}; left:${Math.random()*100}%; top:${Math.random()*100}%; --dx:${(Math.random()-0.5)*400}px; --dy:${(Math.random()-0.5)*400}px; animation-delay:${Math.random()*0.5}s; animation-duration:${1.5+Math.random()}s; width:${4+Math.random()*8}px; height:${4+Math.random()*8}px;`;
+    p.style.cssText = `
+      background:${color};
+      left:${Math.random()*100}%;
+      top:${Math.random()*100}%;
+      --dx:${(Math.random()-0.5)*400}px;
+      --dy:${(Math.random()-0.5)*400}px;
+      animation-delay:${Math.random()*0.5}s;
+      animation-duration:${1.5+Math.random()}s;
+      width:${4+Math.random()*8}px;
+      height:${4+Math.random()*8}px;
+    `;
     container.appendChild(p);
   }
   
@@ -603,20 +798,33 @@ function showThankyou(total){
 }
 
 function clearSale(){
-  state.items = []; state.total = 0; state.discount = 0; state.paymentMethod = null; state.paid = 0;
-  renderItems(); resetIdleTimer();
+  state.items = [];
+  state.total = 0;
+  state.discount = 0;
+  state.paymentMethod = null;
+  state.paid = 0;
+  renderItems();
+  resetIdleTimer();
 }
 </script>
 
-<!-- JAVASCRIPT — PART 3: LIVE SYNC ENGINE -->
+<!-- ==========================================
+     JAVASCRIPT — PART 3: LIVE SYNC ENGINE
+     ========================================== -->
 <script>
+// ============================================================
+// POLL localStorage for changes from POS
+// ============================================================
 let lastSaleId = null;
 let lastCartHash = null;
 
 function pollPOS(){
-  if(typeof readDB !== 'function') return;
+  if (typeof readDB !== 'function') return;
   const db = readDB();
+  if(!db) return;
   
+  // ── CART WATCHER ──
+  // We watch a special key that the POS system writes
   const cartData = localStorage.getItem('hashayshi_display_cart');
   if(cartData){
     try{
@@ -625,38 +833,54 @@ function pollPOS(){
       if(cartHash !== lastCartHash){
         lastCartHash = cartHash;
         if(cart.active){
-          showCashier(); resetIdleTimer();
-          state.items = cart.items || []; state.total = cart.total || 0; state.discount = cart.discount || 0;
-          state.paymentMethod = cart.paymentMethod || null; state.paid = cart.paid || 0;
+          showCashier();
+          resetIdleTimer();
+          state.items = cart.items || [];
+          state.total = cart.total || 0;
+          state.discount = cart.discount || 0;
+          state.paymentMethod = cart.paymentMethod || null;
+          state.paid = cart.paid || 0;
           renderItems();
         }
       }
     }catch(e){}
   }
   
+  // ── SALE COMPLETE WATCHER ──
   const saleComplete = localStorage.getItem('hashayshi_display_complete');
   if(saleComplete){
     try{
       const sale = JSON.parse(saleComplete);
       if(sale.id && sale.id !== lastSaleId){
         lastSaleId = sale.id;
-        showCashier(); showThankyou(sale.total || 0);
+        showCashier();
+        showThankyou(sale.total || 0);
         localStorage.removeItem('hashayshi_display_complete');
       }
     }catch(e){}
   }
   
-  if(db && db.sales && db.sales.length > 0){
+  // ── RECENT SALE WATCHER (fallback) ──
+  if(db.sales && db.sales.length > 0){
     const lastSale = db.sales[db.sales.length - 1];
     const saleId = lastSale.id || lastSale.date;
+    // Only trigger if it's from today
     const today = new Date().toISOString().slice(0,10);
-    // Ignore synthetic admin configs
+    // Ignore synthetic config trigger
     if(saleId !== '_admin_cfg' && saleId !== lastSaleId && lastSale.dateStr === today){
+      // Don't re-trigger old sales on first load
       if(lastSaleId !== null){
-        lastSaleId = saleId; showCashier();
+        lastSaleId = saleId;
+        showCashier();
+        // Show sale items briefly
         if(lastSale.items){
-          state.items = lastSale.items.map(i=>({ name: i.name || i.n || 'منتج', price: i.price || i.p || 0, qty: i.qty || i.q || 1 }));
-          state.total = lastSale.total || 0; state.paymentMethod = lastSale.method || 'cash';
+          state.items = lastSale.items.map(i=>({
+            name: i.name || i.n || 'منتج',
+            price: i.price || i.p || 0,
+            qty: i.qty || i.q || 1,
+          }));
+          state.total = lastSale.total || 0;
+          state.paymentMethod = lastSale.method || 'cash';
           renderItems();
         }
         setTimeout(()=>showThankyou(lastSale.total||0), 1200);
@@ -667,28 +891,107 @@ function pollPOS(){
   }
 }
 
+// Start polling every 500ms
 setInterval(pollPOS, 500);
+// Initial state
 setTimeout(()=>{
   const cartData = localStorage.getItem('hashayshi_display_cart');
-  if(!cartData || !JSON.parse(cartData||'{}').active) showAds();
+  if(!cartData || !JSON.parse(cartData||'{}').active){
+    showAds();
+  }
 }, 1000);
 
+resetIdleTimer();
+if (typeof startAdsSlideshow === 'function') startAdsSlideshow();
+
+// ============================================================
+// INTEGRATION HELPERS — called from POS page (same browser)
+// ============================================================
 window.customerDisplay = {
   updateCart(items, total, discount=0, paymentMethod=null, paid=0){
-    localStorage.setItem('hashayshi_display_cart', JSON.stringify({ active:true, items, total, discount, paymentMethod, paid, ts: Date.now() }));
+    localStorage.setItem('hashayshi_display_cart', JSON.stringify({
+      active:true, items, total, discount, paymentMethod, paid,
+      ts: Date.now()
+    }));
   },
   completeSale(total){
-    localStorage.setItem('hashayshi_display_complete', JSON.stringify({ id: 'sale_'+Date.now(), total, ts: Date.now() }));
+    localStorage.setItem('hashayshi_display_complete', JSON.stringify({
+      id: 'sale_'+Date.now(), total, ts: Date.now()
+    }));
     localStorage.setItem('hashayshi_display_cart', JSON.stringify({active:false,items:[],total:0}));
   },
   clearCart(){
     localStorage.setItem('hashayshi_display_cart', JSON.stringify({active:false,items:[],total:0}));
   }
 };
+
+// ============================================================
+// DEMO MODE — if no POS, run a demo
+// ============================================================
+function runDemo(){
+  const demoItems = [
+    [{name:'دفاتر مدرسية ×5',price:250,qty:1},{name:'أقلام بيك',price:45,qty:3}],
+    [{name:'ورق A4 رزمة',price:480,qty:2},{name:'مقص كبير',price:120,qty:1},{name:'لاصق سريع',price:35,qty:2}],
+    [{name:'محفظة مدرسية',price:850,qty:1}],
+  ];
+  
+  let demoIdx = 0;
+  
+  function demoSale(){
+    // إيقاف الديمو إذا كانت هناك إعدادات حقيقية من لوحة التحكم
+    if (localStorage.getItem('hashayshi_display_full_config')) return;
+
+    const items = demoItems[demoIdx % demoItems.length];
+    const methods = ['cash','card','cash'];
+    const method = methods[demoIdx % 3];
+    
+    showCashier();
+    state.items = [];
+    renderItems();
+    
+    // Add items one by one
+    let i = 0;
+    const addItem = ()=>{
+      if(i < items.length){
+        state.items.push(items[i]);
+        renderItems();
+        i++;
+        setTimeout(addItem, 800);
+      } else {
+        state.total = state.items.reduce((s,it)=>s+(it.price*it.qty),0);
+        state.paymentMethod = method;
+        state.paid = method === 'cash' ? Math.ceil(state.total/100)*100 + 100 : state.total;
+        renderItems();
+        setTimeout(()=>{
+          showThankyou(state.total);
+          setTimeout(()=>{
+            demoIdx++;
+            setTimeout(demoSale, ADS_SLIDE_INTERVAL);
+          }, THANKYOU_DURATION + 500);
+        }, 2000);
+      }
+    };
+    setTimeout(addItem, 600);
+  }
+  
+  // Start demo after 8s if no real data
+  setTimeout(()=>{
+    if (typeof readDB !== 'function') return;
+    const db = readDB();
+    const hasRecentSales = db && db.sales && db.sales.length > 0;
+    if(!hasRecentSales){
+      demoSale();
+      setInterval(()=>{ if(state.mode === 'ads' && !state.showingThankyou) demoSale(); }, 25000);
+    }
+  }, 8000);
+}
+
+runDemo();
 </script>
 
 <!-- ═══════════════════════════════════════════════════════
-     FIX v4 — إصلاح شامل لشاشة الزبون + قارئ الصور (IndexedDB)
+     FIX v4 — قارئ الصور (IndexedDB) + ربط لوحة التحكم
+     هذا السكربت يحل محل الترقيعات القديمة السابقة
      ═══════════════════════════════════════════════════════ -->
 <script>
 (function () {
@@ -708,7 +1011,7 @@ window.customerDisplay = {
       if(callback) callback();
     };
     req.onerror = function() {
-      if(callback) callback(); // المتابعة حتى لو فشل جلب الصور
+      if(callback) callback();
     };
   }
 
@@ -723,8 +1026,12 @@ window.customerDisplay = {
   }
 
   /* ──────────────────────────────────────────────────────
-     2. إعدادات الحالة وقراءة البيانات الأساسية من POS
+     2. قراءة البيانات الأساسية من POS
   ────────────────────────────────────────────────────── */
+  if (typeof state !== 'undefined') {
+    state.mode = 'cashier'; // يبدأ ككاشير لكي يعمل الانتقال إلى الإعلانات بسلاسة
+  }
+
   window.readDB = function () {
     try {
       var hasCfg = !!localStorage.getItem('hashayshi_display_full_config');
@@ -734,6 +1041,8 @@ window.customerDisplay = {
       var products = p  ? JSON.parse(p)  : [];
       var sales    = s  ? JSON.parse(s)  : [];
       var clients  = cl ? JSON.parse(cl) : [];
+      
+      // إذا كان هناك إعدادات حقيقية، نضع بيعة وهمية لمنع الديمو من العمل
       if (hasCfg && !sales.length) {
         sales = [{ id: '_admin_cfg', dateStr: new Date().toISOString().slice(0, 10) }];
       }
@@ -743,7 +1052,7 @@ window.customerDisplay = {
   };
 
   /* ──────────────────────────────────────────────────────
-     3. بناء الشرائح (مع دمج قارئ الصور)
+     3. بناء الشرائح واستدعاء الصور
   ────────────────────────────────────────────────────── */
   var _adminTs  = 0;
   var _adminDur = 6000;
@@ -787,13 +1096,13 @@ window.customerDisplay = {
       div.className = 'slide' + tc + (i === 0 ? ' active' : '');
       div.id        = 'slide-' + i;
 
-      // تجهيز مكان الصورة (سيتم تعبئته بواسطة IndexedDB Reader)
+      // تجهيز عنصر الصورة
       var imgH = '';
       var imgIdStr = 'slide-img-elem-' + i;
       if (s.imageId) {
         imgH = '<img id="' + imgIdStr + '" src="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.75;z-index:0;display:none;">';
         
-        // جلب الصورة في الخلفية فور بنائها
+        // جلب الصورة في الخلفية وحقنها
         (function(targetId, dbImgId){
           getImageFromDB(dbImgId, function(data){
             if(data){
@@ -880,6 +1189,7 @@ window.customerDisplay = {
         var active = cfg.slides.filter(function (sl) { return sl.active !== false; });
         if (active.length) {
           _buildSlides(active, _adminDur);
+          // إعادة تشغيل الـ interval
           if (typeof state !== 'undefined' && state.mode === 'ads') {
             setTimeout(function () { startAdsSlideshow(); }, 100);
           }
