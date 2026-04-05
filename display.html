@@ -578,7 +578,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Cairo','Tajawal',s
 //  IndexedDB
 // ════════════════════════════════════════
 var DB_NAME   = 'hashayshi_pos_db';
-var DB_VER    = 1;
+var DB_VER    = 2;
 var STORE     = 'images';
 var displayDB = null;
 
@@ -788,7 +788,10 @@ var BG_PRESETS_MAP={
 
 var OVERLAY_COLORS={purple:'rgba(124,58,237,',blue:'rgba(59,130,246,',green:'rgba(16,185,129,',orange:'rgba(245,158,11,',pink:'rgba(236,72,153,',teal:'rgba(20,184,166,',red:'rgba(239,68,68,',dark:'rgba(0,0,0,',gold:'rgba(234,179,8,',none:'rgba(0,0,0,'};
 
-function buildBgStyle(slide){
+
+function buildBgStyle(slide, hasImage){
+  // إذا كانت هناك صورة رئيسية: خلفية شبه شفافة فقط لضمان عدم الإخفاء
+  if(hasImage) return 'background:#000;';
   if(slide.bgType==='solid') return 'background:' + (slide.bgSolid||'#0a0a1a') + ';';
   if(slide.bgType==='preset'){
     var bg=BG_PRESETS_MAP[slide.bgPreset];
