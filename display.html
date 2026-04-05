@@ -959,5 +959,345 @@ window.customerDisplay = {
   }
 };
 </script>
+   <!-- ═══════════════════════════════════════════════════
+     أضف هذا الـ CSS داخل <style> في display.html
+     (قبل السطر الأخير </style>)
+     ═══════════════════════════════════════════════════ -->
+
+/* ── Image Effects (Ken Burns, Zoom, Pan) ── */
+@keyframes kenBurns{0%{transform:scale(1) translate(0,0)}100%{transform:scale(1.18) translate(-3%,-2%)}}
+@keyframes kenBurns2{0%{transform:scale(1.15) translate(-2%,-2%)}100%{transform:scale(1) translate(0,0)}}
+@keyframes zoomIn{0%{transform:scale(1)}100%{transform:scale(1.25)}}
+@keyframes zoomOut{0%{transform:scale(1.25)}100%{transform:scale(1)}}
+@keyframes panLeft{0%{transform:scale(1.1) translateX(0)}100%{transform:scale(1.1) translateX(-8%)}}
+@keyframes panRight{0%{transform:scale(1.1) translateX(0)}100%{transform:scale(1.1) translateX(8%)}}
+
+.img-effect-kenburns{animation:kenBurns 8s ease-in-out infinite alternate;}
+.img-effect-kenburns2{animation:kenBurns2 8s ease-in-out infinite alternate;}
+.img-effect-zoom-in{animation:zoomIn 8s ease-in-out infinite alternate;}
+.img-effect-zoom-out{animation:zoomOut 8s ease-in-out infinite alternate;}
+.img-effect-pan-left{animation:panLeft 8s ease-in-out infinite alternate;}
+.img-effect-pan-right{animation:panRight 8s ease-in-out infinite alternate;}
+
+/* ── Text Animations ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideRight{from{opacity:0;transform:translateX(-60px)}to{opacity:1;transform:translateX(0)}}
+@keyframes bounceIn{0%{opacity:0;transform:scale(.3)}50%{transform:scale(1.05)}70%{transform:scale(.95)}100%{opacity:1;transform:scale(1)}}
+@keyframes zoomInText{from{opacity:0;transform:scale(.5)}to{opacity:1;transform:scale(1)}}
+@keyframes glowPulse{0%,100%{text-shadow:0 0 20px rgba(168,85,247,.8),0 0 40px rgba(124,58,237,.5)}50%{text-shadow:0 0 40px rgba(168,85,247,1),0 0 80px rgba(124,58,237,.8),0 0 120px rgba(168,85,247,.4)}}
+@keyframes flipIn{from{opacity:0;transform:perspective(400px) rotateY(90deg)}to{opacity:1;transform:perspective(400px) rotateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+.ta-fade-up{animation:fadeUp .9s cubic-bezier(.175,.885,.32,1.275) both;}
+.ta-slide-right{animation:slideRight .8s ease both;}
+.ta-bounce{animation:bounceIn .9s both;}
+.ta-zoom-in{animation:zoomInText .7s cubic-bezier(.175,.885,.32,1.275) both;}
+.ta-glow{animation:fadeUp .8s both, glowPulse 2.5s 1s ease-in-out infinite;}
+.ta-flip{animation:flipIn .8s ease both;}
+.ta-fade{animation:fadeIn .8s ease both;}
+/* delay for desc */
+.da-delay{animation-delay:.4s;}
+/* Typewriter applied via JS */
+
+/* ── Font sizes ── */
+.ts-xs{font-size:clamp(18px,2.5vw,32px)!important;}
+.ts-sm{font-size:clamp(24px,3.5vw,44px)!important;}
+.ts-md{font-size:clamp(28px,4vw,54px)!important;}
+.ts-lg{font-size:clamp(32px,5vw,64px)!important;}
+.ts-xl{font-size:clamp(40px,6vw,80px)!important;}
+.ts-xxl{font-size:clamp(54px,8vw,110px)!important;}
+
+.ds-xs{font-size:clamp(11px,1.2vw,16px)!important;}
+.ds-sm{font-size:clamp(13px,1.5vw,20px)!important;}
+.ds-md{font-size:clamp(14px,1.8vw,24px)!important;}
+.ds-lg{font-size:clamp(18px,2.2vw,30px)!important;}
+
+/* ── Text colors ── */
+.tc-white{color:#f8fafc;}
+.tc-gold{color:#f59e0b;}
+.tc-purple{color:#a855f7;}
+.tc-gradient{background:linear-gradient(135deg,#f8fafc,#a855f7,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+/* ── Badge styles ── */
+.badge-filled{background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;padding:12px 36px;border-radius:50px;font-weight:900;box-shadow:0 8px 40px rgba(124,58,237,.5);}
+.badge-outline{border:2px solid #a855f7;color:#a855f7;padding:11px 35px;border-radius:50px;font-weight:900;}
+.badge-neon{border:2px solid #a855f7;color:#a855f7;padding:11px 35px;border-radius:50px;font-weight:900;box-shadow:0 0 20px rgba(168,85,247,.6),inset 0 0 20px rgba(168,85,247,.1);animation:glowPulse 2s ease-in-out infinite;}
+.badge-minimal{background:rgba(255,255,255,.08);color:rgba(255,255,255,.85);padding:11px 35px;border-radius:50px;font-weight:900;backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.15);}
+
+/* ── Slide transitions ── */
+.slide{transition:opacity .6s ease;}
+.slide-trans-slide-up.slide-entering{animation:transSlideUp .7s ease both;}
+.slide-trans-slide-left.slide-entering{animation:transSlideLeft .7s ease both;}
+.slide-trans-zoom.slide-entering{animation:transZoom .6s cubic-bezier(.175,.885,.32,1.275) both;}
+.slide-trans-flip.slide-entering{animation:transFlip .7s ease both;}
+.slide-trans-blur.slide-entering{animation:transBlur .7s ease both;}
+.slide-trans-wipe.slide-entering{animation:transWipe .7s ease both;}
+.slide-trans-none{transition:none!important;}
+@keyframes transSlideUp{from{opacity:0;transform:translateY(60px)}to{opacity:1;transform:translateY(0)}}
+@keyframes transSlideLeft{from{opacity:0;transform:translateX(-60px)}to{opacity:1;transform:translateX(0)}}
+@keyframes transZoom{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+@keyframes transFlip{from{opacity:0;transform:perspective(600px) rotateX(30deg)}to{opacity:1;transform:perspective(600px) rotateX(0)}}
+@keyframes transBlur{from{opacity:0;filter:blur(20px)}to{opacity:1;filter:blur(0)}}
+@keyframes transWipe{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0% 0 0)}}
+
+/* ── FX: Particles ── */
+.slide-particles{position:absolute;inset:0;pointer-events:none;z-index:3;overflow:hidden;}
+.spark{position:absolute;width:4px;height:4px;border-radius:50%;animation:sparkFloat linear infinite;}
+@keyframes sparkFloat{0%{opacity:0;transform:translateY(0) scale(0)}10%{opacity:1}90%{opacity:.3}100%{opacity:0;transform:translateY(-100vh) scale(1.5)}}
+
+/* ── FX: Glitch ── */
+@keyframes glitch1{0%,95%,100%{clip-path:none;transform:none}96%{clip-path:polygon(0 20%,100% 20%,100% 25%,0 25%);transform:translateX(-4px)}97%{clip-path:polygon(0 60%,100% 60%,100% 65%,0 65%);transform:translateX(4px)}98%{clip-path:polygon(0 40%,100% 40%,100% 45%,0 45%);transform:translateX(-2px)}99%{clip-path:none;transform:translateX(0)}}
+.fx-glitch::before{content:'';position:absolute;inset:0;background:inherit;animation:glitch1 4s infinite;z-index:4;mix-blend-mode:screen;opacity:.4;}
+
+/* ── FX: Vignette ── */
+.fx-vignette::after{content:'';position:absolute;inset:0;z-index:5;pointer-events:none;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.7) 100%);}
+
+/* ── FX: Grid overlay ── */
+.fx-grid-overlay{position:absolute;inset:0;z-index:2;pointer-events:none;background-image:linear-gradient(rgba(124,58,237,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(124,58,237,.05) 1px,transparent 1px);background-size:50px 50px;animation:gridMove 15s linear infinite;}
+
+/* ── FX: Countdown ── */
+.slide-countdown{position:absolute;bottom:30px;right:0;left:0;text-align:center;z-index:10;}
+.countdown-label{font-size:14px;color:rgba(255,255,255,.7);font-weight:700;margin-bottom:6px;}
+.countdown-timer{font-size:clamp(28px,4vw,56px);font-weight:900;color:#f59e0b;font-variant-numeric:tabular-nums;text-shadow:0 0 30px rgba(245,158,11,.6);}
+
+/* ── Small image positions ── */
+.small-img-wrap{position:absolute;z-index:8;pointer-events:none;}
+.small-img-wrap.spos-tr{top:20px;left:20px;}
+.small-img-wrap.spos-tl{top:20px;right:20px;}
+.small-img-wrap.spos-br{bottom:60px;left:20px;}
+.small-img-wrap.spos-bl{bottom:60px;right:20px;}
+.small-img-wrap img{display:block;object-fit:cover;box-shadow:0 8px 32px rgba(0,0,0,.5);}
+.sishape-rounded img{border-radius:14px;}
+.sishape-circle img{border-radius:50%;}
+.sishape-free img{border-radius:0;}
+
+
+<!-- ═══════════════════════════════════════════════════
+     استبدل دالة buildDynSlideHTML كاملة في display.html
+     ═══════════════════════════════════════════════════ -->
+<script>
+// ── Text size maps ──
+var TITLE_SIZES={xs:'clamp(18px,2.5vw,32px)',sm:'clamp(24px,3.5vw,44px)',md:'clamp(28px,4vw,54px)',lg:'clamp(32px,5vw,64px)',xl:'clamp(40px,6vw,80px)',xxl:'clamp(54px,8vw,110px)'};
+var DESC_SIZES={xs:'clamp(11px,1.2vw,16px)',sm:'clamp(13px,1.5vw,20px)',md:'clamp(14px,1.8vw,24px)',lg:'clamp(18px,2.2vw,30px)'};
+
+// ── Text color CSS ──
+var TEXT_COLORS={white:'color:#f8fafc',gold:'color:#f59e0b',purple:'color:#a855f7',gradient:'background:linear-gradient(135deg,#f8fafc,#a855f7,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text'};
+
+// ── Badge CSS ──
+var BADGE_STYLES={
+  filled:'background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;padding:12px 36px;border-radius:50px;font-weight:900;box-shadow:0 8px 40px rgba(124,58,237,.5);',
+  outline:'border:2px solid #a855f7;color:#a855f7;padding:11px 35px;border-radius:50px;font-weight:900;',
+  neon:'border:2px solid #a855f7;color:#a855f7;padding:11px 35px;border-radius:50px;font-weight:900;box-shadow:0 0 20px rgba(168,85,247,.6),inset 0 0 20px rgba(168,85,247,.1);',
+  minimal:'background:rgba(255,255,255,.08);color:rgba(255,255,255,.85);padding:11px 35px;border-radius:50px;font-weight:900;backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.15);'
+};
+
+// ── BG Presets ──
+var BG_PRESETS_MAP={
+  cosmos:'radial-gradient(ellipse at 20% 50%,#1a0533 0%,#0d001a 50%,#000 100%)',
+  aurora:'linear-gradient(135deg,#0f172a 0%,#064e3b 50%,#1e1b4b 100%)',
+  sunset:'linear-gradient(to bottom,#1a0533,#7f1d1d,#92400e)',
+  ocean:'linear-gradient(135deg,#0c4a6e,#1e3a5f,#0a0a2a)',
+  forest:'linear-gradient(135deg,#052e16,#14532d,#1a2e0a)',
+  fire:'linear-gradient(to top,#7f1d1d,#b45309,#92400e)',
+  neon:'linear-gradient(135deg,#0f0028,#1a0040,#000020)',
+  slate:'linear-gradient(135deg,#0f172a,#1e293b,#334155)',
+  royal:'linear-gradient(135deg,#1e1b4b,#312e81,#4c1d95)',
+  midnight:'linear-gradient(135deg,#020617,#0f172a,#1e1b4b)',
+  crimson:'linear-gradient(135deg,#450a0a,#7f1d1d,#991b1b)',
+  'teal-deep':'linear-gradient(135deg,#042f2e,#134e4a,#0f766e)'
+};
+
+var OVERLAY_COLORS={purple:'rgba(124,58,237,',blue:'rgba(59,130,246,',green:'rgba(16,185,129,',orange:'rgba(245,158,11,',pink:'rgba(236,72,153,',teal:'rgba(20,184,166,',red:'rgba(239,68,68,',dark:'rgba(0,0,0,',gold:'rgba(234,179,8,',none:'rgba(0,0,0,'};
+
+function buildBgStyle(slide){
+  if(slide.bgType==='solid') return 'background:' + (slide.bgSolid||'#0a0a1a') + ';';
+  if(slide.bgType==='preset'){
+    var bg=BG_PRESETS_MAP[slide.bgPreset];
+    return bg ? 'background:'+bg+';' : 'background:#0a0a1a;';
+  }
+  // gradient (default)
+  var base=OVERLAY_COLORS[slide.color]||'rgba(124,58,237,';
+  return 'background:radial-gradient(ellipse at 35% 45%,'+base+'0.22),transparent 65%),radial-gradient(ellipse at 80% 20%,'+base+'0.10),transparent 50%);';
+}
+
+function buildOverlay(slide, imgData){
+  if(!imgData && slide.bgType!=='solid' && slide.bgType!=='preset') return '';
+  var op = (slide.overlayOpacity||40)/100;
+  return '<div style="position:absolute;inset:0;z-index:1;background:rgba(0,0,0,'+op+')"></div>';
+}
+
+function buildTextAnimClass(anim, isDesc){
+  if(!anim||anim==='none') return '';
+  var cls='ta-'+anim + (isDesc?' da-delay':'');
+  return cls;
+}
+
+function buildTitleHTML(slide){
+  var tsz=TITLE_SIZES[slide.titleSize||'lg'];
+  var tc=TEXT_COLORS[slide.textColor||'white']||'color:#f8fafc';
+  var anCls=buildTextAnimClass(slide.titleAnim,false);
+  var align=slide.textAlign||'center';
+  if(slide.titleAnim==='typewriter'){
+    return '<div class="'+anCls+'" id="tw-title-'+Date.now()+'" style="font-size:'+tsz+';font-weight:900;line-height:1.1;'+tc+';text-align:'+align+'" data-tw="'+escapeHtml(slide.title)+'"></div>';
+  }
+  return '<div class="'+anCls+'" style="font-size:'+tsz+';font-weight:900;line-height:1.1;'+tc+';text-align:'+align+'">'+slide.title+'</div>';
+}
+
+function buildDescHTML(slide){
+  if(!slide.desc) return '';
+  var dsz=DESC_SIZES[slide.descSize||'md'];
+  var anCls=buildTextAnimClass(slide.descAnim,true);
+  var align=slide.textAlign||'center';
+  return '<div class="'+anCls+'" style="font-size:'+dsz+';color:rgba(255,255,255,.82);max-width:72%;margin:0 auto;line-height:1.7;text-align:'+align+'">'+slide.desc+'</div>';
+}
+
+function buildBadgeHTML(slide){
+  if(!slide.badge) return '';
+  var bStyle=BADGE_STYLES[slide.badgeStyle||'filled'];
+  return '<div style="display:inline-block;font-size:clamp(14px,1.6vw,22px);'+bStyle+'">'+slide.badge+'</div>';
+}
+
+function buildFxHTML(slide){
+  var html='';
+  if(slide.fx&&slide.fx.grid) html+='<div class="fx-grid-overlay"></div>';
+  if(slide.fx&&slide.fx.particles) html+=buildParticles();
+  return html;
+}
+
+function buildParticles(){
+  var colors=['#7c3aed','#a855f7','#f59e0b','#10b981','#3b82f6'];
+  var html='<div class="slide-particles">';
+  for(var i=0;i<22;i++){
+    var c=colors[Math.floor(Math.random()*colors.length)];
+    var dur=4+Math.random()*8;
+    var delay=Math.random()*6;
+    html+='<div class="spark" style="left:'+Math.random()*100+'%;top:'+Math.random()*100+'%;background:'+c+';width:'+(3+Math.random()*5)+'px;height:'+(3+Math.random()*5)+'px;animation-duration:'+dur+'s;animation-delay:'+delay+'s;"></div>';
+  }
+  return html+'</div>';
+}
+
+function buildSmallImgHTML(slide, smallImgData){
+  if(!smallImgData) return '';
+  var sz=slide.smallImgSize||100;
+  var pos=slide.smallImgPos||'tr';
+  var shape=slide.smallImgShape||'rounded';
+  var br=shape==='circle'?'50%':shape==='rounded'?'14px':'0';
+  return '<div class="small-img-wrap spos-'+pos+' sishape-'+shape+'" style="opacity:.88"><img src="'+smallImgData+'" style="width:'+sz+'px;height:'+sz+'px;border-radius:'+br+';object-fit:cover;box-shadow:0 8px 32px rgba(0,0,0,.55);"></div>';
+}
+
+function buildCountdownHTML(slide){
+  if(!slide.fx||!slide.fx.countdown||!slide.fx.countdownDate) return '';
+  var target=new Date(slide.fx.countdownDate).getTime();
+  var uid='cd-'+Date.now();
+  // timer will be set via JS after insertion
+  var label=slide.fx.countdownLabel||'ينتهي العرض خلال:';
+  return '<div class="slide-countdown"><div class="countdown-label">'+label+'</div><div class="countdown-timer" id="'+uid+'" data-target="'+target+'">--:--:--</div></div>';
+}
+
+function escapeHtml(t){return(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// ── MAIN: buildDynSlideHTML (استبدل الدالة القديمة بهذه) ──
+function buildDynSlideHTML(slide, imgData, smallImgData){
+  var bgStyle = buildBgStyle(slide);
+  var extraClasses='';
+  if(slide.fx&&slide.fx.glitch) extraClasses+=' fx-glitch';
+  if(slide.fx&&slide.fx.vignette!==false) extraClasses+=' fx-vignette';
+
+  // صورة خلفية + تأثيرها
+  var imgHtml='';
+  if(imgData){
+    var imgEffCls='img-effect-'+(slide.imgEffect||'kenburns');
+    imgHtml='<div style="position:absolute;inset:0;z-index:0;overflow:hidden"><img src="'+imgData+'" style="width:100%;height:100%;object-fit:cover;display:block" class="'+imgEffCls+'"></div>';
+  }
+
+  var overlay=buildOverlay(slide, imgData);
+  var fxHtml=buildFxHTML(slide);
+  var titleHtml=buildTitleHTML(slide);
+  var descHtml=buildDescHTML(slide);
+  var badgeHtml=buildBadgeHTML(slide);
+  var smallHtml=buildSmallImgHTML(slide, smallImgData);
+  var countdownHtml=buildCountdownHTML(slide);
+
+  var align=slide.textAlign||'center';
+  var contentStyle='position:relative;z-index:6;display:flex;flex-direction:column;align-items:'+(align==='center'?'center':align==='right'?'flex-end':'flex-start')+';justify-content:center;height:100%;gap:20px;padding:40px 60px;text-align:'+align+';';
+
+  return '<div style="position:absolute;inset:0;'+bgStyle+'" class="'+extraClasses+'">'+
+    imgHtml+overlay+fxHtml+
+    smallHtml+
+    '<div style="'+contentStyle+'">'+titleHtml+descHtml+badgeHtml+'</div>'+
+    countdownHtml+
+  '</div>';
+}
+
+// ── بعد إدراج الشريحة في DOM، نشغّل الـ typewriter والعداد ──
+function postSlideInit(container){
+  // Typewriter
+  var tws=container.querySelectorAll('[data-tw]');
+  tws.forEach(function(el){
+    var text=el.getAttribute('data-tw');
+    el.textContent='';
+    var i=0;
+    var iv=setInterval(function(){
+      if(i>=text.length){clearInterval(iv);return;}
+      el.textContent+=text[i++];
+    },50);
+  });
+  // Countdown timers
+  var cds=container.querySelectorAll('[data-target]');
+  cds.forEach(function(el){
+    function tick(){
+      var now=Date.now(), diff=parseInt(el.getAttribute('data-target'))-now;
+      if(diff<=0){el.textContent='انتهى!';return;}
+      var h=Math.floor(diff/3600000), m=Math.floor((diff%3600000)/60000), s=Math.floor((diff%60000)/1000);
+      el.textContent=(h?h+'h ':'')+String(m).padStart(2,'0')+'m '+String(s).padStart(2,'0')+'s';
+      setTimeout(tick,1000);
+    }
+    tick();
+  });
+}
+</script>
+
+<!-- ═══════════════════════════════════════════════════
+     تعديل دالة showDynSlide في display.html:
+     استبدل الجزء داخل doRender بهذا:
+     ═══════════════════════════════════════════════════ -->
+<script>
+// في دالة showDynSlide، استبدل الـ doRender بهذا:
+var doRender = function(imgData, smallImgData){
+  var sid='dyn-slide-'+idx;
+  var existing=document.getElementById(sid);
+  if(existing)existing.remove();
+
+  var div=document.createElement('div');
+  div.className='slide slide-image active';
+  // أضف كلاس الانتقال
+  var trans=slide.transEffect||'fade';
+  if(trans!=='fade'&&trans!=='none') div.classList.add('slide-trans-'+trans,'slide-entering');
+  div.id=sid;
+  div.innerHTML=buildDynSlideHTML(slide, imgData, smallImgData);
+  el('dynamic-slides-container').appendChild(div);
+
+  // شغّل typewriter والعداد
+  postSlideInit(div);
+
+  buildDots(dynSlides.length,idx);
+  startProgress(dur);
+  clearTimeout(dynTimer);
+  dynTimer=setTimeout(onDone, dur);
+};
+
+// واستدع الدالة كذلك:
+if(slide.type==='image'&&slide.imageId){
+  getImg(slide.imageId, function(imgData){
+    if(slide.smallImgId){
+      getImg(slide.smallImgId, function(smallData){ doRender(imgData, smallData); });
+    } else { doRender(imgData, null); }
+  });
+} else {
+  if(slide.smallImgId){
+    getImg(slide.smallImgId, function(smallData){ doRender(null, smallData); });
+  } else { doRender(null, null); }
+}
+</script>
 </body>
 </html>
