@@ -559,7 +559,7 @@ body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;background:var(--bg);color:v
 
 <script>
 // ════════════ IndexedDB ════════════
-var DB_NAME='hashayshi_pos_db', DB_VER=1, STORE='images', db=null;
+var DB_NAME='hashayshi_pos_db', DB_VER=2, STORE='images', db=null;
 function initDB(cb){
   var req=indexedDB.open(DB_NAME,DB_VER);
   req.onupgradeneeded=function(e){if(!e.target.result.objectStoreNames.contains(STORE))e.target.result.createObjectStore(STORE,{keyPath:'id'});};
