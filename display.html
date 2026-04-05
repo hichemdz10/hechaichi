@@ -877,7 +877,7 @@ function escapeHtml(t){return(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 
 // ── MAIN: buildDynSlideHTML ──
 function buildDynSlideHTML(slide, imgData, smallImgData){
-  var bgStyle = buildBgStyle(slide);
+  var bgStyle = buildBgStyle(slide, !!imgData);
   var extraClasses='';
   if(slide.fx&&slide.fx.glitch) extraClasses+=' fx-glitch';
   if(slide.fx&&slide.fx.vignette!==false) extraClasses+=' fx-vignette';
